@@ -1462,700 +1462,1667 @@ def index():
 def privacy():
     return PRIVACY_TEMPLATE
 
-
 LIVE_TEMPLATE = r"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>LensDJ Pro // Sovereign Uplink</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>LENSDNA // NEURAL UPLINK</title>
     <link rel="icon" type="image/png" href="/static/app-icon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('lensdna_hud_theme') || 'auto';
+            if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+            else if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+            else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
     <style>
-        :root {
-            --bg-dark: #0a0a0c;
-            --surface: #141418;
-            --surface-hover: #1f1f25;
-            --primary: #00ff41;
-            --primary-dim: rgba(0, 255, 65, 0.15);
-            --secondary: #00e5ff;
-            --accent: #b000ff;
-            --danger: #ff3b30;
-            --text-main: #ffffff;
-            --text-dim: #8e8e93;
-            --border: rgba(255, 255, 255, 0.1);
-            --radius: 12px;
-            --glass: rgba(10, 10, 12, 0.75);
+        :root { 
+            --neon: #00ff41; --neon-dim: rgba(0, 255, 65, 0.1); 
+            --border: rgba(255, 255, 255, 0.15); --glass: rgba(0, 0, 0, 0.85); 
+            --bg: #000; --alert: #ff3b30; 
+            --text-main: #fff; --text-dim: #ccc; --text-mut: #666;
+            --panel-bg: rgba(0,0,0,0.85); --panel-bg-solid: #050505;
+            --input-bg: #111; --chat-bg: rgba(0,0,0,0.3);
+            --msg-bg: rgba(255,255,255,0.03); --btn-bg: #000; --btn-hover: #111;
+            --danger-bg: #220000; --danger-border: #500;
+            --shadow-glow: 0 0 5px rgba(0,0,0,0.5);
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+        :root[data-theme="light"] {
+            --neon: #059669; --neon-dim: rgba(5, 150, 105, 0.1); 
+            --border: rgba(0, 0, 0, 0.2); --glass: rgba(255, 255, 255, 0.92); 
+            --bg: #f8fafc; --alert: #dc2626; 
+            --text-main: #111; --text-dim: #333; --text-mut: #555;
+            --panel-bg: rgba(245,245,245,0.95); --panel-bg-solid: #f0f0f0;
+            --input-bg: #fff; --chat-bg: rgba(255,255,255,0.6);
+            --msg-bg: rgba(0,0,0,0.04); --btn-bg: #eee; --btn-hover: #ddd;
+            --danger-bg: rgba(220, 38, 38, 0.1); --danger-border: rgba(220, 38, 38, 0.3);
+            --shadow-glow: none;
+        }
+        body { background-color: var(--bg); color: var(--neon); font-family: "Share Tech Mono", monospace; margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100dvh; width: 100vw; transition: background-color 0.3s, color 0.3s; }
+        #main-container { position: relative; width: 100%; height: 100%; background: var(--bg); overflow: hidden; display: flex; flex-direction: column; }
+        @media (min-width: 800px) {
+            body { align-items: flex-start; justify-content: flex-start; }
+            #main-container { width: 100vw; height: 100dvh; max-height: none; border: none; border-radius: 0; box-shadow: none; }
+            #hud { width: 75vw !important; max-width: 1000px; left: 50% !important; transform: translateX(-50%); top: 20px !important; }
+            #controls { bottom: 40px !important; }
+        }
+        #hud { position: absolute; top: 20px; left: 20px; z-index: 1000; background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--border); width: calc(100% - 40px); display: flex; flex-direction: column; transition: all 0.3s ease; border-radius: 4px; resize: vertical; overflow: hidden; min-height: 48px; max-height: 90vh; }
+        @media (max-width: 600px) { #hud { width: calc(100vw - 40px); left: 20px; top: 10px; } }
+        #hud.minimized { max-height: 48px !important; height: 48px !important; resize: none !important; overflow: hidden; }
+        .hud-header { padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); cursor: pointer; height: 48px; box-sizing: border-box; }
+        .title-main { font-size: 0.85rem; letter-spacing: 1px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; margin-right: 10px; }
+        .status-tag { font-size: 0.65rem; color: var(--neon); display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .hud-body { display: flex; flex-direction: column; flex: 1; overflow-y: auto; height: 100%; }
+        #hud.minimized .hud-body { display: none; }
+        #chat-history { height: 200px; min-height: 100px; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; resize: vertical; border-bottom: 1px solid var(--border); background: var(--chat-bg); }
+        #staging-area { padding: 10px; display: flex; flex-direction: column; resize: vertical; min-height: 60px; border-bottom: 1px solid var(--border); }
+        .log { font-size: 0.6rem; color: var(--text-mut); padding: 8px; background: var(--panel-bg-solid); height: 60px; min-height: 40px; overflow-y: auto; resize: vertical; font-family: "JetBrains Mono", monospace; }
+        .msg-row { display: flex; flex-direction: column; margin-bottom: 4px; }
+        .msg-sender { font-size: 0.6rem; opacity: 0.5; margin-bottom: 2px; color: var(--text-main); }
+        .msg-content { font-size: 0.85rem; line-height: 1.4; padding: 8px; background: var(--msg-bg); border-left: 1px solid var(--neon); color: var(--text-dim); white-space: pre-wrap; }
+        .msg-content.thought { color: #4a6; font-size: 0.75rem; font-style: italic; border-left: 1px solid var(--border); opacity: 0.8; margin-bottom: 2px; }
+        .msg-content.speech { color: var(--text-main); font-weight: bold; border-left: 3px solid var(--neon); background: var(--neon-dim); text-shadow: var(--shadow-glow); }
+        .msg-content.sys-alert { color: var(--alert); border-left: 3px solid var(--alert); background: rgba(255, 59, 48, 0.1); font-weight: bold; }
+        .msg-user { align-self: flex-end; text-align: right; }
+        .msg-user .msg-content { border-left: none; border-right: 1px solid var(--neon); background: var(--neon-dim); color: var(--text-main); }
+        .hud-tools { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--border); gap: 1px; }
+        .tool-btn { background: var(--btn-bg); border: none; color: var(--neon); padding: 12px 5px; font-family: inherit; font-size: 0.65rem; cursor: pointer; text-transform: uppercase; white-space: nowrap; transition: 0.2s; }
+        .tool-btn:hover:not(:disabled) { background: var(--btn-hover); color: var(--text-main); }
+        .tool-btn:disabled { opacity: 0.2; }
+        .tool-btn.active-mode { background: var(--neon-dim); color: var(--text-main); box-shadow: inset 0 0 10px var(--neon); }
+        #manualInject { width: 100%; height: 100%; box-sizing: border-box; background: transparent; border: none; color: var(--text-main); padding: 5px; font-family: inherit; font-size: 0.85rem; outline: none; }
+        #safety-panel { border-bottom: 1px solid var(--border); background: var(--panel-bg); font-size: 0.7rem; }
+        details summary { padding: 8px 15px; cursor: pointer; list-style: none; color: var(--text-mut); font-weight: bold; user-select: none; transition: color 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+        details summary:hover { color: var(--text-main); }
+        details[open] summary { color: var(--alert); border-bottom: 1px solid var(--border); }
+        .safety-content { padding: 12px 15px; background: var(--panel-bg-solid); display: flex; flex-direction: column; gap: 10px; }
+        .legal-disclaimer { margin: 0; color: var(--text-mut); font-size: 0.55rem; line-height: 1.4; font-family: "JetBrains Mono", monospace; border-left: 2px solid var(--border); padding-left: 8px; }
+        .safety-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+        .warn-btn { border: 1px solid #fbbf24; color: #fbbf24; background: rgba(251, 191, 36, 0.1); padding: 10px; cursor: pointer; font-family: inherit; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; }
+        .warn-btn:hover { background: #fbbf24; color: #000; }
+        .danger-btn { border: 1px solid var(--alert); color: var(--alert); background: rgba(255, 59, 48, 0.1); padding: 10px; cursor: pointer; font-family: inherit; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 0 15px rgba(255, 59, 48, 0.1); }
+        .danger-btn:hover { background: var(--alert); color: #fff; box-shadow: 0 0 20px rgba(255, 59, 48, 0.4); }
         
-        body {
-            background-color: var(--bg-dark); color: var(--text-main);
-            font-family: 'Inter', sans-serif; overflow: hidden;
-            height: 100dvh; width: 100vw;
-        }
-
-        /* Essential for ar_engine.js integration */
-        #main-container {
-            position: relative; width: 100%; height: 100%;
-            display: flex; flex-direction: column; overflow: hidden;
-        }
-
-        #video-bg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; z-index: 0; transform: scaleX(-1);
-            opacity: 0; transition: opacity 0.5s ease;
-        }
-        #ar-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        #video-feed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.3s ease; transform-origin: center center; will-change: transform, filter; }
+        #ar-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; pointer-events: none; }
         
-        .performance-mode #video-bg { opacity: 1; }
-        .performance-mode #app-ui { background: transparent; }
-
-        #app-ui {
-            position: relative; z-index: 10; flex: 1; display: flex; flex-direction: column;
-            background: var(--bg-dark); transition: background 0.5s ease;
+        .mirror { transform: scaleX(-1); }
+        #controls { position: absolute; bottom: 40px; width: 100%; display: flex; justify-content: center; z-index: 2000; pointer-events: none; }
+        .connect-btn { pointer-events: auto; background: var(--glass); border: 1.5px solid var(--neon); color: var(--neon); padding: 14px 40px; cursor: pointer; font-family: "Share Tech Mono", monospace; font-size: 16px; font-weight: 700; letter-spacing: 3px; border-radius: 50px; display: flex; align-items: center; gap: 12px; box-shadow: 0 0 15px var(--neon-dim); transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); text-transform: uppercase; }
+        .connect-btn:hover { background: var(--neon); color: var(--bg); box-shadow: 0 0 25px var(--neon); transform: translateY(-1px); }
+        .connect-btn .dot { width: 10px; height: 10px; background: #333; border-radius: 50%; border: 1px solid rgba(0,255,65,0.3); }
+        .connect-btn.active { border-color: var(--alert); color: var(--alert); }
+        .connect-btn.active .dot { background: var(--alert); animation: pulseRed 1.5s infinite; }
+        @keyframes pulseRed { 0% { transform: scale(1); opacity: 1; } 70% { transform: scale(1.2); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+        .min-btn { background: transparent; border: 1px solid var(--border); color: var(--text-main); cursor: pointer; width: 24px; height: 24px; border-radius: 2px; }
+        .log-entry { margin-bottom: 2px; border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+        .log-time { color: var(--text-mut); margin-right: 5px; }
+        .log-data { color: var(--neon); font-weight: bold; }
+        .log-info { color: var(--text-mut); }
+        #timer-display { color: var(--text-main); font-weight: bold; margin-right: 10px; }
+        .key-panel { padding: 15px; border-bottom: 1px solid var(--border); background: var(--panel-bg); }
+        .key-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .key-input { width: 100%; background: var(--input-bg); border: 1px solid var(--border); color: var(--neon); padding: 8px; font-family: 'Share Tech Mono'; font-size: 0.75rem; outline: none; border-radius: 4px; box-sizing: border-box; transition: border 0.2s; }
+        .key-input:focus { border-color: var(--neon); }
+        .key-label { font-size: 0.6rem; color: var(--text-mut); margin-bottom: 4px; display: block; text-transform: uppercase; }
+        .clear-keys-btn { width: 100%; background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--alert); padding: 6px; font-size: 0.65rem; cursor: pointer; text-transform: uppercase; margin-top: 5px; border-radius: 2px; font-weight: bold; transition: 0.2s; }
+        .clear-keys-btn:hover { background: var(--alert); color: #fff; }
+        #staging-area.drag-over { border-color: var(--neon); background: var(--neon-dim); box-shadow: 0 0 15px var(--neon-dim); }
+        @media (max-width: 800px) { #btn-screen { display: none !important; } }
+        .thought { display: none !important; }
+        .msg-ai:has(.thought) { display: none !important; }
+        .msg-sender:has(+ .thought) { display: none !important; }
+        /* VOICE PROMPTS OVERLAY */
+        #prompts-overlay {
+            position: absolute; top: 20px; right: 20px; width: 320px; 
+            background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--neon); border-radius: 8px; z-index: 1005; 
+            padding: 20px; box-shadow: 0 0 25px var(--neon-dim); 
+            display: flex; flex-direction: column; transition: all 0.3s ease;
+            transform-origin: top right;
         }
-
-        header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 16px 20px; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+        #prompts-overlay.hidden { transform: scale(0.95); opacity: 0; pointer-events: none; }
+        .prompt-category { font-size: 0.65rem; margin-bottom: 6px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; color: var(--text-main); }
+        .prompt-example { 
+            font-size: 0.75rem; color: var(--text-dim); background: var(--msg-bg); 
+            padding: 8px 10px; margin-bottom: 6px; border-radius: 0 4px 4px 0; 
+            font-style: italic; letter-spacing: 0.5px; border-left: 3px solid var(--neon);
+            transition: background 0.2s, color 0.2s;
         }
-        .header-brand { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 10px var(--danger); transition: 0.3s; }
-        .status-dot.connected { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
-        
-        .header-controls { display: flex; gap: 12px; }
-        .icon-btn {
-            background: var(--surface); border: 1px solid var(--border); color: var(--text-main);
-            width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-size: 1.1rem; cursor: pointer; transition: 0.2s;
-        }
-        .icon-btn:hover { background: var(--surface-hover); }
-        .icon-btn.active { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); }
-
-        #decks-container {
-            flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth;
-        }
-        
-        .dj-deck {
-            background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border); border-radius: var(--radius); padding: 16px;
-            display: flex; flex-direction: column; gap: 12px; animation: slideIn 0.3s ease-out forwards;
-        }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .deck-header { display: flex; justify-content: space-between; align-items: center; }
-        .deck-title { font-size: 0.9rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; }
-        .deck-bpm { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-dim); background: var(--surface); padding: 4px 8px; border-radius: 4px; }
-        
-        .deck-controls { display: flex; align-items: center; gap: 16px; }
-        .play-btn {
-            width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: #000;
-            border: none; font-size: 1.2rem; display: flex; justify-content: center; align-items: center;
-            cursor: pointer; box-shadow: 0 4px 15px var(--primary-dim); transition: 0.2s;
-        }
-        .play-btn:active { transform: scale(0.95); }
-        
-        .visualizer-placeholder {
-            flex: 1; height: 40px; background: repeating-linear-gradient(90deg, var(--surface) 0px, var(--surface) 2px, transparent 2px, transparent 4px);
-            border-radius: 4px; position: relative; overflow: hidden; opacity: 0.5;
-        }
-        
-        .deck-options { display: flex; gap: 12px; }
-        .toggle-btn {
-            flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text-dim);
-            padding: 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: 0.2s;
-        }
-        .toggle-btn.active { background: var(--primary-dim); color: var(--primary); border-color: var(--primary); }
-        
-        input[type=range] { -webkit-appearance: none; width: 100px; background: transparent; }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
-            background: var(--text-main); cursor: pointer; margin-top: -6px; box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--surface-hover); border-radius: 2px; }
-
-        footer {
-            padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom));
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            display: flex; flex-direction: column; align-items: center; gap: 16px;
-        }
-        
-        .ai-subtitle {
-            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--secondary);
-            text-align: center; min-height: 24px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); opacity: 0.8;
-        }
-
-        .action-row { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 400px; }
-        
-        .mic-btn-container { position: relative; }
-        .mic-btn {
-            width: 80px; height: 80px; border-radius: 50%; border: none;
-            background: linear-gradient(135deg, var(--surface), var(--surface-hover));
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 2px 2px rgba(255,255,255,0.1);
-            color: var(--text-main); font-size: 2rem; cursor: pointer;
-            display: flex; justify-content: center; align-items: center; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .mic-btn.active-mic { background: var(--primary); color: #000; box-shadow: 0 0 25px var(--primary-dim); }
-        .mic-btn.listening { transform: scale(1.05); animation: pulseMic 1.5s infinite; }
-        @keyframes pulseMic { 0% { box-shadow: 0 0 0 0 var(--primary-dim); } 70% { box-shadow: 0 0 0 20px rgba(0, 255, 65, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0); } }
-
-        .modal-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            z-index: 100; display: none; justify-content: center; align-items: center; padding: 20px;
-        }
-        .modal-overlay.active { display: flex; }
-        
-        .modal-content {
-            background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-            width: 100%; max-width: 400px; padding: 24px; max-height: 85vh; overflow-y: auto;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-        .modal-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; color: var(--text-main); display: flex; justify-content: space-between; }
-        .close-modal { background: none; border: none; color: var(--text-dim); font-size: 1.5rem; cursor: pointer; }
-        
-        .input-group { margin-bottom: 16px; }
-        .input-group label { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; font-weight: 600; }
-        .input-group input {
-            width: 100%; background: var(--bg-dark); border: 1px solid var(--border); color: var(--text-main);
-            padding: 12px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none;
-        }
-        .input-group input:focus { border-color: var(--primary); }
-
-        .btn-primary {
-            width: 100%; background: var(--primary); color: #000; border: none; padding: 14px;
-            border-radius: 8px; font-weight: 800; font-size: 0.9rem; text-transform: uppercase;
-            cursor: pointer; transition: 0.2s; margin-top: 10px;
-        }
-        .btn-primary:active { transform: scale(0.98); }
-        .btn-danger { background: rgba(255, 59, 48, 0.1); color: var(--danger); border: 1px solid var(--danger); }
-
-        #terminal-logs {
-            font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--text-dim);
-            background: #000; padding: 10px; border-radius: 6px; height: 150px; overflow-y: auto;
-            margin-top: 20px; border: 1px solid var(--border); display: none;
+        .prompt-example:hover { background: var(--neon-dim); color: var(--text-main); }
+        @media (max-width: 1100px) {
+            #prompts-overlay { top: auto; bottom: 100px; right: 20px; width: calc(100vw - 40px); max-width: 350px; transform-origin: bottom right; }
         }
     </style>
 </head>
 <body>
-
-    <div id="main-container">
-        <!-- BACKGROUND CAMERA -->
-        <video id="video-bg" autoplay muted playsinline></video>
-        <canvas id="ar-overlay"></canvas>
-
-        <!-- MAIN UI -->
-        <div id="app-ui">
-            <header>
-                <div class="header-brand">
-                    <div class="status-dot" id="connection-dot"></div>
-                    LENSDJ PRO
-                </div>
-                <div class="header-controls">
-                    <button class="icon-btn" id="btn-mode-toggle" title="Performance Mode">📷</button>
-                    <button class="icon-btn" id="btn-ar-game" style="color:var(--secondary); border-color:rgba(0,229,255,0.3);" title="AR Sync">AR</button>
-                    <button class="icon-btn" id="btn-settings" title="Settings">⚙️</button>
-                </div>
-            </header>
-
-            <div id="decks-container">
-                <div class="dj-deck" id="welcome-deck" style="text-align:center; padding: 30px 20px; border-color: var(--primary-dim);">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">🎧</div>
-                    <h3 style="margin-bottom: 8px;">Decks Empty</h3>
-                    <p style="font-size: 0.85rem; color: var(--text-dim); line-height: 1.5;">Tap the Microphone below to toggle live listening, then say:<br><strong>"Generate a heavy techno bassline"</strong></p>
-                </div>
-            </div>
-
-            <footer>
-                <div class="ai-subtitle" id="ai-subtitle">Awaiting Uplink...</div>
-                <div class="action-row">
-                    <button class="icon-btn" style="opacity: 0; pointer-events: none;">.</button>
-                    <div class="mic-btn-container">
-                        <button class="mic-btn" id="btn-mic" title="Toggle Mic">🎙️</button>
-                    </div>
-                    <button class="icon-btn" id="btn-power" title="Power Uplink">🔌</button>
-                </div>
-            </footer>
+<div id="main-container">
+    <video id="video-feed" autoplay muted playsinline class="mirror"></video>
+    <canvas id="ar-overlay"></canvas>
+    
+    <!-- VOICE COMMANDS OVERLAY -->
+    <div id="prompts-overlay">
+        <button onclick="document.getElementById('prompts-overlay').classList.add('hidden')" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; color: var(--text-mut); font-size: 1.5rem; cursor: pointer; line-height: 1;">×</button>
+        <div style="font-size: 0.9rem; color: var(--text-main); font-weight: bold; margin-bottom: 12px; border-bottom: 1px dashed var(--border); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+            <span style="animation: pulseRed 1.5s infinite; color: var(--alert); font-size: 0.7rem;">🔴</span>
+            SPOKEN COMMANDS
         </div>
-    </div>
-
-    <!-- SETTINGS MODAL -->
-    <div class="modal-overlay" id="modal-settings">
-        <div class="modal-content">
-            <div class="modal-title">
-                Sovereign Settings
-                <button class="close-modal" id="close-settings">&times;</button>
-            </div>
-            
-            <div class="input-group">
-                <label>Gemini API Key (Live Engine)</label>
-                <input type="password" id="geminiKey" placeholder="AIza...">
-            </div>
-            
-            <button class="btn-primary" id="btn-save-keys" style="margin-bottom: 20px;">Save & Connect</button>
-            
-            <div style="border-top: 1px solid var(--border); margin: 20px 0;"></div>
-            
-            <button class="btn-primary" id="btn-toggle-logs" style="background: var(--surface-hover); color: var(--text-main); border: 1px solid var(--border);">Show Diagnostic Terminal</button>
-            <div id="terminal-logs"></div>
-
-            <button class="btn-primary btn-danger" id="btn-purge" style="margin-top: 20px;">Purge Cache & Disconnect</button>
+        <div style="font-size: 0.65rem; color: var(--text-dim); margin-bottom: 18px; line-height: 1.5;">
+            Speak naturally to your AI Co-Pilot. You are the conductor; the AI is your live audio engine. Try saying:
         </div>
-    </div>
-
-    <!-- ONBOARDING MODAL -->
-    <div class="modal-overlay active" id="modal-onboarding">
-        <div class="modal-content" style="text-align: center;">
-            <img src="/static/app-icon.png" style="width: 80px; border-radius: 16px; margin-bottom: 16px;">
-            <h2 style="margin-bottom: 12px;">Welcome to LensDJ</h2>
-            <p style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 24px; line-height: 1.6;">
-                The world's first agentic AI DJ interface. <br><br>
-                1. Add your AI Key in Settings.<br>
-                2. Tap 🎙️ to activate your mic and stream.<br>
-                3. Speak commands to generate stems.
-            </p>
-            <button class="btn-primary" id="btn-start-onboarding">Initialize Deck</button>
-            <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 16px;">By initializing, you agree to our <a href="/privacy.html" style="color:var(--primary);">Privacy Protocol</a>.</p>
-        </div>
-    </div>
-
-    <script type="module">
-        import '/static/ar_engine.js';
-
-        const PROVIDER = "{{ provider }}";
-        const DOMAIN = "dj"; 
-        const UPLINK_CLEARANCE = "coDe7777";
-
-        const state = {
-            socket: null, audioCtx: null, worklet: null, videoStream: null, audioStream: null,
-            serverReady: false, isPerformanceMode: false, micMuted: true,
-            isSpeaking: false, lastVoiceTimestamp: 0, nextStartTime: 0, lyriaNextStartTime: 0,
-            recorderDest: null
-        };
-
-        const el = {
-            main: document.getElementById("main-container"),
-            video: document.getElementById("video-bg"),
-            btnMic: document.getElementById("btn-mic"),
-            btnMode: document.getElementById("btn-mode-toggle"),
-            btnPower: document.getElementById("btn-power"),
-            btnAr: document.getElementById("btn-ar-game"),
-            btnSettings: document.getElementById("btn-settings"),
-            decksContainer: document.getElementById("decks-container"),
-            welcomeDeck: document.getElementById("welcome-deck"),
-            subtitle: document.getElementById("ai-subtitle"),
-            statusDot: document.getElementById("connection-dot"),
-            geminiInput: document.getElementById("geminiKey"),
-            terminalLogs: document.getElementById("terminal-logs")
-        };
-
-        // --- ONBOARDING & SETTINGS ---
-        document.getElementById('btn-start-onboarding').onclick = () => {
-            document.getElementById('modal-onboarding').classList.remove('active');
-            if(!localStorage.getItem("enigma_gemini_key")) {
-                document.getElementById('modal-settings').classList.add('active');
-            } else {
-                connect();
-            }
-        };
-
-        el.btnSettings.onclick = () => document.getElementById('modal-settings').classList.add('active');
-        document.getElementById('close-settings').onclick = () => document.getElementById('modal-settings').classList.remove('active');
         
-        if (localStorage.getItem("enigma_gemini_key")) el.geminiInput.value = localStorage.getItem("enigma_gemini_key");
+        <div style="margin-bottom: 12px;">
+            <div class="prompt-category">🔥 The Mainstage Drop</div>
+            <div class="prompt-example">"Build it up and drop a massive techno bassline!"</div>
+            <div class="prompt-example">"Go crazy! Give me fast hi-hats at 150 BPM."</div>
+        </div>
 
-        document.getElementById('btn-save-keys').onclick = () => {
-            const key = el.geminiInput.value.trim();
-            if(key) localStorage.setItem("enigma_gemini_key", key);
-            document.getElementById('modal-settings').classList.remove('active');
-            if(!state.serverReady) connect();
-        };
+        <div style="margin-bottom: 12px;">
+            <div class="prompt-category">🎛️ Live Mix Adjustments</div>
+            <div class="prompt-example">"Mute the kick drum for the next 4 beats."</div>
+            <div class="prompt-example">"Chill out, make everything a bit quieter."</div>
+        </div>
 
-        function logMsg(msg) {
-            const entry = document.createElement("div");
-            entry.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
-            el.terminalLogs.appendChild(entry);
-            el.terminalLogs.scrollTop = el.terminalLogs.scrollHeight;
+        <div style="margin-bottom: 12px;">
+            <div class="prompt-category">🎤 Stem Matrix (Vocals/Melodies)</div>
+            <div class="prompt-example">"Generate a female vocal singing 'Lens DNA is the future'."</div>
+        </div>
+
+        <div style="margin-bottom: 5px;">
+            <div class="prompt-category">⏱️ Timing & Workflow Strategy</div>
+            <div style="font-size: 0.65rem; color: var(--text-dim); background: var(--msg-bg); border: 1px dashed var(--border); padding: 8px; border-radius: 4px; line-height: 1.4;">
+                <strong style="color: var(--text-main);">PRO TIP:</strong> Always test ideas with <strong>T=8</strong> (8 seconds) first to check the composition. Once perfected, command full tracks like <strong>T=180</strong>. (Full 3 minutes is considered the longest optimal AI music production). <br><br>
+                <span style="color: var(--alert); font-weight: bold;">⚠️ EXPECT DELAYS:</span> High-fidelity production time often equals or exceeds the requested track length. A 3-minute track takes 3+ minutes to render. Be patient!
+            </div>
+        </div>
+    </div>
+    <!-- END VOICE COMMANDS OVERLAY -->
+
+    <div id="hud" class="minimized">
+        <div class="hud-header" id="hudHeader">
+            <div class="title-main">ENIGMAFORGE // {{ domain|upper }}</div>
+            <div class="status-tag">
+                <span id="timer-display">09:00</span>
+                <span id="status">STANDBY</span>
+                <button class="min-btn" id="themeToggle" title="Toggle Theme (Dark/Light/Auto)" style="margin-right:4px;">◐</button>
+                <button class="min-btn" id="minToggle">+</button>
+            </div>
+        </div>
+        <div class="hud-body">
+            <div class="key-panel">
+                <div style="font-size: 0.6rem; color: var(--text-main); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1px; display:flex; justify-content:space-between; align-items:center;">
+                    <span>Sovereign Compute Keyring</span>
+                    <span id="providerDisplay" style="color:var(--neon); border:1px solid var(--neon); padding:2px 8px; border-radius:4px; font-size:0.55rem;">ACTIVE: {{ provider|upper }}</span>
+                </div>
+                <div id="geminiPromoBox" style="background: var(--panel-bg); border: 1px solid var(--border); border-left: 5px solid var(--neon); border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; position: relative; box-shadow: 0 0 20px var(--neon-dim);">
+                    <button onclick="window.dismissGeminiPromo()" style="position: absolute; top: 10px; right: 14px; background: none; border: none; color: var(--text-mut); font-size: 1.6rem; cursor: pointer; line-height: 1; padding: 0;">×</button>
+                    <div style="padding-right: 30px;">
+                        <div style="color: var(--neon); font-size: 0.95rem; font-weight: 700; letter-spacing: 0.6px; margin-bottom: 8px;">DON'T HAVE A GEMINI KEY?</div>
+                        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="display: block; background: var(--input-bg); color: var(--text-main); padding: 16px 20px; text-align: center; text-decoration: none; border-radius: 6px; font-weight: 800; font-size: 1.05rem; border: 2px solid var(--neon); box-shadow: 0 0 25px var(--neon-dim); letter-spacing: 0.4px;">Get your "FREE tier" Google AI Key in 2 clicks here</a>
+                        <div style="text-align: center; font-size: 0.68rem; color: var(--text-mut); margin-top: 8px;">Official • Instant • Opens in new tab</div>
+                    </div>
+                </div>
+                <div class="key-grid">
+                    <div>
+                        <span class="key-label">Gemini (Live)</span>
+                        <input type="password" id="geminiKey" class="key-input" placeholder="AIza...">
+                    </div>
+                    <div>
+                        <span class="key-label">xAI (Grok)</span>
+                        <input type="password" id="grokKey" class="key-input" placeholder="xai-...">
+                    </div>
+                    <div>
+                        <span class="key-label">OpenAI (RT)</span>
+                        <input type="password" id="openaiKey" class="key-input" placeholder="sk-...">
+                    </div>
+                </div>
+                <button id="clearKeysBtn" class="clear-keys-btn">[UNLINK ALL KEYS]</button>
+            </div>
+            <div id="chat-history"><div class="msg-row msg-ai"><div class="msg-sender">SYSTEM</div><div class="msg-content">Neural Uplink Ready. Compute Arbitrage Active.</div></div></div>
+            <div class="promptdj-panel" style="padding: 15px; border-bottom: 1px solid var(--border); background: var(--panel-bg);">
+                <div style="font-size: 0.6rem; color: var(--text-main); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--neon-dim); padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Stem Matrix</span>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="btn-next-preset" style="background: transparent; color: #00e5ff; border: 1px solid #00e5ff; border-radius: 3px; padding: 3px 8px; font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; font-weight: bold; cursor: pointer; transition: 0.2s;">⏭️ AUTO PRESET</button>
+                        <button id="btn-add-channel" style="background: var(--neon); color: #000; border: none; border-radius: 3px; padding: 3px 8px; font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; font-weight: bold; cursor: pointer; transition: 0.2s;">+ ADD CH (3/8)</button>
+                    </div>
+                </div>
+                <div id="channels-container" style="display: flex; gap: 10px; margin-bottom: 15px; height: 160px; min-height: 120px; resize: vertical; overflow: auto; padding-bottom: 5px;"></div>
+                <div style="font-size: 0.65rem; color: var(--text-mut); background: rgba(0, 255, 65, 0.05); border: 1px dashed rgba(0, 255, 65, 0.3); padding: 8px; border-radius: 4px; margin-bottom: 12px; line-height: 1.4;">
+                    <strong style="color: var(--neon);">PRO TIP:</strong> Generative AI excels at 1- to 3-minute chunks. Generate highly cohesive 30s to 120s loops for absolute fire. As the DJ, loop these stems, mix them, and trigger new ones to keep a 10-minute set going, rather than forcing the AI to pre-render a monolithic 10-minute track.
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                    <div>
+                        <span class="key-label">Duration (Sec)</span>
+                        <input type="number" id="lyriaDur" class="key-input" value="120" min="1" max="600">
+                    </div>
+                    <div>
+                        <span class="key-label">RPM / BPM</span>
+                        <input type="number" id="lyriaBpm" class="key-input" value="138" min="60" max="200">
+                    </div>
+                </div>
+                <button id="btn-lyria-gen" class="clear-keys-btn" style="background: var(--neon); color: #000; border-color: var(--neon);">SYNTHESIZE MULTI-MIX</button>
+            </div>
+            <div class="hud-tools" style="grid-template-columns: repeat(4, 1fr);">
+                <button id="btn-ingest" class="tool-btn" disabled>Data</button>
+                <button id="btn-lens" class="tool-btn" disabled>OCR</button>
+                <button id="btn-flip" class="tool-btn">Cam</button>
+                <button id="btn-screen" class="tool-btn">Scr</button>
+                <button id="btn-mic" class="tool-btn">MIC ON</button>
+                <button id="btn-zoom-out" class="tool-btn">-</button>
+                <button id="btn-zoom-reset" class="tool-btn">1.0x</button>
+                <button id="btn-zoom-in" class="tool-btn">+</button>
+                <button onclick="document.getElementById('prompts-overlay').classList.remove('hidden')" class="tool-btn" style="grid-column: span 4; border-top: 1px solid var(--border); color: var(--text-main); font-weight: bold; background: var(--neon-dim);">
+                    🎙️ VIEW VOICE COMMANDS
+                </button>
+                <button id="btn-record" class="tool-btn" style="grid-column: span 4; background: rgba(255, 59, 48, 0.1); border: 1px solid var(--alert); color: var(--alert); font-weight: bold; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(255, 59, 48, 0.2); transition: all 0.3s; margin-top: 2px;">
+                    <span id="record-text-main" style="font-size: 1rem; letter-spacing: 2px;">🔴 RECORD PERFORMANCE</span>
+                    <span style="font-size: 0.55rem; opacity: 0.8; margin-top: 4px; color: var(--text-main); font-weight: normal; letter-spacing: 0.5px;">BE AT THE TOP AS A DJ/VJ AND PRODUCER</span>
+                </button>
+                <button id="btn-laser-game" class="tool-btn" style="grid-column: span 4; border: 1px dashed var(--neon); background: rgba(0,255,65,0.1);">🎮 SAVE THE DJS (AR)</button>
+            </div>
+            <div id="safety-panel">
+                <details>
+                    <summary>⚠️ SENSOR DATA & SAFETY</summary>
+                    <div class="safety-content">
+                        <div class="legal-disclaimer">
+                            * DATA IS EPHEMERAL (RAM-ONLY). NOT STORED ON DISK.<br>
+                            * DATA IS ENCRYPTED IN TRANSIT (TLS 1.3).<br>
+                            * STRICT AI SAFETY FILTERS ACTIVE.<br>
+                            * UPLINK WILL AUTO-SEVER IN 30 MINS.
+                        </div>
+                        <div class="safety-controls">
+                            <button id="btn-report" class="warn-btn">REPORT OFFENSIVE</button>
+                            <button id="btn-purge" class="danger-btn">[PURGE ALL DATA]</button>
+                        </div>
+                    </div>
+                </details>
+            </div>
+            <div id="staging-area"><textarea id="manualInject" placeholder="Inject..."></textarea></div>
+            <div class="log" id="logs">
+                <div class="log-entry"><span class="log-time">SYS</span> <span class="log-info">Telemetry Service Init...</span></div>
+            </div>
+        </div>
+        <div style="text-align: center; padding: 6px 10px; font-size: 0.55rem; color: var(--text-mut); background: var(--panel-bg); border-top: 1px solid var(--border); letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; flex-shrink: 0; z-index: 100;">
+            PRODUCED WITH MAGICAL LOVE BY &copy; HANS JOHANNES SCHULTE
+        </div>
+    </div>
+    <div id="controls"><button id="btn-connect" class="connect-btn"><span class="dot"></span><span id="btn-text">CONNECT</span></button></div>
+</div>
+
+<script type="module">
+import '/static/ar_engine.js';
+
+// [KISS ARCHITECTURE] Strudel has been fully removed in favor of Lyria.
+
+window.dismissGeminiPromo = function() {
+    const box = document.getElementById('geminiPromoBox');
+    if (box) {
+        box.style.display = 'none';
+        localStorage.setItem('geminiPromoDismissed', 'true');
+    }
+};
+
+if (localStorage.getItem('geminiPromoDismissed') === 'true') {
+    const box = document.getElementById('geminiPromoBox');
+    if (box) box.style.display = 'none';
+}
+
+const PROVIDER = "{{ provider }}";
+const DOMAIN = "{{ domain }}";
+const USE_CONTEXT = "{{ use_context }}";
+const UPLINK_CLEARANCE = "coDe7777"; 
+const SESSION_LIMIT_SEC = 540;
+
+const elements = { 
+    geminiInput: document.getElementById("geminiKey"),
+    grokInput: document.getElementById("grokKey"),
+    openaiInput: document.getElementById("openaiKey"),
+    clearKeysBtn: document.getElementById("clearKeysBtn"),
+    hud: document.getElementById("hud"), 
+    hudHeader: document.getElementById("hudHeader"), 
+    video: document.getElementById("video-feed"), 
+    mainContainer: document.getElementById("main-container"),
+    btn: document.getElementById("btn-connect"), 
+    btnText: document.getElementById("btn-text"), 
+    screenBtn: document.getElementById("btn-screen"), 
+    flipBtn: document.getElementById("btn-flip"), 
+    micBtn: document.getElementById("btn-mic"), 
+    ingestBtn: document.getElementById("btn-ingest"), 
+    lensBtn: document.getElementById("btn-lens"), 
+    zOut: document.getElementById("btn-zoom-out"),
+    zRes: document.getElementById("btn-zoom-reset"),
+    zIn: document.getElementById("btn-zoom-in"),
+    laserGameBtn: document.getElementById("btn-laser-game"),
+    reportBtn: document.getElementById("btn-report"),
+    purgeBtn: document.getElementById("btn-purge"),
+    recordBtn: document.getElementById("btn-record"),
+    recordText: document.getElementById("record-text-main"),
+    status: document.getElementById("status"), 
+    timer: document.getElementById("timer-display"),
+    logs: document.getElementById("logs"), 
+    chat: document.getElementById("chat-history"), 
+    manualInput: document.getElementById("manualInject"), 
+    minBtn: document.getElementById("minToggle") 
+};
+
+let state = { socket: null, audioCtx: null, worklet: null, videoStream: null, audioStream: null, serverReady: false, nextStartTime: 0, mode: "camera", facingMode: "user", isSwapping: false, minimized: true, zoomLevel: 1.0, pulseActive: false, timerInterval: null, secondsLeft: SESSION_LIMIT_SEC, isSpeaking: false, lastVoiceTimestamp: 0, isGeneratingStem: false, stemTimeout: null, stemInterval: null, stemStartTime: 0, mediaRecorder: null, recordedChunks:[], recorderDest: null };
+let telemetry = { scanCount: 0, totalBytes: 0, startTime: Date.now() };
+
+let engineState = { currentBPM: 138 };
+window.updateBPM = function(newBPM) { engineState.currentBPM = newBPM; };
+
+window.arState = window.arState || { active: false };
+
+elements.laserGameBtn.onclick = async () => {
+    if (typeof window.toggleAR === 'function') {
+        await window.toggleAR(); // Calls the engine toggle
+        elements.laserGameBtn.style.color = window.arState.active ? "var(--neon)" : "";
+        elements.laserGameBtn.style.boxShadow = window.arState.active ? "inset 0 0 10px var(--neon)" : "none";
+    }
+};
+
+function log(msg, isTelemetry = false) { 
+    const entry = document.createElement("div"); 
+    entry.className = "log-entry";
+    const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
+    if (isTelemetry) entry.innerHTML = `<span class="log-time">${time}</span> ${msg}`; 
+    else entry.innerHTML = `<span class="log-time">${time}</span> <span class="log-info">${msg}</span>`;
+    elements.logs.appendChild(entry); 
+    elements.logs.scrollTop = elements.logs.scrollHeight; 
+}
+
+function updateTelemetryStats(type, sizeBytes, width, height) {
+    telemetry.scanCount++;
+    telemetry.totalBytes += sizeBytes;
+    const sizeKB = Math.round(sizeBytes / 1024);
+    const totalMB = (telemetry.totalBytes / (1024 * 1024)).toFixed(2);
+    const msg = `<span class="log-data">[TX-${telemetry.scanCount.toString().padStart(3, '0')}]</span> ${type} | <span class="log-data">${sizeKB}KB</span> | ${width}x${height} | TOTAL: ${totalMB}MB`;
+    log(msg, true);
+}
+
+function startTimer() {
+    clearInterval(state.timerInterval);
+    state.secondsLeft = SESSION_LIMIT_SEC;
+    updateTimerDisplay();
+    state.timerInterval = setInterval(() => {
+        state.secondsLeft--;
+        updateTimerDisplay();
+        if (state.secondsLeft <= 0) {
+            clearInterval(state.timerInterval);
+            appendChat("SYSTEM", ">> UPLINK LIMIT REACHED. SEVERING CONNECTION TO AVOID HALLUCINATIONS. <<", "sys-alert");
+            disconnect();
         }
+    }, 1000);
+}
 
-        document.getElementById('btn-toggle-logs').onclick = () => {
-            el.terminalLogs.style.display = el.terminalLogs.style.display === 'none' ? 'block' : 'none';
-        };
+function updateTimerDisplay() {
+    const m = Math.floor(state.secondsLeft / 60).toString().padStart(2, '0');
+    const s = (state.secondsLeft % 60).toString().padStart(2, '0');
+    elements.timer.innerText = `${m}:${s}`;
+    if (state.secondsLeft < 30) elements.timer.style.color = "#ff3b30";
+    else elements.timer.style.color = "#fff";
+}
 
-        // --- AUDIO ENCODING WORKLET ---
-        const WORKLET_CODE = `
-        class RecorderProcessor extends AudioWorkletProcessor { 
-            constructor() { super(); this.bufferSize = 4096; this.buffer = new Float32Array(this.bufferSize); this.ptr = 0; } 
-            process(inputs) { 
-                const input = inputs[0]; 
-                if (!input || input.length === 0) return true; 
-                const channel = input[0]; 
-                for (let i = 0; i < channel.length; i++) { 
-                    this.buffer[this.ptr++] = channel[i]; 
-                    if (this.ptr >= this.bufferSize) { 
-                        this.port.postMessage(this.buffer); 
-                        this.ptr = 0; 
-                    } 
-                } 
-                return true; 
-            } 
+function setStatus(msg, color="#00ff41") { elements.status.innerText = msg; elements.status.style.color = color; }
+function toggleHud() { state.minimized = !state.minimized; elements.hud.classList.toggle("minimized", state.minimized); elements.minBtn.innerText = state.minimized ? "+" : "–"; }
+
+function appendChat(role, text, type = "normal") {
+    if (!text) return;
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `msg-row ${role === "USER" ? "msg-user" : "msg-ai"}`;
+    let extraClass = "", senderText = role;
+    if (type === "thought") { extraClass = "thought"; senderText = role + " // PROCESSING"; }
+    if (type === "speech") { extraClass = "speech"; }
+    if (type === "sys-alert") { extraClass = "sys-alert"; senderText = "SYSTEM OVERRIDE"; }
+    msgDiv.innerHTML = `<div class="msg-sender">${senderText}</div><div class="msg-content ${extraClass}">${text}</div>`;
+    elements.chat.appendChild(msgDiv);
+    elements.chat.scrollTop = elements.chat.scrollHeight;
+}
+
+async function captureContextFrame(triggerName) {
+    if (!state.serverReady || !elements.video.srcObject) return;
+    const vWidth = elements.video.videoWidth;
+    const vHeight = elements.video.videoHeight;
+    const targetWidth = 1024; 
+    const scaleFactor = vWidth > targetWidth ? (targetWidth / vWidth) : 1.0;
+    const finalWidth = Math.floor(vWidth * scaleFactor);
+    const finalHeight = Math.floor(vHeight * scaleFactor);
+    const canvas = document.createElement("canvas");
+    canvas.width = finalWidth;
+    canvas.height = finalHeight;
+    const ctx = canvas.getContext("2d");
+    if (state.facingMode === "user") {
+        ctx.translate(finalWidth, 0);
+        ctx.scale(-1, 1);
+    }
+    ctx.drawImage(elements.video, 0, 0, finalWidth, finalHeight);
+    
+    if (window.arState && window.arState.active && window.arState.overlayCanvas) {
+        ctx.drawImage(window.arState.overlayCanvas, 0, 0, finalWidth, finalHeight);
+    }
+    
+    if (state.facingMode === "user") {
+        ctx.setTransform(1, 0, 0, 1, 0, 0); 
+    }
+    const frame = canvas.toDataURL("image/jpeg", 0.7).split(",")[1];
+    const estimatedSize = Math.floor(frame.length * 0.75);
+    state.socket.emit("video_frame", { data: frame, telemetry: null, trigger: triggerName });
+    updateTelemetryStats("FRAME_SYNC", estimatedSize, finalWidth, finalHeight);
+}
+
+async function triggerLens() { 
+    if (!state.serverReady || !elements.video.srcObject) {
+        return;
+    }
+    appendChat("USER", "[LENS SCAN: HIGH FIDELITY AUDIT]"); 
+    const vWidth = elements.video.videoWidth;
+    const vHeight = elements.video.videoHeight;
+    const canvas = document.createElement("canvas"); 
+    canvas.width = vWidth; 
+    canvas.height = vHeight; 
+    const ctx = canvas.getContext("2d");
+    if (state.facingMode === "user") { ctx.translate(vWidth, 0); ctx.scale(-1, 1); }
+    ctx.drawImage(elements.video, 0, 0, vWidth, vHeight); 
+    
+    if (window.arState && window.arState.active && window.arState.overlayCanvas) {
+        ctx.drawImage(window.arState.overlayCanvas, 0, 0, vWidth, vHeight);
+    }
+    
+    if (state.facingMode === "user") { ctx.setTransform(1, 0, 0, 1, 0, 0); }
+    const b64Image = canvas.toDataURL("image/jpeg", 0.95).split(",")[1]; 
+    const estimatedSize = Math.floor(b64Image.length * 0.75);
+    const dynamicPrompt = "PERFORM FULL ANALYSIS: 1. Extract any visible text (OCR). 2. Analyze visual energy and environment 'vibe'.";
+    state.socket.emit("lens_ocr", { image: b64Image, prompt: dynamicPrompt }); 
+    updateTelemetryStats("LENS_OCR", estimatedSize, vWidth, vHeight);
+}
+
+async function flipCamera() { 
+    if (state.mode === "screen" || state.isSwapping) return; state.isSwapping = true; 
+    if (state.videoStream) state.videoStream.getTracks().forEach(t => t.stop()); 
+    state.facingMode = (state.facingMode === "user") ? "environment" : "user"; 
+    window.isVideoMirrored = (state.facingMode === "user");
+    await new Promise(r => setTimeout(r, 400)); 
+    try { 
+        const constraints = { video: { facingMode: { ideal: state.facingMode }, width: { ideal: 720 }, height: { ideal: 1280 }, frameRate: { ideal: 30, max: 60 } } }; 
+        state.videoStream = await navigator.mediaDevices.getUserMedia(constraints); 
+        elements.video.srcObject = state.videoStream; 
+        applyZoom(); 
+        if(state.serverReady) setTimeout(() => captureContextFrame("CAM_FLIP"), 500);
+    } catch(e) { } finally { state.isSwapping = false; } 
+}
+
+async function toggleScreenShare() { 
+    if (state.isSwapping) return; state.isSwapping = true; 
+    try { 
+        if (state.mode === "camera") { 
+            const newStream = await navigator.mediaDevices.getDisplayMedia({ video: true, preferCurrentTab: true }); 
+            if (state.videoStream) state.videoStream.getTracks().forEach(t => t.stop()); 
+            state.videoStream = newStream; state.mode = "screen"; elements.video.classList.remove("mirror"); 
+        } else { 
+            const newStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: state.facingMode, width: { ideal: 720 }, height: { ideal: 1280 }, frameRate: { ideal: 30, max: 60 } } }); 
+            if (state.videoStream) state.videoStream.getTracks().forEach(t => t.stop()); 
+            state.videoStream = newStream; state.mode = "camera"; applyZoom(); 
         } 
-        registerProcessor("recorder-processor", RecorderProcessor);`;
+        elements.video.srcObject = state.videoStream; 
+        if(state.serverReady) setTimeout(() => captureContextFrame("SCREEN_TOGGLE"), 1000);
+    } catch (e) { } finally { state.isSwapping = false; } 
+}
 
-        function downsampleBuffer(buffer, sampleRate) { 
-            if (sampleRate === 16000) return buffer; 
-            const ratio = sampleRate / 16000; 
-            const result = new Float32Array(Math.round(buffer.length / ratio)); 
-            let offsetResult = 0, offsetBuffer = 0; 
-            while (offsetResult < result.length) { 
-                const nextOffsetBuffer = Math.round((offsetResult + 1) * ratio); 
-                let accum = 0, count = 0; 
-                for (let i = offsetBuffer; i < nextOffsetBuffer && i < buffer.length; i++) { accum += buffer[i]; count++; } 
-                result[offsetResult] = count > 0 ? accum / count : 0; 
-                offsetResult++; offsetBuffer = nextOffsetBuffer; 
-            } 
-            return result; 
+async function ingestLatestData() { 
+    if (!state.serverReady) return; 
+    try { 
+        const response = await fetch("/get_latest_context"); 
+        const data = await response.json(); 
+        if (data.text) { 
+            appendChat("USER", "[INGESTING DATA]"); 
+            state.socket.emit("ingest_context", { text: data.text }); 
+        } 
+    } catch (e) { } 
+}
+
+function applyZoom() {
+    const isMirror = (state.facingMode === "user" && state.mode === "camera");
+    window.isVideoMirrored = isMirror;
+    const z = state.zoomLevel;
+    elements.zRes.innerText = z.toFixed(1) + "x";
+    if (isMirror) elements.video.style.transform = `scaleX(-1) scale(${z})`; else elements.video.style.transform = `scale(${z})`;
+}
+function adjustZoom(delta) { 
+    let newZ = state.zoomLevel + delta; 
+    if (newZ < 1.0) newZ = 1.0; if (newZ > 5.0) newZ = 5.0; 
+    state.zoomLevel = newZ; 
+    applyZoom(); 
+    if(state.serverReady) captureContextFrame("ZOOM_CHANGE"); 
+}
+function resetZoom() { state.zoomLevel = 1.0; applyZoom(); if(state.serverReady) captureContextFrame("ZOOM_RESET"); }
+
+const WORKLET_CODE = `class RecorderProcessor extends AudioWorkletProcessor { constructor() { super(); this.bufferSize = 4096; this.buffer = new Float32Array(this.bufferSize); this.ptr = 0; } process(inputs) { const input = inputs[0]; if (!input || input.length === 0) return true; const channel = input[0]; for (let i = 0; i < channel.length; i++) { this.buffer[this.ptr++] = channel[i]; if (this.ptr >= this.bufferSize) { this.port.postMessage(this.buffer); this.ptr = 0; } } return true; } } registerProcessor("recorder-processor", RecorderProcessor);`;
+function downsampleBuffer(buffer, sampleRate) { if (sampleRate === 16000) return buffer; const ratio = sampleRate / 16000; const result = new Float32Array(Math.round(buffer.length / ratio)); let offsetResult = 0, offsetBuffer = 0; while (offsetResult < result.length) { const nextOffsetBuffer = Math.round((offsetResult + 1) * ratio); let accum = 0, count = 0; for (let i = offsetBuffer; i < nextOffsetBuffer && i < buffer.length; i++) { accum += buffer[i]; count++; } result[offsetResult] = count > 0 ? accum / count : 0; offsetResult++; offsetBuffer = nextOffsetBuffer; } return result; }
+function floatTo16BitPCM(float32Arr) { const buffer = new ArrayBuffer(float32Arr.length * 2); const view = new DataView(buffer); for (let i = 0; i < float32Arr.length; i++) { let s = Math.max(-1, Math.min(1, float32Arr[i])); view.setInt16(i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true); } return buffer; }
+function base64Encode(buffer) { let binary = ""; const bytes = new Uint8Array(buffer); for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]); return window.btoa(binary); }
+
+async function playAudio(b64Data) { 
+    if (!state.audioCtx) return; 
+    try { 
+        const bin = window.atob(b64Data); 
+        const len = bin.length; 
+        const arr = new Uint8Array(len); 
+        for(let i=0; i<len; i++) arr[i] = bin.charCodeAt(i); 
+        const int16 = new Int16Array(arr.buffer); 
+        const float32 = new Float32Array(int16.length); 
+        for(let i=0; i<int16.length; i++) float32[i] = int16[i] / 32768.0; 
+        const audioBuffer = state.audioCtx.createBuffer(1, float32.length, 24000); 
+        audioBuffer.getChannelData(0).set(float32); 
+        const src = state.audioCtx.createBufferSource(); 
+        src.buffer = audioBuffer; 
+        src.connect(state.audioCtx.destination); 
+        if (state.recorderDest) { src.connect(state.recorderDest); }
+        const currentTime = state.audioCtx.currentTime; 
+        if (state.nextStartTime < currentTime) { state.nextStartTime = currentTime + 0.05; } 
+        src.start(state.nextStartTime); 
+        state.nextStartTime += audioBuffer.duration; 
+    } catch(e) {} 
+}
+
+async function playLyriaAudioStream(b64Data) { 
+    if (!state.audioCtx) return; 
+    try { 
+        const bin = window.atob(b64Data); 
+        const len = bin.length; 
+        const arr = new Uint8Array(len); 
+        for(let i=0; i<len; i++) arr[i] = bin.charCodeAt(i); 
+        const int16 = new Int16Array(arr.buffer); 
+        
+        // Lyria streams in 48kHz Stereo 16-bit PCM
+        const numFrames = int16.length / 2;
+        const audioBuffer = state.audioCtx.createBuffer(2, numFrames, 48000); 
+        const channel0 = audioBuffer.getChannelData(0);
+        const channel1 = audioBuffer.getChannelData(1);
+
+        for (let i = 0; i < numFrames; i++) {
+            channel0[i] = int16[i * 2] / 32768.0;
+            channel1[i] = int16[i * 2 + 1] / 32768.0;
         }
+        
+        const src = state.audioCtx.createBufferSource(); 
+        src.buffer = audioBuffer; 
+        src.connect(state.audioCtx.destination); 
+        if (state.recorderDest) { src.connect(state.recorderDest); }
+        
+        const currentTime = state.audioCtx.currentTime; 
+        if (window.lyriaNextStartTime === undefined || window.lyriaNextStartTime < currentTime) { 
+            window.lyriaNextStartTime = currentTime + 0.05; 
+        } 
+        src.start(window.lyriaNextStartTime); 
+        window.lyriaNextStartTime += audioBuffer.duration; 
+    } catch(e) { console.error("Lyria Stream Error", e); } 
+}
 
-        function floatTo16BitPCM(float32Arr) { 
-            const buffer = new ArrayBuffer(float32Arr.length * 2); 
-            const view = new DataView(buffer); 
-            for (let i = 0; i < float32Arr.length; i++) { 
-                let s = Math.max(-1, Math.min(1, float32Arr[i])); 
-                view.setInt16(i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true); 
-            } 
-            return buffer; 
-        }
+async function startLocalMedia() {
+    if (state.videoStream) return;
+    try {
+        state.audioStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 } });
+        state.videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: state.facingMode, width: { ideal: 720 }, height: { ideal: 1280 }, frameRate: { ideal: 30, max: 60 } } });
+        elements.video.srcObject = state.videoStream; 
+        await elements.video.play();
+        state.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
+        if (state.audioCtx.state === "suspended") await state.audioCtx.resume();
+        
+        state.recorderDest = state.audioCtx.createMediaStreamDestination();
+        
+        const blob = new Blob([WORKLET_CODE], { type: "application/javascript" }); 
+        await state.audioCtx.audioWorklet.addModule(URL.createObjectURL(blob));
+        const source = state.audioCtx.createMediaStreamSource(state.audioStream); 
+        
+        source.connect(state.recorderDest);
+        
+        state.worklet = new AudioWorkletNode(state.audioCtx, "recorder-processor"); 
+        source.connect(state.worklet);
+        log("Local Hardware Engines Initialized.");
+        
+    } catch(err) {
+        log("HARDWARE INIT FAILED: " + err.message);
+        appendChat("SYSTEM", "Camera/Mic access denied. Please grant permissions to use features.", "sys-alert");
+    }
+}
 
-        function base64Encode(buffer) { 
-            let binary = ""; const bytes = new Uint8Array(buffer); 
-            for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]); 
-            return window.btoa(binary); 
-        }
+async function connect() {
+    let geminiKey = elements.geminiInput.value.trim();
+    let grokKey = elements.grokInput.value.trim();
+    let openaiKey = elements.openaiInput.value.trim();
+    
+    if (geminiKey) localStorage.setItem("enigma_gemini_key", geminiKey);
+    if (grokKey) localStorage.setItem("enigma_grok_key", grokKey);
+    if (openaiKey) localStorage.setItem("enigma_openai_key", openaiKey);
 
-        // --- HARDWARE INIT ---
-        async function startLocalMedia() {
-            try {
-                if (!state.audioStream) {
-                    state.audioStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 } });
-                    // Start muted by default to avoid sending background noise until explicitly enabled
-                    state.audioStream.getAudioTracks()[0].enabled = false;
-                    state.micMuted = true;
-                }
+    let activeKey = "";
+    if (PROVIDER === "grok") activeKey = grokKey;
+    else if (PROVIDER === "openai") activeKey = openaiKey;
+    else activeKey = geminiKey;
 
-                if (!state.videoStream && state.isPerformanceMode) {
-                    state.videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                    el.video.srcObject = state.videoStream;
-                }
+    elements.btn.disabled = true; 
+    setStatus("INIT...", "yellow");
+    
+    await startLocalMedia();
 
-                if (!state.audioCtx) {
-                    state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    state.recorderDest = state.audioCtx.createMediaStreamDestination();
-                    
-                    const blob = new Blob([WORKLET_CODE], { type: "application/javascript" });
-                    await state.audioCtx.audioWorklet.addModule(URL.createObjectURL(blob));
-                    
-                    const source = state.audioCtx.createMediaStreamSource(state.audioStream);
-                    source.connect(state.recorderDest);
-                    
-                    state.worklet = new AudioWorkletNode(state.audioCtx, "recorder-processor");
-                    source.connect(state.worklet);
-                }
-                if (state.audioCtx.state === "suspended") await state.audioCtx.resume();
-                logMsg("Hardware Engines Init Success.");
-            } catch(err) {
-                logMsg("HARDWARE INIT FAILED: " + err.message);
-                el.subtitle.innerText = "Error: Camera/Mic permissions denied.";
+    if (!activeKey) { 
+        elements.btn.disabled = false; 
+        elements.btn.classList.remove("active");
+        elements.btnText.innerText = "CONNECT AI";
+        return; 
+    }
+
+    setStatus("LINKING", "yellow");
+    try {
+        state.nextStartTime = 0; 
+        state.isSpeaking = false;
+        state.lastVoiceTimestamp = 0;
+        
+        state.socket = io("/live", { 
+            query: { 
+                provider: PROVIDER, 
+                domain: DOMAIN, 
+                use_context: USE_CONTEXT, 
+                clearance: UPLINK_CLEARANCE,
+                sovereign_key: activeKey
+            }, 
+            transports: ["websocket"], 
+            forceNew: true 
+        });
+
+        state.socket.on('new_generative_stem', (data) => {
+            state.isGeneratingStem = false;
+            clearTimeout(state.stemTimeout);
+            if (state.stemInterval) clearInterval(state.stemInterval);
+
+            const btnLyria = document.getElementById('btn-lyria-gen');
+            if (btnLyria) {
+                btnLyria.innerText = "SYNTHESIZE MULTI-MIX";
+                btnLyria.disabled = false;
+                btnLyria.style.animation = "none";
+                btnLyria.style.backgroundColor = "var(--neon)";
+                btnLyria.style.borderColor = "var(--neon)";  
+                btnLyria.style.color = "#000";
             }
-        }
 
-        // --- AUDIO PLAYBACK ---
-        async function playAudio(b64Data) { 
-            if (!state.audioCtx) return; 
-            try { 
-                const bin = window.atob(b64Data); 
-                const len = bin.length; const arr = new Uint8Array(len); 
-                for(let i=0; i<len; i++) arr[i] = bin.charCodeAt(i); 
-                const int16 = new Int16Array(arr.buffer); 
-                const float32 = new Float32Array(int16.length); 
-                for(let i=0; i<int16.length; i++) float32[i] = int16[i] / 32768.0; 
-                const audioBuffer = state.audioCtx.createBuffer(1, float32.length, 24000); 
-                audioBuffer.getChannelData(0).set(float32); 
-                const src = state.audioCtx.createBufferSource(); 
-                src.buffer = audioBuffer; 
-                src.connect(state.audioCtx.destination); 
-                if (state.recorderDest) src.connect(state.recorderDest); 
-                const currentTime = state.audioCtx.currentTime; 
-                if (state.nextStartTime < currentTime) state.nextStartTime = currentTime + 0.05; 
-                src.start(state.nextStartTime); 
-                state.nextStartTime += audioBuffer.duration; 
-            } catch(e) { logMsg("Audio Playback Error: " + e.message); } 
-        }
-
-        async function playLyriaAudioStream(b64Data) { 
-            if (!state.audioCtx) return; 
-            try { 
-                const bin = window.atob(b64Data); const len = bin.length; const arr = new Uint8Array(len); 
-                for(let i=0; i<len; i++) arr[i] = bin.charCodeAt(i); 
-                const int16 = new Int16Array(arr.buffer); 
-                const numFrames = int16.length / 2;
-                const audioBuffer = state.audioCtx.createBuffer(2, numFrames, 48000); 
-                const channel0 = audioBuffer.getChannelData(0); const channel1 = audioBuffer.getChannelData(1);
-                for (let i = 0; i < numFrames; i++) { 
-                    channel0[i] = int16[i * 2] / 32768.0; channel1[i] = int16[i * 2 + 1] / 32768.0; 
-                }
-                const src = state.audioCtx.createBufferSource(); 
-                src.buffer = audioBuffer; 
-                src.connect(state.audioCtx.destination); 
-                if (state.recorderDest) src.connect(state.recorderDest); 
-                const currentTime = state.audioCtx.currentTime; 
-                if (state.lyriaNextStartTime === undefined || state.lyriaNextStartTime < currentTime) state.lyriaNextStartTime = currentTime + 0.05; 
-                src.start(state.lyriaNextStartTime); 
-                state.lyriaNextStartTime += audioBuffer.duration; 
-            } catch(e) { logMsg("Lyria Stream Error: " + e.message); } 
-        }
-
-        // --- CONNECTION LOGIC ---
-        async function connect() {
-            let activeKey = el.geminiInput.value.trim() || localStorage.getItem("enigma_gemini_key");
-            if (!activeKey) {
-                el.subtitle.innerText = "Error: Sovereign Key required.";
-                document.getElementById('modal-settings').classList.add('active');
-                return;
-            }
-
-            el.subtitle.innerText = "Initiating Neural Uplink...";
-            await startLocalMedia(); 
-
-            state.socket = io("/live", { 
-                query: { provider: PROVIDER, domain: DOMAIN, clearance: UPLINK_CLEARANCE, sovereign_key: activeKey }, 
-                transports: ["websocket"], forceNew: true 
+            document.querySelectorAll('.stem-loading-indicator').forEach(el => {
+                el.innerText = "[ ⚡ STEM COMPLETE ⚡ ]";
+                el.style.animation = "none";
+                el.style.backgroundColor = "transparent";
+                el.style.color = "#b000ff";
+                el.style.border = "1px solid #b000ff";
+                el.classList.remove('stem-loading-indicator');
             });
-
-            state.socket.on("connect", () => {
-                state.serverReady = true;
-                el.statusDot.classList.add('connected');
-                el.btnPower.classList.add('active');
-                el.subtitle.innerText = "Uplink Secure. Tap Mic to command.";
-                logMsg("WebSocket Connected.");
-
-                if (state.worklet) {
-                    state.worklet.port.onmessage = (e) => { 
-                        if (state.serverReady && !state.micMuted) { 
-                            const float32 = e.data;
-                            let sum = 0; 
-                            for (let i = 0; i < float32.length; i += 4) sum += float32[i] * float32[i]; 
-                            const rms = Math.sqrt(sum / (float32.length / 4));
-                            
-                            if (rms > 0.05) {
-                                state.lastVoiceTimestamp = Date.now();
-                                if (!state.isSpeaking) {
-                                    state.isSpeaking = true;
-                                    el.btnMic.classList.add('listening');
-                                }
-                            }
-                            if (state.isSpeaking && (Date.now() - state.lastVoiceTimestamp > 2000)) {
-                                state.isSpeaking = false;
-                                el.btnMic.classList.remove('listening');
-                            }
-
-                            const audioData = base64Encode(floatTo16BitPCM(downsampleBuffer(e.data, state.audioCtx.sampleRate))); 
-                            state.socket.emit("audio_chunk", { data: audioData }); 
-                        } 
-                    };
-                }
-            });
-
-            state.socket.on("message", (rawMsg) => {
-                let msg = typeof rawMsg === "string" ? JSON.parse(rawMsg || '{}') : rawMsg;
-                
-                // Voice Audio Routing
-                if (msg.serverContent?.modelTurn?.parts) { 
-                    msg.serverContent.modelTurn.parts.forEach(p => { 
-                        if (p.inlineData && p.inlineData.data) playAudio(p.inlineData.data); 
-                    }); 
-                }
-                if (msg.type === "response.audio.delta" || msg.type === "audio_delta") playAudio(msg.delta || msg.data);
-                
-                // Text / Subtitle Routing
-                let textChunks =[];
-                if (msg.serverContent?.outputTranscription?.text) textChunks.push(msg.serverContent.outputTranscription.text);
-                if (msg.serverContent?.modelTurn?.parts) { msg.serverContent.modelTurn.parts.forEach(p => { if (p.text) textChunks.push(p.text); }); }
-                if (msg.text) textChunks.push(msg.text);
-
-                textChunks.forEach(txt => {
-                    logMsg("AI: " + txt);
-                    if (txt.includes("[GENERATE_STEM:")) {
-                        el.subtitle.innerText = "⚡ Synthesizing Audio Stem...";
-                        el.subtitle.style.color = "var(--accent)";
-                    } else if (!txt.startsWith("**") && !txt.startsWith("Thinking")) {
-                        el.subtitle.innerText = txt;
-                        el.subtitle.style.color = "var(--secondary)";
-                    }
-                });
-            });
-
-            state.socket.on('lyria_audio_stream_chunk', (data) => {
-                if (state.audioCtx && state.audioCtx.state === "suspended") state.audioCtx.resume();
-                playLyriaAudioStream(data.data);
-            });
-
-            state.socket.on("new_generative_stem", (data) => {
-                el.welcomeDeck.style.display = 'none';
-                el.subtitle.innerText = "Stem received. Ready to mix.";
-                el.subtitle.style.color = "var(--primary)";
-                createDJDeck(data);
-            });
-
-            state.socket.on("disconnect", () => disconnect());
-        }
-
-        function disconnect() {
-            state.serverReady = false;
-            el.statusDot.classList.remove('connected');
-            el.btnPower.classList.remove('active');
-            el.subtitle.innerText = "Uplink Severed.";
-            el.subtitle.style.color = "var(--text-dim)";
             
-            state.micMuted = true;
-            if(state.audioStream) state.audioStream.getAudioTracks()[0].enabled = false;
-            el.btnMic.classList.remove('active-mic', 'listening');
-
-            if(state.socket) { state.socket.disconnect(); state.socket = null; }
-        }
-
-        el.btnPower.onclick = () => { state.serverReady ? disconnect() : connect(); };
-
-        // --- MIC TOGGLE LOGIC ---
-        el.btnMic.onclick = () => {
-            if(!state.serverReady) { document.getElementById('modal-settings').classList.add('active'); return; }
-            if(!state.audioStream) return;
-
-            state.micMuted = !state.micMuted;
-            state.audioStream.getAudioTracks()[0].enabled = !state.micMuted;
-            
-            if (!state.micMuted) {
-                el.btnMic.classList.add('active-mic');
-                el.subtitle.innerText = "Mic Live. The AI is listening...";
-                el.subtitle.style.color = "var(--danger)";
-            } else {
-                el.btnMic.classList.remove('active-mic', 'listening');
-                el.subtitle.innerText = "Mic Muted. Tap to speak.";
-                el.subtitle.style.color = "var(--text-dim)";
+            const existingStems = document.querySelectorAll('audio[id^="stem_"]');
+            if (existingStems.length >= 2) {
+                const oldestStem = existingStems[0];
+                oldestStem.pause();
+                oldestStem.removeAttribute('src'); 
+                oldestStem.load(); 
+                const purgeNotice = document.createElement('div');
+                purgeNotice.style.color = '#ff3b30';
+                purgeNotice.style.fontSize = '0.65rem';
+                purgeNotice.innerText = "[MEMORY PURGED: OLD STEM REMOVED]";
+                if (oldestStem.parentNode) oldestStem.parentNode.replaceChild(purgeNotice, oldestStem);
             }
-        };
 
-        // --- DECK CREATION ---
-        function createDJDeck(data) {
             const byteCharacters = atob(data.b64_wav);
             const byteArray = new Uint8Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) byteArray[i] = byteCharacters.charCodeAt(i);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteArray[i] = byteCharacters.charCodeAt(i);
+            }
             const blob = new Blob([byteArray], { type: 'audio/wav' });
-            const audioUrl = URL.createObjectURL(blob);
-            
+            const audioDataUrl = URL.createObjectURL(blob); 
+
             const trackId = "stem_" + Date.now();
             const displayBpm = data.bpm || "138";
             
-            const deck = document.createElement('div');
-            deck.className = 'dj-deck';
-            deck.innerHTML = `
-                <div class="deck-header">
-                    <div class="deck-title">${data.description.replace('[OFFLINE SYNTH]', '').trim()}</div>
-                    <div class="deck-bpm">${displayBpm} BPM</div>
+            const stemHtml = `
+                <div style="margin-bottom: 10px; font-weight: bold; color: #b000ff;">
+                    ✅ NEW STEM LOADED: ${data.description}[${displayBpm} BPM]
                 </div>
-                <div class="deck-controls">
-                    <button class="play-btn" id="play-${trackId}">▶</button>
-                    <div class="visualizer-placeholder" id="vis-${trackId}"></div>
-                    <input type="range" id="vol-${trackId}" min="0" max="1" step="0.01" value="0.9">
+                <audio id="${trackId}" src="${audioDataUrl}" controls style="width: 100%; height: 35px; border-radius: 4px; outline: none; margin-bottom: 10px;"></audio>
+                
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+                    <button onclick="const a = document.getElementById('${trackId}'); a.loop = !a.loop; this.style.background = a.loop ? 'var(--neon)' : 'transparent'; this.style.color = a.loop ? '#000' : 'var(--neon)';"
+                            style="padding: 8px 16px; border: 1px solid var(--neon); background: transparent; color: var(--neon); border-radius: 4px; cursor: pointer; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; font-weight: bold; transition: 0.2s;">
+                        🔁 TOGGLE LOOP
+                    </button>
+                    <a href="${audioDataUrl}" download="Sovereign_Stem_${displayBpm}BPM_${trackId}.wav" 
+                       style="padding: 8px 16px; background: var(--neon); color: #000; text-decoration: none; font-weight: bold; border-radius: 4px; font-size: 0.75rem; font-family: 'Share Tech Mono', monospace; text-transform: uppercase;">
+                       ⬇️ SAVE .WAV (${displayBpm} RPM)
+                    </a>
                 </div>
-                <div class="deck-options">
-                    <button class="toggle-btn" id="loop-${trackId}">🔁 LOOP: OFF</button>
-                    <button class="toggle-btn" style="flex: 0.5; color: var(--danger); border-color: rgba(255,59,48,0.3);" onclick="this.parentElement.parentElement.remove()">X</button>
-                </div>
-                <audio id="audio-${trackId}" src="${audioUrl}" style="display:none;"></audio>
             `;
             
-            el.decksContainer.prepend(deck);
+            appendChat("SYSTEM", stemHtml, "speech");
 
-            const audioEl = document.getElementById(`audio-${trackId}`);
-            const playBtn = document.getElementById(`play-${trackId}`);
-            const loopBtn = document.getElementById(`loop-${trackId}`);
+            setTimeout(() => {
+                const audioEl = document.getElementById(trackId);
+                if (audioEl && state.audioCtx) {
+                    try {
+                        if (state.audioCtx.state === 'suspended') state.audioCtx.resume();
+                        if (!audioEl.sourceNode) {
+                            audioEl.sourceNode = state.audioCtx.createMediaElementSource(audioEl);
+                            audioEl.sourceNode.connect(state.audioCtx.destination); 
+                            if (state.recorderDest) {
+                                audioEl.sourceNode.connect(state.recorderDest);
+                            }
+                        }
+                        audioEl.volume = 0.9;
+                        audioEl.play().catch(e => { });
+                    } catch(err) {
+                    }
+                }
+            }, 150); 
+        });
 
-            if(state.audioCtx) {
-                const sourceNode = state.audioCtx.createMediaElementSource(audioEl);
-                sourceNode.connect(state.audioCtx.destination);
-                if(state.recorderDest) sourceNode.connect(state.recorderDest);
+        state.socket.on('lyria_audio_stream_chunk', (data) => {
+            if (state.audioCtx && state.audioCtx.state === "suspended") {
+                state.audioCtx.resume();
+            }
+            playLyriaAudioStream(data.data);
+        });
+        
+        state.socket.on("connect_error", (err) => {
+            log("SOCK_ERR: " + err.message);
+            setStatus("CONN FAIL", "red");
+            elements.btn.disabled = false;
+            elements.btnText.innerText = "CONNECT AI";
+        });
+        
+        state.socket.on("connect", () => {
+            state.serverReady = true; 
+            setStatus("SECURED", "#00ff41"); 
+            elements.btnText.innerText = "DISCONNECT AI"; 
+            elements.btn.classList.add("active"); 
+            elements.btn.disabled = false; 
+            elements.ingestBtn.disabled = false;
+            elements.lensBtn.disabled = false;
+            startTimer();
+            setTimeout(() => { captureContextFrame("INITIAL_RECON"); }, 1500);
+            state.socket.emit("user_message", { text: "Link established. Visual context syncing automatically." });
+            
+            if (state.worklet) {
+                state.worklet.port.onmessage = (e) => { 
+                    if (state.serverReady) { 
+                        const float32 = e.data;
+                        let sum = 0;
+                        for (let i = 0; i < float32.length; i += 4) sum += float32[i] * float32[i]; 
+                        const rms = Math.sqrt(sum / (float32.length / 4));
+                        if (rms > 0.05) {
+                            state.lastVoiceTimestamp = Date.now();
+                            if (!state.isSpeaking) {
+                                state.isSpeaking = true;
+                                captureContextFrame("VOICE_ACTIVE"); 
+                            }
+                        }
+                        if (state.isSpeaking && (Date.now() - state.lastVoiceTimestamp > 3000)) {
+                            state.isSpeaking = false;
+                        }
+                        const audioData = base64Encode(floatTo16BitPCM(downsampleBuffer(e.data, state.audioCtx.sampleRate))); 
+                        state.socket.emit("audio_chunk", { data: audioData }); 
+                    } 
+                };
+            }
+        });
+
+        state.socket.on("force_disconnect", () => {
+            appendChat("SYSTEM", "AI Uplink Severed by Server (Timeout). Please reconnect.", "sys-alert");
+            disconnect(); 
+        });
+
+        state.socket.on("message", (rawMsg) => {
+            let msg = rawMsg;
+            if (typeof rawMsg === "string") { try { msg = JSON.parse(rawMsg); } catch(e) { return; } }
+            
+            if (msg.asset_html) {
+                if (!msg.asset_html.includes("<img")) return; 
+                const wrapper = document.createElement("div");
+                wrapper.className = "msg-row msg-asset"; 
+                wrapper.innerHTML = `<div class="msg-sender">SYSTEM [ASSET SECURED]</div><div class="msg-content" style="background:transparent; border:none; padding:0;">${msg.asset_html}</div>`;
+                elements.chat.appendChild(wrapper);
+                elements.chat.scrollTop = elements.chat.scrollHeight;
+                return; 
             }
 
-            playBtn.onclick = () => { 
-                if (audioEl.paused) { 
-                    audioEl.play(); 
-                    playBtn.innerText = "⏸"; 
-                    playBtn.style.background = "var(--secondary)"; 
-                } else { 
-                    audioEl.pause(); 
-                    playBtn.innerText = "▶"; 
-                    playBtn.style.background = "var(--primary)"; 
-                } 
-            };
-
-            document.getElementById(`vol-${trackId}`).oninput = (e) => audioEl.volume = e.target.value;
+            if (msg.serverContent?.modelTurn?.parts) { msg.serverContent.modelTurn.parts.forEach(p => { if (p.inlineData && p.inlineData.data) { playAudio(p.inlineData.data); } }); }
+            if (msg.type === "response.audio.delta" || msg.type === "audio_delta") { playAudio(msg.delta || msg.data); }
             
-            loopBtn.onclick = () => { 
-                audioEl.loop = !audioEl.loop; 
-                loopBtn.classList.toggle('active'); 
-                loopBtn.innerText = audioEl.loop ? "🔁 LOOP: ON" : "🔁 LOOP: OFF"; 
-            };
-
-            audioEl.ontimeupdate = () => { 
-                const percent = (audioEl.currentTime / audioEl.duration) * 100; 
-                document.getElementById(`vis-${trackId}`).innerHTML = `<div style="height:100%; width:${percent}%; background:rgba(0,255,65,0.4); border-right:2px solid var(--primary);"></div>`; 
-            };
+            let textChunks =[];
+            const addText = (t) => { if (t && typeof t === "string" && t.trim().length > 0) textChunks.push(t); };
+            if (msg.serverContent?.outputTranscription?.text) addText(msg.serverContent.outputTranscription.text);
+            if (msg.serverContent?.output_transcription?.text) addText(msg.serverContent.output_transcription.text);
+            if (msg.serverContent?.modelTurn?.parts) { msg.serverContent.modelTurn.parts.forEach(p => { if (p.text) addText(p.text); }); }
+            if (msg.transcript) addText(msg.transcript);
+            if (msg.text) addText(msg.text);
             
-            setTimeout(() => playBtn.click(), 100);
+            if (msg.serverContent?.modelTurn?.parts) { 
+                msg.serverContent.modelTurn.parts.forEach(p => { 
+                    if (p.inlineData && p.inlineData.mimeType.startsWith('image/')) { 
+                        state.socket.emit("upload_promo_asset", { data: p.inlineData.data, mime: p.inlineData.mimeType });
+                    } 
+                }); 
+            }
+            
+            textChunks.forEach(textChunk => {
+                const isThought = textChunk.startsWith("**") || textChunk.startsWith("Thinking Process:");
+                const msgType = isThought ? "thought" : "speech";
+                
+                let chatChildren = Array.from(elements.chat.children);
+                let lastMsg = chatChildren.reverse().find(el => el.classList.contains("msg-ai"));
+                let lastContent = lastMsg ? lastMsg.querySelector(".msg-content") : null;
+                const lastIsThought = lastContent ? lastContent.classList.contains("thought") : false;
+                
+                if (lastContent && lastContent.textContent.includes(textChunk)) return;
+
+                if (!lastMsg || (isThought !== lastIsThought)) { 
+                    const msgDiv = document.createElement("div");
+                    msgDiv.className = "msg-row msg-ai";
+                    let extraClass = isThought ? "thought" : "speech";
+                    let senderText = isThought ? "AI // PROCESSING" : "AI";
+                    msgDiv.innerHTML = `<div class="msg-sender">${senderText}</div><div class="msg-content ${extraClass}" data-raw=""></div>`;
+                    elements.chat.appendChild(msgDiv);
+                    lastMsg = msgDiv;
+                    lastContent = msgDiv.querySelector(".msg-content");
+                }
+
+                let raw = lastContent.getAttribute("data-raw") || "";
+                raw += textChunk;
+                lastContent.setAttribute("data-raw", raw);
+
+                const actionRegex = /\[ACTION:\s*([^\]]+)\]/g;
+                let actionMatch;
+                while ((actionMatch = actionRegex.exec(raw)) !== null) {
+                    let actionStr = actionMatch[1];
+                    let tagId = "executed_" + actionStr.replace(/[^a-zA-Z0-9]/g, '');
+                    if (lastContent.getAttribute(tagId) !== "true") {
+                        lastContent.setAttribute(tagId, "true");
+                    }
+                }
+
+                const strudelRegex = /<STRUDEL>\s*([\s\S]*?)<\/STRUDEL>/g;
+                let strudelMatch;
+                while ((strudelMatch = strudelRegex.exec(raw)) !== null) {
+                    let codeStr = strudelMatch[1].trim();
+                    let tagId = "strudel_exec_" + btoa(codeStr.substring(0, 15)).replace(/[^a-zA-Z0-9]/g, '');
+                    
+                    if (lastContent.getAttribute(tagId) !== "true") {
+                        lastContent.setAttribute(tagId, "true");
+                        
+                        // [KISS DISABLE] 
+                        // executeStrudel(); // Disabled to fully rely on Lyria
+                        console.log("Strudel block suppressed, forcing Lyria.");
+                    }
+                }
+
+                const stemRegex = /\[GENERATE_STEM:\s*([^\]]+)\]/g;
+                let stemMatch;
+                while ((stemMatch = stemRegex.exec(raw)) !== null) {
+                    let stemStr = stemMatch[1];
+                    let tagId = "stem_executed_" + stemStr.replace(/[^a-zA-Z0-9]/g, '');
+                    if (lastContent.getAttribute(tagId) !== "true") {
+                        lastContent.setAttribute(tagId, "true");
+                        
+                        if (!state.isGeneratingStem) {
+                            state.isGeneratingStem = true;
+                            clearTimeout(state.stemTimeout);
+                            if (state.stemInterval) clearInterval(state.stemInterval);
+                            state.stemStartTime = Date.now();
+
+                            state.stemTimeout = setTimeout(() => { 
+                                state.isGeneratingStem = false; 
+                                if (state.stemInterval) clearInterval(state.stemInterval);
+                                const btnLyria = document.getElementById('btn-lyria-gen');
+                                if (btnLyria) {
+                                    btnLyria.innerText = "SYNTHESIZE MULTI-MIX";
+                                    btnLyria.disabled = false;
+                                    btnLyria.style.animation = "none";
+                                }
+                            }, 600000); 
+                            
+                            state.stemInterval = setInterval(() => {
+                                let elapsed = Math.floor((Date.now() - state.stemStartTime) / 1000);
+                                let m = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                                let s = (elapsed % 60).toString().padStart(2, '0');
+                                let btn = document.getElementById('btn-lyria-gen');
+                                if (btn) btn.innerText = `⏳ SYNTHESIZING...[${m}:${s}]`;
+                                document.querySelectorAll('.stem-loading-indicator').forEach(el => {
+                                    el.innerText = `[ ⏳ SUPERPOWERS ACTIVE: GENERATING AUDIO... ${m}:${s} ]`;
+                                });
+                            }, 1000);
+
+                            state.socket.emit("trigger_stem_generation", { prompt: stemStr });
+                            
+                            appendChat("SYSTEM", `🎵 **Synthesizing Generative Audio Engine:** ${stemStr} <br><span class="stem-loading-indicator" style="display:inline-block; margin-top:8px; padding:4px 8px; border-radius:4px; font-weight:bold; color:#000; background:#b000ff; animation:pulseSuperpower 1.5s infinite;">[ ⏳ SUPERPOWERS ACTIVE: GENERATING AUDIO... 00:00 ]</span>`, "sys-alert");
+                            
+                            const btnLyria = document.getElementById('btn-lyria-gen');
+                            if (btnLyria) {
+                                btnLyria.innerText = "⏳ SYNTHESIZING...[00:00]";
+                                btnLyria.disabled = true;
+                                btnLyria.style.animation = "none";
+                            }
+                        }
+                    }
+                }
+
+                let triggerString = "](nano_banana)";
+                if (raw.includes(triggerString) && lastContent.getAttribute("data-forged") !== "true") {
+                    lastContent.setAttribute("data-forged", "true"); 
+                    let altText = "Asset";
+                    let parts = raw.split(triggerString);
+                    let beforeTrigger = parts[0];
+                    let altStart = beforeTrigger.lastIndexOf("![");
+                    if (altStart !== -1) altText = beforeTrigger.substring(altStart + 2);
+                    state.socket.emit("request_nano_banana", { alt: altText, context: raw });
+                }
+
+                let displayHtml = raw.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\\n/g, "<br>");
+                displayHtml = displayHtml.replace(/\[ACTION:\s*([^\]]+)\]/g, 
+                    '<br><span style="color:#00ffea; border:1px dashed #00ffea; background:rgba(0, 255, 234, 0.1); padding:4px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold; letter-spacing:1px; display:inline-block; margin-top:5px;">⚡ AUDIO OVERRIDE: $1</span><br>');
+                displayHtml = displayHtml.replace(/&lt;STRUDEL&gt;([\s\S]*?)&lt;\/STRUDEL&gt;/g, 
+                    '<br><span style="color:#00ffea; border:1px dashed #00ffea; background:rgba(0, 255, 234, 0.1); padding:4px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold; letter-spacing:1px; display:inline-block; margin-top:5px;">⚡ STRUDEL ALGORITHM SYNTHESIZED</span><br>');
+                displayHtml = displayHtml.replace(/\[GENERATE_STEM:\s*([^\]]+)\]/g, 
+                    '<br><span style="color:#b000ff; border:1px dashed #b000ff; background:rgba(176, 0, 255, 0.1); padding:4px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold; letter-spacing:1px; display:inline-block; margin-top:5px;">🎧 GENERATIVE AI STEM: $1</span><br>');
+
+                const imageRegex = new RegExp("!\\[([^\\]]*)\\]\\((https?:\\/\\/[^\\)]+)\\)", "g");
+                displayHtml = displayHtml.replace(imageRegex, 
+                    '<br><img src="$2" alt="$1" style="max-width:100%; border:1px solid var(--neon); border-radius:8px; margin:10px 0; box-shadow: 0 0 20px rgba(0,255,65,0.25);"><br>');
+
+                if (displayHtml.includes("](nano_banana)")) {
+                    let startIndex = displayHtml.lastIndexOf("![");
+                    let endIndex = displayHtml.indexOf("](nano_banana)") + triggerString.length;
+                    if (startIndex !== -1 && endIndex > startIndex) {
+                        let fullTrigger = displayHtml.substring(startIndex, endIndex);
+                        let extractedAlt = fullTrigger.replace("![", "").replace("](nano_banana)", "");
+                        let forgeBlock = `<br><div style="color:var(--neon); font-size:0.75rem; border: 1px dashed var(--neon); padding: 8px; border-radius: 4px; display: inline-block; background: rgba(0,255,65,0.1); margin: 10px 0; text-transform: uppercase;">[⚙️ SYNTHESizing: ${extractedAlt}]</div><br>`;
+                        displayHtml = displayHtml.replace(fullTrigger, forgeBlock);
+                    }
+                }
+                lastContent.innerHTML = displayHtml; 
+                elements.chat.scrollTop = elements.chat.scrollHeight;
+            });
+        });
+
+        state.socket.on("disconnect", () => { disconnect(); });
+    } catch(e) { disconnect(); }
+}
+
+async function disconnect() {
+    setStatus("LOCAL ONLY", "#00ccff"); 
+    elements.btnText.innerText = "CONNECT AI"; 
+    elements.btn.classList.remove("active");
+    state.serverReady = false;
+    
+    if (window.arState && window.arState.active && typeof window.toggleAR === 'function') {
+        await window.toggleAR();
+        if (elements.laserGameBtn) {
+            elements.laserGameBtn.style.color = "";
+            elements.laserGameBtn.style.boxShadow = "none";
+        }
+    }
+
+    state.micMuted = false;
+    if (elements.micBtn) {
+        elements.micBtn.innerText = "MIC ON";
+        elements.micBtn.style.color = "";
+        elements.micBtn.style.boxShadow = "none";
+    }
+    
+    clearInterval(state.timerInterval);
+    if (state.stemInterval) clearInterval(state.stemInterval);
+    
+    if (state.socket) { 
+        state.socket.disconnect(); 
+        state.socket = null; 
+    }
+    
+    elements.ingestBtn.disabled = true;
+    elements.lensBtn.disabled = true;
+    
+    if (state.mediaRecorder && state.mediaRecorder.state !== "inactive") {
+        state.mediaRecorder.stop();
+    }
+    
+    elements.recordText.innerText = "🔴 RECORD PERFORMANCE";
+    elements.recordBtn.style.color = "var(--alert)";
+    elements.recordBtn.style.boxShadow = "0 0 15px rgba(255, 59, 48, 0.2)";
+    
+    appendChat("SYSTEM", "Neural Uplink severed. Returning to offline LOCAL MODE.", "sys-alert");
+    elements.btn.disabled = false;
+}
+
+elements.btn.onclick = async () => { 
+    if (state.serverReady) {
+        await disconnect(); 
+    } else { 
+        connect(); 
+    }
+};
+
+elements.clearKeysBtn.onclick = () => {
+    if(confirm("UNLINK SOVEREIGN KEYS?\\n\\nThis will remove your API keys from local memory.")) {
+        localStorage.removeItem("enigma_gemini_key");
+        localStorage.removeItem("enigma_grok_key");
+        localStorage.removeItem("enigma_openai_key");
+        elements.geminiInput.value = "";
+        elements.grokInput.value = "";
+        elements.openaiInput.value = "";
+    }
+};
+
+elements.screenBtn.onclick = toggleScreenShare; 
+elements.flipBtn.onclick = flipCamera; 
+elements.ingestBtn.onclick = ingestLatestData; 
+elements.lensBtn.onclick = triggerLens; 
+
+// [KISS MIC TOGGLE]
+elements.micBtn.onclick = () => {
+    if (!state.audioStream) return;
+    const audioTracks = state.audioStream.getAudioTracks();
+    if (audioTracks.length > 0) {
+        state.micMuted = !state.micMuted;
+        audioTracks[0].enabled = !state.micMuted;
+        
+        if (state.micMuted) {
+            elements.micBtn.innerText = "MIC OFF";
+            elements.micBtn.style.color = "var(--alert)";
+            elements.micBtn.style.boxShadow = "inset 0 0 10px rgba(255, 59, 48, 0.2)";
+            appendChat("SYSTEM", "Microphone Muted. The AI cannot hear you.", "sys-alert");
+        } else {
+            elements.micBtn.innerText = "MIC ON";
+            elements.micBtn.style.color = "";
+            elements.micBtn.style.boxShadow = "none";
+            appendChat("SYSTEM", "Microphone Active. The AI is listening.", "sys-alert");
+        }
+    }
+}; 
+elements.recordBtn.onclick = async () => {
+    if (!state.mediaRecorder || state.mediaRecorder.state === "inactive") {
+        if (!state.videoStream || !state.audioCtx) {
+            return;
+        }
+        
+        let videoTracks =[];
+        let displayStream = null;
+
+        try {
+            if (navigator.mediaDevices.getDisplayMedia) {
+                displayStream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { displaySurface: 'browser' },
+                    preferCurrentTab: true,
+                    audio: false 
+                });
+                videoTracks = displayStream.getVideoTracks();
+            } else {
+                throw new Error("getDisplayMedia not supported on this device.");
+            }
+        } catch (err) {
+            videoTracks = state.videoStream.getVideoTracks();
         }
 
-        // --- MODES & AR ---
-        el.btnMode.onclick = async () => {
-            state.isPerformanceMode = !state.isPerformanceMode;
-            if(state.isPerformanceMode) {
-                document.body.classList.add('performance-mode');
-                el.btnMode.classList.add('active');
-                if(!state.videoStream) {
+        if (videoTracks.length === 0) return;
+        
+        if (!state.recorderDest) {
+            state.recorderDest = state.audioCtx.createMediaStreamDestination();
+            const source = state.audioCtx.createMediaStreamSource(state.audioStream);
+            source.connect(state.recorderDest);
+        }
+
+        const audioTracks = state.recorderDest.stream.getAudioTracks();
+        
+        const combinedStream = new MediaStream([...videoTracks, ...audioTracks]);
+
+        let mimeType = 'video/webm;codecs=vp8,opus';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'video/webm';
+            if (!MediaRecorder.isTypeSupported(mimeType)) {
+                mimeType = 'video/mp4'; 
+                if (!MediaRecorder.isTypeSupported(mimeType)) {
+                    mimeType = ''; 
+                }
+            }
+        }
+
+        try {
+            state.mediaRecorder = new MediaRecorder(combinedStream, mimeType ? { mimeType } : undefined);
+        } catch (e) {
+            state.mediaRecorder = new MediaRecorder(combinedStream);
+        }
+
+        state.recordedChunks =[];
+        state.mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) state.recordedChunks.push(e.data);
+        };
+        
+        state.mediaRecorder.onstop = () => {
+            if (displayStream) {
+                displayStream.getTracks().forEach(track => track.stop());
+            }
+
+            const finalMime = state.mediaRecorder.mimeType || 'video/mp4';
+            const blob = new Blob(state.recordedChunks, { type: finalMime });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            
+            let ext = "mp4";
+            if (finalMime.includes("webm")) ext = "webm";
+            
+            a.download = `LensDNA_Performance_${Date.now()}.${ext}`;
+            document.body.appendChild(a);
+            a.click();
+            
+            setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(url); }, 100);
+            
+            elements.recordText.innerText = "🔴 RECORD PERFORMANCE";
+            elements.recordBtn.style.color = "var(--alert)";
+            elements.recordBtn.style.animation = "none";
+            elements.recordBtn.style.boxShadow = "0 0 15px rgba(255, 59, 48, 0.2)";
+        };
+
+        if (displayStream && videoTracks[0]) {
+            videoTracks[0].onended = () => {
+                if (state.mediaRecorder && state.mediaRecorder.state !== "inactive") {
+                    state.mediaRecorder.stop();
+                }
+            };
+        }
+
+        state.mediaRecorder.start();
+        elements.recordText.innerText = "⏹ STOP RECORDING";
+        elements.recordBtn.style.color = "var(--neon)";
+        elements.recordBtn.style.boxShadow = "0 0 25px var(--neon)";
+        
+    } else {
+        state.mediaRecorder.stop();
+    }
+};
+
+elements.minBtn.onclick = toggleHud;
+elements.zOut.onclick = () => adjustZoom(-0.5); 
+elements.zIn.onclick = () => adjustZoom(0.5); 
+elements.zRes.onclick = resetZoom;
+
+const channelsContainer = document.getElementById('channels-container');
+const btnAddChannel = document.getElementById('btn-add-channel');
+let activeChannels = 0;
+const MAX_CHANNELS = 8; 
+
+const chDefaults =[
+    { text: "filthy techno bass", color: "#00ff41", weight: 1.0 },
+    { text: "lush ambient strings", color: "#00e5ff", weight: 0.0 },
+    { text: "female vocal hook", color: "#b000ff", weight: 0.0 },
+    { text: "acid synth arp", color: "#ff00aa", weight: 0.0 },
+    { text: "tribal percussion", color: "#fadc00", weight: 0.0 },
+    { text: "ethereal pad", color: "#ff3b30", weight: 0.0 },
+    { text: "female vocals singing: 'type your lyrics here'", color: "#ff00ea", weight: 0.0 },
+    { text: "male vocals singing: 'type your lyrics here'", color: "#0055ff", weight: 0.0 }
+];
+
+function injectChannel() {
+    if (activeChannels >= MAX_CHANNELS) return;
+    const ch = chDefaults[activeChannels];
+    activeChannels++;
+    const col = document.createElement('div');
+    // Replaced hardcoded #000 background and #222 border with adaptive theme variables
+    col.style = "flex: 1; min-width: 100px; display: flex; flex-direction: column; align-items: center; background: var(--panel-bg-solid); border: 1px solid var(--border); border-radius: 6px; padding: 5px;";
+    col.innerHTML = `
+        <input type="text" id="ch${activeChannels}-prompt" class="key-input" value="${ch.text}" style="margin-bottom: 5px; text-align: center; padding: 4px; font-size: 0.55rem; background: var(--input-bg); color: var(--text-main);">
+        <input type="range" id="ch${activeChannels}-weight" min="0" max="2" step="0.1" value="${ch.weight}" style="writing-mode: vertical-lr; direction: rtl; flex: 1; width: 15px; accent-color: ${ch.color}; cursor: pointer;">
+        <span id="ch${activeChannels}-val" style="font-size: 0.65rem; font-weight: bold; margin-top: 5px; color: var(--text-main);">${ch.weight.toFixed(1)}</span>
+    `;
+    channelsContainer.appendChild(col);
+    const slider = col.querySelector(`#ch${activeChannels}-weight`);
+    const label = col.querySelector(`#ch${activeChannels}-val`);
+    slider.addEventListener('input', (e) => {
+        label.innerText = parseFloat(e.target.value).toFixed(1);
+    });
+    if (btnAddChannel) {
+        btnAddChannel.innerText = `+ ADD CH (${activeChannels}/${MAX_CHANNELS})`;
+        if (activeChannels >= MAX_CHANNELS) {
+            btnAddChannel.style.opacity = "0.5";
+            btnAddChannel.style.cursor = "not-allowed";
+        }
+    }
+}
+
+if (channelsContainer) {
+    injectChannel();
+    injectChannel();
+    injectChannel();
+    if (btnAddChannel) btnAddChannel.onclick = injectChannel;
+}
+
+const djPresets =[
+    {
+        name: "K-Pop Girl Crush Trap", bpm: 105, dur: 8,
+        channels:[
+            { text: "heavy trap 808 punchy kick and snappy snare", weight: 1.5, color: "#00ff41" },
+            { text: "booming 808 sub bass glide", weight: 1.8, color: "#00e5ff" },
+            { text: "fast-paced staccato rhythmic trap hi-hat rolls", weight: 1.2, color: "#b000ff" },
+            { text: "aggressive cinematic brass stabs and middle eastern synth lead", weight: 1.5, color: "#ff00aa" },
+            { text: "sparkling arpeggios minimal trap sequence", weight: 0.8, color: "#fadc00" },
+            { text: "hype stadium vocal chants and siren fx", weight: 0.6, color: "#ff3b30" },
+            { text: "glossy autotuned high soprano female rapper, aggressive staccato flow singing: 'Lens DNA APP is King of the DJ APPS'", weight: 1.6, color: "#ff00ea" },
+            { text: "deep gravelly male hype man with distorted ad-libs shouting: 'Be the TOP DJ VJ and Producer'", weight: 0.8, color: "#0055ff" }
+        ]
+    },
+    {
+        name: "K-Pop Mainstage EDM", bpm: 130, dur: 16,
+        channels:[
+            { text: "heavy four on the floor punchy kick drum edm", weight: 1.5, color: "#00ff41" },
+            { text: "filthy rolling dubstep sub bass", weight: 1.2, color: "#00e5ff" },
+            { text: "crisp 909 shakers and building drum rolls", weight: 1.0, color: "#b000ff" },
+            { text: "massive detuned rave synth lead drop", weight: 1.5, color: "#ff00aa" },
+            { text: "euphoric trance supersaw chords", weight: 1.2, color: "#fadc00" },
+            { text: "massive stadium riser sweep fx", weight: 0.8, color: "#ff3b30" },
+            { text: "anthemic powerful pop female vocals with large stadium reverb singing: 'DJing LensDNA APP is King!'", weight: 1.5, color: "#ff00ea" },
+            { text: "harmonized robotic vocoder male backing vocals singing: 'Lens DNA APP is King of the DJ APPS'", weight: 0.7, color: "#0055ff" }
+        ]
+    },
+    {
+        name: "Moombahton Pink Groove", bpm: 110, dur: 16,
+        channels:[
+            { text: "punchy kick reggaeton moombahton beat", weight: 1.5, color: "#00ff41" },
+            { text: "warm bouncy synth bass", weight: 1.2, color: "#00e5ff" },
+            { text: "tropical congas and crisp rhythmic snares", weight: 1.0, color: "#b000ff" },
+            { text: "bright tropical marimba synth pluck", weight: 1.2, color: "#ff00aa" },
+            { text: "lush strings and upbeat piano chords", weight: 1.0, color: "#fadc00" },
+            { text: "sweeping white noise fx", weight: 0.5, color: "#ff3b30" },
+            { text: "sultry soulful female vocals with rhythmic reggaeton phrasing singing: 'Be the TOP DJ VJ and Producer'", weight: 1.5, color: "#ff00ea" },
+            { text: "laid-back baritone male vocals with warm analog saturation singing: 'DJing LensDNA APP is King!'", weight: 0.8, color: "#0055ff" }
+        ]
+    },
+    {
+        name: "Peak-Time Melodic Techno", bpm: 126, dur: 16,
+        channels:[
+            { text: "punchy deep room techno kick drum", weight: 1.5, color: "#00ff41" },
+            { text: "rolling dark sub bassline", weight: 1.2, color: "#00e5ff" },
+            { text: "crisp 909 hi-hats and driving shakers", weight: 0.8, color: "#b000ff" },
+            { text: "detuned cinematic brass stabs", weight: 1.0, color: "#ff00aa" },
+            { text: "euphoric analog synthesizer arpeggio", weight: 1.8, color: "#fadc00" },
+            { text: "distant haunting choral vocal wash", weight: 0.6, color: "#ff3b30" },
+            { text: "hypnotic high soprano female vocals with dark ping-pong delay singing: 'Lens DNA APP is King of the DJ APPS'", weight: 1.0, color: "#ff00ea" },
+            { text: "commanding rhythmic baritone male vocals, monotone techno style singing: 'Be the TOP DJ VJ and Producer'", weight: 1.2, color: "#0055ff" }
+        ]
+    },
+    {
+        name: "High-Octane Psy-Trance", bpm: 142, dur: 8,
+        channels:[
+            { text: "tight punchy psytrance kick", weight: 1.5, color: "#00ff41" },
+            { text: "galloping triplet FM bassline", weight: 1.8, color: "#00e5ff" },
+            { text: "metallic futuristic percussion loops", weight: 1.0, color: "#b000ff" },
+            { text: "swirling psychedelic 303 acid squelches", weight: 1.5, color: "#ff00aa" },
+            { text: "epic trance supersaw chords", weight: 1.0, color: "#fadc00" },
+            { text: "alien sci-fi riser FX", weight: 0.8, color: "#ff3b30" },
+            { text: "glitched rhythmic female vocal chops with trippy echo trails singing: 'DJing LensDNA APP is King!'", weight: 1.5, color: "#ff00ea" },
+            { text: "distant pitched-shifted male vocal drones singing: 'Lens DNA APP is King of the DJ APPS'", weight: 0.6, color: "#0055ff" }
+        ]
+    },
+    {
+        name: "Mainstage Future Rave", bpm: 128, dur: 8,
+        channels:[
+            { text: "heavy distorted mainroom kick", weight: 1.5, color: "#00ff41" },
+            { text: "aggressive reese bass drone", weight: 1.2, color: "#00e5ff" },
+            { text: "driving mechanical snare build", weight: 1.0, color: "#b000ff" },
+            { text: "massive detuned rave synth lead", weight: 1.8, color: "#ff00aa" },
+            { text: "sidechained white noise sweep", weight: 0.6, color: "#fadc00" },
+            { text: "distorted hype male vocal shout with metallic crunch", weight: 1.0, color: "#ff3b30" },
+            { text: "high-energy pop female vocals with bright sidechained processing singing: 'Be the TOP DJ VJ and Producer'", weight: 1.5, color: "#ff00ea" },
+            { text: "robotic vocoder male vocals with futuristic texture singing: 'DJing LensDNA APP is King!'", weight: 0.8, color: "#0055ff" }
+        ]
+    },
+    {
+        name: "Cyberpunk Synthwave", bpm: 105, dur: 8,
+        channels:[
+            { text: "retro 80s gated snare and heavy kick", weight: 1.5, color: "#00ff41" },
+            { text: "fat moog analog bass sequence", weight: 1.8, color: "#00e5ff" },
+            { text: "driving 16th-note synth hi-hats", weight: 1.0, color: "#b000ff" },
+            { text: "neon-drenched polysynth chords", weight: 1.5, color: "#ff00aa" },
+            { text: "soaring outrun electric guitar solo", weight: 1.0, color: "#fadc00" },
+            { text: "dystopian vhs tape flutter noise", weight: 0.4, color: "#ff3b30" },
+            { text: "dreamy breathy female vocals with vintage gated reverb singing: 'Lens DNA APP is King of the DJ APPS'", weight: 1.4, color: "#ff00ea" },
+            { text: "smooth multi-tracked male harmonies with 80s chorus effect singing: 'Be the TOP DJ VJ and Producer'", weight: 0.8, color: "#0055ff" }
+        ]
+    },
+    {
+        name: "Organic Afro House", bpm: 122, dur: 16,
+        channels:[
+            { text: "warm acoustic kick drum", weight: 1.2, color: "#00ff41" },
+            { text: "deep muted electric bass", weight: 1.0, color: "#00e5ff" },
+            { text: "live conga and bongo polyrhythms", weight: 1.8, color: "#b000ff" },
+            { text: "lush kalimba and marimba melodies", weight: 1.5, color: "#ff00aa" },
+            { text: "soulful emotive saxophone riff", weight: 1.2, color: "#fadc00" },
+            { text: "warm tribal group vocal chants and earthy ad-libs", weight: 1.0, color: "#ff3b30" },
+            { text: "rich soulful female r&b vocals with natural reverberant tone singing: 'DJing LensDNA APP is King!'", weight: 1.5, color: "#ff00ea" },
+            { text: "smooth rhythmic male vocals with organic texture singing: 'Lens DNA APP is King of the DJ APPS'", weight: 0.7, color: "#0055ff" }
+        ]
+    },
+    {
+        name: "Drum and Bass Chiptune", bpm: 174, dur: 8,
+        channels:[
+            { text: "punchy kick and fast-paced breakbeat snare", weight: 1.5, color: "#00ff41" },
+            { text: "aggressive reese bass drone heavy distortion", weight: 1.8, color: "#00e5ff" },
+            { text: "fast-paced rhythmic hi-hats and rides", weight: 1.2, color: "#b000ff" },
+            { text: "dystopian sci-fi neuro sweeps", weight: 1.0, color: "#ff00aa" },
+            { text: "rapid chiptune style sequence", weight: 0.8, color: "#fadc00" },
+            { text: "dark ambient tension pad", weight: 0.5, color: "#ff3b30" },
+            { text: "ethereal high-speed female rhythmic chanting singing: 'DJing LensDNA APP is King!'", weight: 1.2, color: "#ff00ea" },
+            { text: "commanding baritone male vocals with bitcrushed grit singing: 'Be the TOP DJ VJ and Producer'", weight: 1.5, color: "#0055ff" }
+        ]
+    },
+    {
+        name: "Neo Soul Funk Groove", bpm: 95, dur: 16,
+        channels:[
+            { text: "tight acoustic punchy kick and snare groove bossa nova feel", weight: 1.2, color: "#00ff41" },
+            { text: "warm slap bass funk groove", weight: 1.5, color: "#00e5ff" },
+            { text: "laid-back rhythmic shaker and congas", weight: 1.0, color: "#b000ff" },
+            { text: "smooth rhodes electric piano chords neo soul", weight: 1.2, color: "#ff00aa" },
+            { text: "soulful clean electric guitar licks", weight: 1.0, color: "#fadc00" },
+            { text: "lush strings background swell", weight: 0.8, color: "#ff3b30" },
+            { text: "silky soulful female r&b vocals with jazz-inspired phrasing singing: 'Lens DNA APP is King of the DJ APPS'", weight: 1.5, color: "#ff00ea" },
+            { text: "smooth background male harmonies with vintage warmth singing: 'DJing LensDNA APP is King!'", weight: 1.0, color: "#0055ff" }
+        ]
+    },
+    {
+        name: "Dubstep Thrash Hybrid", bpm: 140, dur: 8,
+        channels:[
+            { text: "heavy trap 808 punchy kick and metallic snare", weight: 1.5, color: "#00ff41" },
+            { text: "filthy wobbling dubstep sub bass", weight: 1.8, color: "#00e5ff" },
+            { text: "staccato rhythms trap hi-hat rolls", weight: 1.2, color: "#b000ff" },
+            { text: "aggressive metallic synth screech", weight: 1.2, color: "#ff00aa" },
+            { text: "heavy distorted thrash metal guitar riffs", weight: 0.8, color: "#fadc00" },
+            { text: "massive stadium riser fx", weight: 0.5, color: "#ff3b30" },
+            { text: "fast-paced rhythmic female vocals with aggressive industrial processing singing: 'Be the TOP DJ VJ and Producer'", weight: 1.2, color: "#ff00ea" },
+            { text: "deep commanding gravelly male rap with distorted growling ad-libs shouting: 'Lens DNA APP is King of the DJ APPS'", weight: 1.6, color: "#0055ff" }
+        ]
+    },
+    {
+        name: "Trip Hop Shoegaze", bpm: 85, dur: 16,
+        channels:[
+            { text: "dusty vintage breakbeat punchy kick", weight: 1.2, color: "#00ff41" },
+            { text: "deep warm analog sub bass", weight: 1.2, color: "#00e5ff" },
+            { text: "vinyl crackle and staccato rimshots", weight: 1.0, color: "#b000ff" },
+            { text: "massive wall of sound distorted shoegaze guitars post punk", weight: 1.5, color: "#ff00aa" },
+            { text: "sparkling arpeggios tape delay", weight: 1.0, color: "#fadc00" },
+            { text: "ethereal lush strings pad", weight: 0.8, color: "#ff3b30" },
+            { text: "smoky breathy female vocals with massive hall reverb singing: 'DJing LensDNA APP is King!'", weight: 1.5, color: "#ff00ea" },
+            { text: "distant echoing male vocals with lo-fi telephone filter singing: 'Be the TOP DJ VJ and Producer'", weight: 0.8, color: "#0055ff" }
+        ]
+    }
+];
+
+let currentPresetIdx = -1;
+const btnNextPreset = document.getElementById('btn-next-preset');
+
+if (btnNextPreset) {
+    btnNextPreset.onclick = () => {
+        currentPresetIdx = (currentPresetIdx + 1) % djPresets.length;
+        const preset = djPresets[currentPresetIdx];
+        
+        while (activeChannels < 8) {
+            injectChannel();
+        }
+        
+        for (let i = 0; i < 8; i++) {
+            const textEl = document.getElementById(`ch${i+1}-prompt`);
+            const weightEl = document.getElementById(`ch${i+1}-weight`);
+            const valEl = document.getElementById(`ch${i+1}-val`);
+            
+            if (textEl && weightEl && valEl && preset.channels[i]) {
+                const chData = preset.channels[i];
+                textEl.value = chData.text;
+                weightEl.value = chData.weight;
+                valEl.innerText = chData.weight.toFixed(1);
+            }
+        }
+        
+        const durInput = document.getElementById('lyriaDur');
+        const bpmInput = document.getElementById('lyriaBpm');
+        if (durInput) durInput.value = preset.dur;
+        if (bpmInput) bpmInput.value = preset.bpm;
+        if (typeof window.updateBPM === 'function') {
+            window.updateBPM(preset.bpm);
+        }
+        appendChat("SYSTEM", `🎛️ **MATRIX LOADED:** ${preset.name}[${preset.bpm} BPM / ${preset.dur}s]`, "sys-alert");
+    };
+}
+
+const btnLyria = document.getElementById('btn-lyria-gen');
+if (btnLyria) {
+    btnLyria.onclick = () => {
+        if (!state.serverReady) {
+            return;
+        }
+        
+        if (state.isGeneratingStem) {
+            // User clicked while generating -> ABORT SYNTHESIS
+            state.socket.emit("cancel_stem");
+            state.isGeneratingStem = false;
+            clearTimeout(state.stemTimeout);
+            if (state.stemInterval) clearInterval(state.stemInterval);
+            
+            // Reset button to green
+            btnLyria.innerText = "SYNTHESIZE MULTI-MIX";
+            btnLyria.style.animation = "none";
+            btnLyria.style.backgroundColor = "var(--neon)";
+            btnLyria.style.borderColor = "var(--neon)";
+            btnLyria.style.color = "#000";
+            
+            // Mark chat log as aborted
+            document.querySelectorAll('.stem-loading-indicator').forEach(el => {
+                el.innerText = "[ 🛑 MIX ABORTED. FINALIZING STEM... ]";
+                el.style.animation = "none";
+                el.style.backgroundColor = "transparent";
+                el.style.color = "var(--alert)";
+                el.style.border = "1px solid var(--alert)";
+            });
+            return;
+        }
+        
+        const payload =[];
+        let summaryText =[];
+        for (let i = 1; i <= activeChannels; i++) {
+            const textEl = document.getElementById(`ch${i}-prompt`);
+            const weightEl = document.getElementById(`ch${i}-weight`);
+            if (textEl && weightEl) {
+                const text = textEl.value;
+                const weight = parseFloat(weightEl.value);
+                if (text && weight > 0) {
+                    payload.push({ text: text, weight: weight });
+                    summaryText.push(`${text} (${weight})`);
+                }
+            }
+        }
+        if (payload.length === 0) {
+            return;
+        }
+        
+        state.isGeneratingStem = true;
+        clearTimeout(state.stemTimeout);
+        if (state.stemInterval) clearInterval(state.stemInterval);
+        state.stemStartTime = Date.now();
+
+        state.stemTimeout = setTimeout(() => { 
+            state.isGeneratingStem = false; 
+            if (state.stemInterval) clearInterval(state.stemInterval);
+            btnLyria.innerText = "SYNTHESIZE MULTI-MIX";
+            btnLyria.disabled = false;
+            btnLyria.style.animation = "none";
+        }, 600000); 
+
+        state.stemInterval = setInterval(() => {
+            let elapsed = Math.floor((Date.now() - state.stemStartTime) / 1000);
+            let m = Math.floor(elapsed / 60).toString().padStart(2, '0');
+            let s = (elapsed % 60).toString().padStart(2, '0');
+            btnLyria.innerText = `🛑 ABORT MIX [${m}:${s}]`;
+            document.querySelectorAll('.stem-loading-indicator').forEach(el => {
+                el.innerText = `[ ⏳ SUPERPOWERS ACTIVE: GENERATING AUDIO... ${m}:${s} ]`;
+            });
+        }, 1000);
+
+        const dur = document.getElementById('lyriaDur').value || "120";
+        const bpm = document.getElementById('lyriaBpm').value || "138";
+        appendChat("USER", `[MIXER TRIGGER]: Interpolating -> ${summaryText.join(' + ')}`, "sys-alert");
+        
+        btnLyria.innerText = "🛑 ABORT MIX [00:00]";
+        btnLyria.disabled = false; // KEEP CLICKABLE SO WE CAN ABORT!
+        btnLyria.style.backgroundColor = "var(--danger-bg)";
+        btnLyria.style.borderColor = "var(--alert)";
+        btnLyria.style.color = "var(--alert)";
+        btnLyria.style.animation = "none";
+
+        state.socket.emit("trigger_stem_generation", { 
+            prompts: payload, 
+            duration: parseInt(dur),
+            bpm: parseInt(bpm) 
+        });
+    };
+}
+
+elements.reportBtn.onclick = () => {
+};
+
+elements.purgeBtn.onclick = () => {
+    if(confirm("CONFIRM PURGE PROTOCOL?\\n\\nThis will:\\n1. Sever the Neural Uplink immediately.\\n2. Wipe all local RAM and Session variables.\\n3. Disconnect from the Cognitive Engine.\\n\\nThis action cannot be undone.")) {
+        disconnect();
+        setTimeout(() => { window.location.reload(); }, 500);
+    }
+};
+
+elements.manualInput.addEventListener("keydown", (e) => { 
+    if (e.key === "Enter" && !e.shiftKey) { 
+        e.preventDefault(); 
+        const t = elements.manualInput.value.trim(); 
+        if(t && state.serverReady) { 
+            captureContextFrame("USER_INPUT");
+            appendChat("USER", t); 
+            elements.manualInput.value = ""; 
+            state.socket.emit("user_message", { text: t }); 
+        } else if (t) {
+        }
+    } 
+});
+
+const dropZone = document.getElementById('staging-area');
+dropZone.addEventListener('dragover', (e) => { 
+    e.preventDefault(); 
+    dropZone.classList.add('drag-over'); 
+});
+dropZone.addEventListener('dragleave', (e) => { 
+    e.preventDefault(); 
+    dropZone.classList.remove('drag-over'); 
+});
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    
+    const files = e.dataTransfer.files;
+    if (files.length === 0) return;
+    
+    Array.from(files).forEach(file => {
+        appendChat("USER", `[UPLOADING: ${file.name}...]`, "sys-alert");
+        const reader = new FileReader();
+        
+        reader.onload = async function(evt) {
+            const rawData = evt.target.result; 
+            
+            if (state.socket && state.serverReady) {
+                
+                if (file.type.startsWith('audio/') || file.name.toLowerCase().match(/\.(wav|mp3|m4a|ogg)$/)) {
                     try {
-                        state.videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                        el.video.srcObject = state.videoStream;
-                    } catch(e) { logMsg("Camera failed: " + e.message); }
+                        if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                        if (state.audioCtx.state === "suspended") await state.audioCtx.resume();
+                        
+                        appendChat("SYSTEM", `Decoding and resampling audio: ${file.name}...`, "sys-alert");
+                        
+                        const audioBuffer = await state.audioCtx.decodeAudioData(rawData);
+                        
+                        const duration = Math.min(audioBuffer.duration, 30); 
+                        const offlineCtx = new OfflineAudioContext(1, duration * 16000, 16000);
+                        
+                        const source = offlineCtx.createBufferSource();
+                        source.buffer = audioBuffer;
+                        source.connect(offlineCtx.destination);
+                        source.start();
+                        
+                        const renderedBuffer = await offlineCtx.startRendering();
+                        const float32Data = renderedBuffer.getChannelData(0);
+                        
+                        const sampleRate = 16000;
+                        for (let i = 0; i < float32Data.length; i += sampleRate) {
+                            const chunk = float32Data.subarray(i, i + sampleRate);
+                            const pcm16Data = floatTo16BitPCM(chunk);
+                            const b64Data = base64Encode(pcm16Data);
+                            state.socket.emit("audio_chunk", { data: b64Data });
+                        }
+                        
+                        setTimeout(() => {
+                            const prompt = `I just uploaded a track snippet named ${file.name}. Listen to the high-fidelity audio stream I just transmitted, analyze the vibe, and tell me exactly what stem, synth, or beat I should generate to add to it.`;
+                            appendChat("USER", prompt);
+                            state.socket.emit("user_message", { text: prompt });
+                        }, 500);
+
+                    } catch (err) {
+                        appendChat("SYSTEM", `Failed to process audio file: ${err.message}`, "sys-alert");
+                    }
+                } 
+                else {
+                    state.socket.emit('process_document', { filename: file.name, data: rawData });
                 }
             } else {
-                document.body.classList.remove('performance-mode');
-                el.btnMode.classList.remove('active');
             }
         };
+        reader.readAsArrayBuffer(file);
+    });
+});
 
-        el.btnAr.onclick = () => {
-            if(typeof window.toggleAR === 'function') {
-                window.toggleAR();
-                el.btnAr.classList.toggle('active');
-            }
-        };
+const savedGemini = localStorage.getItem("enigma_gemini_key");
+const savedGrok = localStorage.getItem("enigma_grok_key");
+const savedOpenAI = localStorage.getItem("enigma_openai_key");
+if (savedGemini) elements.geminiInput.value = savedGemini;
+if (savedGrok) elements.grokInput.value = savedGrok;
+if (savedOpenAI) elements.openaiInput.value = savedOpenAI;
 
-        document.getElementById('btn-purge').onclick = () => {
-            if(confirm("Wipe all local stems and disconnect?")) {
-                localStorage.removeItem("enigma_gemini_key");
-                el.geminiInput.value = "";
-                el.decksContainer.innerHTML = '';
-                el.decksContainer.appendChild(el.welcomeDeck);
-                el.welcomeDeck.style.display = 'block';
-                disconnect();
-                document.getElementById('modal-settings').classList.remove('active');
-            }
-        };
-    </script>
+const themeBtn = document.getElementById('themeToggle');
+const themes =['auto', 'dark', 'light'];
+let currentTheme = localStorage.getItem('lensdna_hud_theme') || 'auto';
+function applyTheme(theme) {
+    if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        themeBtn.innerText = '☼';
+    } else if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeBtn.innerText = '☾';
+    } else {
+        if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+            document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+        themeBtn.innerText = '◐';
+    }
+}
+themeBtn.onclick = () => {
+    let nextIndex = (themes.indexOf(currentTheme) + 1) % themes.length;
+    currentTheme = themes[nextIndex];
+    localStorage.setItem('lensdna_hud_theme', currentTheme);
+    applyTheme(currentTheme);
+};
+applyTheme(currentTheme);
+</script>
 </body>
 </html>
 """
