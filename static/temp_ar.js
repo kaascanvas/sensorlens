@@ -121,7 +121,7 @@ class LaserGame {
                 <button id="restart-game-btn" style="background:#ff3b30; color:#fff; border:none; padding:18px 40px; font-family:inherit; font-size:22px; cursor:pointer; margin-top:15px; letter-spacing:2px;">REBOOT SYSTEM</button>
             </div>
         `;
-        document.getElementById('main-container').appendChild(this.ui);
+        document.getElementById('main-stage').appendChild(this.ui);
         this.ui.querySelector('#restart-game-btn').onclick = () => this.startGame();
     }
 
