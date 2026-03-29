@@ -1764,10 +1764,15 @@ LIVE_TEMPLATE = r"""
                 <span style="color:var(--border);">|</span>
                 <span id="status" style="color:var(--text-mut);">STANDBY</span>
             </div>
-            <button id="btn-record" class="record-btn-top">
-                <span class="brand-dot" style="background:var(--alert); box-shadow:none;"></span>
-                <span id="record-text-main">RECORD</span>
-            </button>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button id="btn-minimize-ui" class="record-btn-top" style="background: rgba(0, 229, 255, 0.1); border-color: var(--cyan); color: var(--cyan);" title="Toggle UI">
+                    👁️ HUD
+                </button>
+                <button id="btn-record" class="record-btn-top">
+                    <span class="brand-dot" style="background:var(--alert); box-shadow:none;"></span>
+                    <span id="record-text-main">RECORD</span>
+                </button>
+            </div>
         </div>
 
         <div id="chat-history">
@@ -1881,6 +1886,28 @@ elements.laserGameBtn.onclick = async () => {
         await window.toggleAR(); 
         elements.laserGameBtn.style.color = window.arState.active ? "var(--neon)" : "";
         elements.laserGameBtn.style.boxShadow = window.arState.active ? "inset 0 0 10px var(--neon)" : "none";
+        
+        if (window.arState.active) {
+            document.getElementById('chat-history').style.display = 'none';
+            document.querySelector('.input-wrapper').style.display = 'none';
+            document.getElementById('btn-minimize-ui').style.opacity = '0.5';
+        }
+    }
+};
+
+document.getElementById('btn-minimize-ui').onclick = () => {
+    const chat = document.getElementById('chat-history');
+    const inputWrap = document.querySelector('.input-wrapper');
+    const btn = document.getElementById('btn-minimize-ui');
+    
+    if (chat.style.display === 'none') {
+        chat.style.display = 'flex';
+        inputWrap.style.display = 'flex';
+        btn.style.opacity = '1';
+    } else {
+        chat.style.display = 'none';
+        inputWrap.style.display = 'none';
+        btn.style.opacity = '0.5';
     }
 };
 
