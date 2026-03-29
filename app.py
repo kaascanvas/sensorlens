@@ -423,36 +423,35 @@ def ai_bridge_thread(sid, provider, system_instruction, input_queue, sovereign_k
                                 "audio": data
                             }))
                     else:
-                        if m_type == 'text':
+                        if m_type == 'text' and data:
                             ws.send(json.dumps({
                                 "clientContent": {
                                     "turns":[{
                                         "role": "user",
-                                        "parts": [{"text": data}]
+                                        "parts":[{"text": data}]
                                     }],
                                     "turnComplete": True
                                 }
                             }))
-                        elif m_type == 'audio':
+                        elif m_type == 'audio' and data:
                             ws.send(json.dumps({
                                 "realtimeInput": {
-                                    "mediaChunks":[{
+                                    "audio": {
                                         "mimeType": "audio/pcm;rate=16000",
                                         "data": data
-                                    }]
+                                    }
                                 }
                             }))
-                        elif m_type == 'video':
+                        elif m_type == 'video' and data:
                             ws.send(json.dumps({
                                 "realtimeInput": {
-                                    "mediaChunks":[{
+                                    "video": {
                                         "mimeType": "image/jpeg",
                                         "data": data
-                                    }]
+                                    }
                                 }
                             }))
                         elif m_type == 'lens_ocr':
-                            # (OCR still utilizes clientContent turn completion)
                             prompt_text = item.get('prompt', "Analyze.")
                             ws.send(json.dumps({
                                 "clientContent": {
