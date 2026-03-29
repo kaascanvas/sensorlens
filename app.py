@@ -1529,7 +1529,7 @@ LIVE_TEMPLATE = r"""
         .sidebar-content { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 24px; }
         
         .nav-section { display: flex; flex-direction: column; gap: 10px; }
-        .nav-label { font-size: 0.65rem; color: var(--text-mut); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        .nav-label { font-size: 0.65rem; color: var(--text-mut); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
         
         .key-input { width: 100%; background: var(--panel-bg-solid); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 6px; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; outline: none; transition: 0.2s; box-sizing: border-box; }
         .key-input:focus { border-color: var(--neon); }
@@ -1544,9 +1544,10 @@ LIVE_TEMPLATE = r"""
 
         /* DJ MATRIX IN SIDEBAR */
         .dj-panel { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; padding: 15px; }
-        .dj-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .dj-channels { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
-        .dj-channel { flex: 1; min-width: 60px; display: flex; flex-direction: column; align-items: center; background: var(--panel-bg-solid); border: 1px solid var(--border); border-radius: 4px; padding: 5px; }
+        .dj-channels { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+        .dj-channels::-webkit-scrollbar { height: 6px; }
+        .dj-channels::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 3px; }
+        .dj-channel { flex: 0 0 65px; display: flex; flex-direction: column; align-items: center; background: var(--panel-bg-solid); border: 1px solid var(--border); border-radius: 4px; padding: 5px; }
         
         /* MAIN STAGE */
         #main-stage { flex: 1; position: relative; display: flex; flex-direction: column; overflow: hidden; }
@@ -1555,13 +1556,13 @@ LIVE_TEMPLATE = r"""
         #video-feed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: contrast(110%) brightness(0.9); }
         .mirror { transform: scaleX(-1); }
         #ar-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-        .camera-tint { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; background: linear-gradient(to bottom, var(--bg) 0%, transparent 20%, transparent 70%, var(--bg) 100%); opacity: 0.9; pointer-events: none; }
+        .camera-tint { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; background: linear-gradient(to bottom, var(--bg) 0%, transparent 20%, transparent 70%, var(--bg) 100%); opacity: 0.85; pointer-events: none; }
 
         /* TOP BAR */
         .top-bar { position: relative; z-index: 10; padding: 15px 24px; display: flex; justify-content: space-between; align-items: center; }
         .hamburger { background: transparent; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; display: none; padding: 5px; }
         .status-pill { background: var(--glass); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; display: flex; gap: 10px; align-items: center; backdrop-filter: blur(10px); }
-        .record-btn-top { background: rgba(255, 59, 48, 0.1); border: 1px solid var(--alert); color: var(--alert); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.75rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .record-btn-top { background: rgba(255, 59, 48, 0.1); border: 1px solid var(--alert); color: var(--alert); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.75rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
         .record-btn-top:hover { background: var(--alert); color: #fff; box-shadow: 0 0 15px rgba(255,59,48,0.4); }
 
         /* CHAT AREA */
@@ -1574,6 +1575,29 @@ LIVE_TEMPLATE = r"""
         .msg-user .msg-content { border-right: 3px solid var(--cyan); background: rgba(0,229,255,0.03); text-align: right; }
         .thought { font-size: 0.85rem; color: var(--neon); font-style: italic; border-left: 1px solid var(--border) !important; opacity: 0.8; }
         .sys-alert { border-left: 3px solid var(--alert) !important; background: rgba(255,59,48,0.05) !important; color: var(--alert); }
+
+        /* DRAG AND DROP INDICATOR */
+        .drag-overlay { position: absolute; inset: 0; background: rgba(0,255,65,0.1); border: 2px dashed var(--neon); z-index: 999; display: none; justify-content: center; align-items: center; color: var(--neon); font-size: 2rem; font-weight: bold; backdrop-filter: blur(5px); }
+        #main-stage.drag-active .drag-overlay { display: flex; }
+
+        /* VOICE PROMPTS OVERLAY */
+        #prompts-overlay {
+            position: absolute; top: 70px; right: 24px; width: 320px; 
+            background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--neon); border-radius: 12px; z-index: 1005; 
+            padding: 20px; box-shadow: 0 0 25px var(--neon-dim); 
+            display: flex; flex-direction: column; transition: all 0.3s ease;
+            transform-origin: top right;
+        }
+        #prompts-overlay.hidden { transform: scale(0.95); opacity: 0; pointer-events: none; }
+        .prompt-category { font-size: 0.65rem; margin-bottom: 6px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; color: var(--text-main); }
+        .prompt-example { 
+            font-size: 0.75rem; color: var(--text-dim); background: var(--msg-bg); 
+            padding: 8px 10px; margin-bottom: 6px; border-radius: 0 4px 4px 0; 
+            font-style: italic; letter-spacing: 0.5px; border-left: 3px solid var(--neon);
+            transition: background 0.2s, color 0.2s;
+        }
+        .prompt-example:hover { background: var(--neon-dim); color: var(--text-main); }
 
         /* UNIFIED INPUT BOTTOM BAR */
         .input-wrapper { position: relative; z-index: 10; padding: 20px 40px 40px 40px; display: flex; justify-content: center; }
@@ -1608,15 +1632,11 @@ LIVE_TEMPLATE = r"""
             #sidebar.open { left: 0; }
             .hamburger { display: block; }
             .input-wrapper { padding: 15px 20px 20px 20px; }
-            #chat-history { padding: 20px; }
-            .hero-mic-btn span.text { display: none; } /* Hide text on mobile, just show icon */
+            #chat-history { padding: 20px 15px; }
+            .hero-mic-btn span.text { display: none; } 
             .hero-mic-btn { padding: 10px 15px; }
+            #prompts-overlay { width: calc(100vw - 40px); right: 20px; top: 60px; }
         }
-
-        /* Hiding thoughts by default */
-        .thought { display: none !important; }
-        .msg-ai:has(.thought) { display: none !important; }
-        .msg-sender:has(+ .thought) { display: none !important; }
     </style>
 </head>
 <body>
@@ -1643,28 +1663,32 @@ LIVE_TEMPLATE = r"""
             </div>
 
             <div class="nav-section">
-                <div class="nav-label">Compute Keyring</div>
+                <div class="nav-label">
+                    Compute Keyring
+                    <button id="clearKeysBtn" style="background:none; border:none; color:var(--alert); font-size:0.6rem; cursor:pointer; text-decoration:underline;">UNLINK ALL</button>
+                </div>
                 <input type="password" id="geminiKey" class="key-input" placeholder="Gemini API Key (AIza...)">
                 <input type="password" id="grokKey" class="key-input" placeholder="xAI Grok Key (xai-...)">
                 <input type="password" id="openaiKey" class="key-input" placeholder="OpenAI Key (sk-...)">
-                <button id="clearKeysBtn" class="btn-clear">UNLINK ALL KEYS</button>
             </div>
 
-            <!-- DJ Infinite Crate Panel (Only really useful if domain is DJ, but we keep it available) -->
+            <!-- DJ Infinite Crate Panel -->
             <div class="nav-section dj-panel">
-                <div class="dj-header">
-                    <span class="nav-label" style="color:#b000ff;">Infinite Stem Matrix</span>
-                    <button id="btn-next-preset" style="background:transparent; border:1px solid #b000ff; color:#b000ff; border-radius:4px; padding:2px 6px; font-size:0.6rem; cursor:pointer;">PRESET</button>
+                <div class="nav-label" style="color:#b000ff; margin-bottom:12px;">
+                    Infinite Stem Matrix
+                    <button id="btn-next-preset" style="background:transparent; border:1px solid #b000ff; color:#b000ff; border-radius:4px; padding:2px 6px; font-size:0.6rem; cursor:pointer;">PRESET ⏭️</button>
                 </div>
                 <div class="dj-channels" id="channels-container">
                     <!-- Channels injected via JS -->
+                </div>
+                <div style="display:flex; justify-content:center; margin-top:8px;">
+                    <button id="btn-add-channel" style="background:none; border:1px dashed #b000ff; color:#b000ff; font-size:0.6rem; padding:4px 8px; cursor:pointer; border-radius:4px;">+ ADD CH (0/8)</button>
                 </div>
                 <div style="display:flex; gap:10px; margin-top:10px;">
                     <input type="number" id="lyriaDur" class="key-input" value="120" placeholder="Sec" style="width:50%;">
                     <input type="number" id="lyriaBpm" class="key-input" value="138" placeholder="BPM" style="width:50%;">
                 </div>
                 <button id="btn-lyria-gen" class="btn-clear" style="margin-top:10px; background:rgba(176,0,255,0.1); border-color:#b000ff; color:#b000ff;">SYNTHESIZE AUDIO</button>
-                <button id="btn-add-channel" style="display:none;"></button> <!-- Hidden but kept for JS compatibility -->
             </div>
 
             <div class="nav-section">
@@ -1678,7 +1702,10 @@ LIVE_TEMPLATE = r"""
                     <button id="btn-purge" class="btn-clear" style="flex:1;">PURGE RAM</button>
                     <button id="themeToggle" class="btn-clear" style="flex:1; background:var(--panel-bg); color:var(--text-main); border-color:var(--border);">THEME ◐</button>
                 </div>
-                <button id="btn-laser-game" class="btn-clear" style="margin-top:5px; background:transparent; border:1px dashed var(--neon); color:var(--neon);">TOGGLE AR</button>
+                <div style="display: flex; gap: 10px; margin-top: 5px;">
+                    <button id="btn-laser-game" class="btn-clear" style="flex:1; background:transparent; border:1px dashed var(--neon); color:var(--neon);">TOGGLE AR</button>
+                    <button onclick="document.getElementById('prompts-overlay').classList.toggle('hidden')" class="btn-clear" style="flex:1; background:transparent; border:1px dashed var(--cyan); color:var(--cyan);">VOICE GUIDE</button>
+                </div>
             </div>
         </div>
 
@@ -1694,6 +1721,35 @@ LIVE_TEMPLATE = r"""
         <video id="video-feed" autoplay muted playsinline class="mirror"></video>
         <canvas id="ar-overlay"></canvas>
         <div class="camera-tint"></div>
+        
+        <!-- DRAG & DROP OVERLAY -->
+        <div class="drag-overlay mono">DROP AUDIO OR DATA TO INGEST</div>
+
+        <!-- VOICE COMMANDS OVERLAY -->
+        <div id="prompts-overlay" class="hidden">
+            <button onclick="document.getElementById('prompts-overlay').classList.add('hidden')" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; color: var(--text-mut); font-size: 1.5rem; cursor: pointer; line-height: 1;">×</button>
+            <div style="font-size: 0.9rem; color: var(--text-main); font-weight: bold; margin-bottom: 12px; border-bottom: 1px dashed var(--border); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                <span style="color: var(--alert); font-size: 0.7rem;">🔴</span> SPOKEN COMMANDS
+            </div>
+            <div style="font-size: 0.65rem; color: var(--text-dim); margin-bottom: 18px; line-height: 1.5;">
+                Speak naturally to your AI Co-Pilot. You are the conductor; the AI is your live audio engine. Try saying:
+            </div>
+            <div style="margin-bottom: 12px;">
+                <div class="prompt-category">🔥 The Mainstage Drop</div>
+                <div class="prompt-example">"Build it up and drop a massive techno bassline!"</div>
+                <div class="prompt-example">"Go crazy! Give me fast hi-hats at 150 BPM."</div>
+            </div>
+            <div style="margin-bottom: 12px;">
+                <div class="prompt-category">🎤 Stem Matrix (Vocals/Melodies)</div>
+                <div class="prompt-example">"Generate a female vocal singing 'Lens DNA is the future'."</div>
+            </div>
+            <div style="margin-bottom: 5px;">
+                <div class="prompt-category">⏱️ Timing Strategy</div>
+                <div style="font-size: 0.65rem; color: var(--text-dim); background: var(--msg-bg); border: 1px dashed var(--border); padding: 8px; border-radius: 4px; line-height: 1.4;">
+                    Test ideas with <strong>T=8</strong> (8 seconds) first to check composition. Command full tracks like <strong>T=180</strong> once perfected.
+                </div>
+            </div>
+        </div>
 
         <!-- TOP BAR -->
         <div class="top-bar mono">
@@ -1723,17 +1779,15 @@ LIVE_TEMPLATE = r"""
         <!-- UNIFIED COMMAND BAR -->
         <div class="input-wrapper">
             <div class="input-box">
-                <!-- Hidden inputs for compatibility -->
+                <!-- Hidden inputs -->
+                <input type="file" id="file-upload" hidden multiple>
                 <button id="btn-ingest" style="display:none;"></button>
-                <button id="btn-report" style="display:none;"></button>
-                <button id="btn-zoom-in" style="display:none;"></button>
-                <button id="btn-zoom-out" style="display:none;"></button>
-                <button id="btn-zoom-reset" style="display:none;"></button>
 
+                <button class="action-btn" title="Upload Audio/Doc" onclick="document.getElementById('file-upload').click()">📎</button>
                 <button id="btn-screen" class="action-btn" title="Share Screen">💻</button>
                 <button id="btn-flip" class="action-btn" title="Flip Camera">📷</button>
                 
-                <textarea id="manualInject" rows="1" placeholder="Command the AI, or use your voice..."></textarea>
+                <textarea id="manualInject" rows="1" placeholder="Command the AI, or drop files here..."></textarea>
                 
                 <button id="btn-mic" class="hero-mic-btn mono">
                     <div class="indicator"></div>
@@ -1776,7 +1830,6 @@ const elements = {
     screenBtn: document.getElementById("btn-screen"), 
     flipBtn: document.getElementById("btn-flip"), 
     micBtn: document.getElementById("btn-mic"), 
-    ingestBtn: document.getElementById("btn-ingest"), 
     lensBtn: document.getElementById("btn-lens"), 
     laserGameBtn: document.getElementById("btn-laser-game"),
     purgeBtn: document.getElementById("btn-purge"),
@@ -1787,7 +1840,8 @@ const elements = {
     logs: document.getElementById("logs"), 
     chat: document.getElementById("chat-history"), 
     manualInput: document.getElementById("manualInject"),
-    sendManualBtn: document.getElementById("btn-send-manual")
+    sendManualBtn: document.getElementById("btn-send-manual"),
+    fileUpload: document.getElementById("file-upload")
 };
 
 let state = { socket: null, audioCtx: null, worklet: null, videoStream: null, audioStream: null, serverReady: false, nextStartTime: 0, mode: "camera", facingMode: "user", isSwapping: false, timerInterval: null, secondsLeft: SESSION_LIMIT_SEC, isSpeaking: false, lastVoiceTimestamp: 0, isGeneratingStem: false, stemTimeout: null, stemInterval: null, stemStartTime: 0, mediaRecorder: null, recordedChunks:[], recorderDest: null, micMuted: true };
@@ -1820,20 +1874,15 @@ function log(msg, isTelemetry = false) {
 }
 
 function updateTelemetryStats(type, sizeBytes, width, height) {
-    telemetry.scanCount++;
-    telemetry.totalBytes += sizeBytes;
-    const sizeKB = Math.round(sizeBytes / 1024);
-    const totalMB = (telemetry.totalBytes / (1024 * 1024)).toFixed(2);
+    telemetry.scanCount++; telemetry.totalBytes += sizeBytes;
+    const sizeKB = Math.round(sizeBytes / 1024); const totalMB = (telemetry.totalBytes / (1024 * 1024)).toFixed(2);
     log(`TX-${telemetry.scanCount}: ${type} | ${sizeKB}KB | TOTAL: ${totalMB}MB`, true);
 }
 
 function startTimer() {
-    clearInterval(state.timerInterval);
-    state.secondsLeft = SESSION_LIMIT_SEC;
-    updateTimerDisplay();
+    clearInterval(state.timerInterval); state.secondsLeft = SESSION_LIMIT_SEC; updateTimerDisplay();
     state.timerInterval = setInterval(() => {
-        state.secondsLeft--;
-        updateTimerDisplay();
+        state.secondsLeft--; updateTimerDisplay();
         if (state.secondsLeft <= 0) {
             clearInterval(state.timerInterval);
             appendChat("SYSTEM", ">> UPLINK LIMIT REACHED. SEVERING CONNECTION TO AVOID HALLUCINATIONS. <<", "sys-alert");
@@ -1846,20 +1895,13 @@ function updateTimerDisplay() {
     const m = Math.floor(state.secondsLeft / 60).toString().padStart(2, '0');
     const s = (state.secondsLeft % 60).toString().padStart(2, '0');
     elements.timer.innerText = `${m}:${s}`;
-    if (state.secondsLeft < 30) elements.timer.style.color = "#ff3b30";
-    else elements.timer.style.color = "inherit";
+    if (state.secondsLeft < 30) elements.timer.style.color = "#ff3b30"; else elements.timer.style.color = "inherit";
 }
 
 function setStatus(msg, color="#00ff41") { 
-    elements.status.innerText = msg; 
-    elements.status.style.color = color; 
-    if(color === "#00ff41") {
-        elements.connDot.style.background = color;
-        elements.connDot.style.boxShadow = `0 0 10px ${color}`;
-    } else {
-        elements.connDot.style.background = "#555";
-        elements.connDot.style.boxShadow = "none";
-    }
+    elements.status.innerText = msg; elements.status.style.color = color; 
+    if(color === "#00ff41") { elements.connDot.style.background = color; elements.connDot.style.boxShadow = `0 0 10px ${color}`; } 
+    else { elements.connDot.style.background = "#555"; elements.connDot.style.boxShadow = "none"; }
 }
 
 function appendChat(role, text, type = "normal") {
@@ -1877,21 +1919,14 @@ function appendChat(role, text, type = "normal") {
 
 async function captureContextFrame(triggerName) {
     if (!state.serverReady || !elements.video.srcObject) return;
-    const vWidth = elements.video.videoWidth;
-    const vHeight = elements.video.videoHeight;
-    const targetWidth = 1024; 
-    const scaleFactor = vWidth > targetWidth ? (targetWidth / vWidth) : 1.0;
-    const finalWidth = Math.floor(vWidth * scaleFactor);
-    const finalHeight = Math.floor(vHeight * scaleFactor);
-    const canvas = document.createElement("canvas");
-    canvas.width = finalWidth;
-    canvas.height = finalHeight;
+    const vWidth = elements.video.videoWidth; const vHeight = elements.video.videoHeight;
+    const targetWidth = 1024; const scaleFactor = vWidth > targetWidth ? (targetWidth / vWidth) : 1.0;
+    const finalWidth = Math.floor(vWidth * scaleFactor); const finalHeight = Math.floor(vHeight * scaleFactor);
+    const canvas = document.createElement("canvas"); canvas.width = finalWidth; canvas.height = finalHeight;
     const ctx = canvas.getContext("2d");
     if (state.facingMode === "user") { ctx.translate(finalWidth, 0); ctx.scale(-1, 1); }
     ctx.drawImage(elements.video, 0, 0, finalWidth, finalHeight);
-    if (window.arState && window.arState.active && window.arState.overlayCanvas) {
-        ctx.drawImage(window.arState.overlayCanvas, 0, 0, finalWidth, finalHeight);
-    }
+    if (window.arState && window.arState.active && window.arState.overlayCanvas) ctx.drawImage(window.arState.overlayCanvas, 0, 0, finalWidth, finalHeight);
     if (state.facingMode === "user") { ctx.setTransform(1, 0, 0, 1, 0, 0); }
     const frame = canvas.toDataURL("image/jpeg", 0.7).split(",")[1];
     const estimatedSize = Math.floor(frame.length * 0.75);
@@ -1902,17 +1937,12 @@ async function captureContextFrame(triggerName) {
 async function triggerLens() { 
     if (!state.serverReady || !elements.video.srcObject) return;
     appendChat("USER", "[LENS SCAN: HIGH FIDELITY AUDIT]"); 
-    const vWidth = elements.video.videoWidth;
-    const vHeight = elements.video.videoHeight;
-    const canvas = document.createElement("canvas"); 
-    canvas.width = vWidth; 
-    canvas.height = vHeight; 
+    const vWidth = elements.video.videoWidth; const vHeight = elements.video.videoHeight;
+    const canvas = document.createElement("canvas"); canvas.width = vWidth; canvas.height = vHeight; 
     const ctx = canvas.getContext("2d");
     if (state.facingMode === "user") { ctx.translate(vWidth, 0); ctx.scale(-1, 1); }
     ctx.drawImage(elements.video, 0, 0, vWidth, vHeight); 
-    if (window.arState && window.arState.active && window.arState.overlayCanvas) {
-        ctx.drawImage(window.arState.overlayCanvas, 0, 0, vWidth, vHeight);
-    }
+    if (window.arState && window.arState.active && window.arState.overlayCanvas) ctx.drawImage(window.arState.overlayCanvas, 0, 0, vWidth, vHeight);
     if (state.facingMode === "user") { ctx.setTransform(1, 0, 0, 1, 0, 0); }
     const b64Image = canvas.toDataURL("image/jpeg", 0.95).split(",")[1]; 
     const estimatedSize = Math.floor(b64Image.length * 0.75);
@@ -1984,9 +2014,7 @@ async function playLyriaAudioStream(b64Data) {
         const numFrames = int16.length / 2;
         const audioBuffer = state.audioCtx.createBuffer(2, numFrames, 48000); 
         const channel0 = audioBuffer.getChannelData(0); const channel1 = audioBuffer.getChannelData(1);
-        for (let i = 0; i < numFrames; i++) {
-            channel0[i] = int16[i * 2] / 32768.0; channel1[i] = int16[i * 2 + 1] / 32768.0;
-        }
+        for (let i = 0; i < numFrames; i++) { channel0[i] = int16[i * 2] / 32768.0; channel1[i] = int16[i * 2 + 1] / 32768.0; }
         const src = state.audioCtx.createBufferSource(); src.buffer = audioBuffer; 
         src.connect(state.audioCtx.destination); if (state.recorderDest) src.connect(state.recorderDest);
         const currentTime = state.audioCtx.currentTime; 
@@ -2023,36 +2051,23 @@ async function startLocalMedia() {
 }
 
 async function connect() {
-    let geminiKey = elements.geminiInput.value.trim();
-    let grokKey = elements.grokInput.value.trim();
-    let openaiKey = elements.openaiInput.value.trim();
-    
-    if (geminiKey) localStorage.setItem("enigma_gemini_key", geminiKey);
-    if (grokKey) localStorage.setItem("enigma_grok_key", grokKey);
-    if (openaiKey) localStorage.setItem("enigma_openai_key", openaiKey);
+    let geminiKey = elements.geminiInput.value.trim(); let grokKey = elements.grokInput.value.trim(); let openaiKey = elements.openaiInput.value.trim();
+    if (geminiKey) localStorage.setItem("enigma_gemini_key", geminiKey); if (grokKey) localStorage.setItem("enigma_grok_key", grokKey); if (openaiKey) localStorage.setItem("enigma_openai_key", openaiKey);
 
     let activeKey = "";
     if (PROVIDER === "grok") activeKey = grokKey;
     else if (PROVIDER === "openai") activeKey = openaiKey;
     else activeKey = geminiKey;
 
-    elements.btn.disabled = true; 
-    setStatus("INIT...", "yellow");
+    elements.btn.disabled = true; setStatus("INIT...", "yellow");
     await startLocalMedia();
 
-    if (!activeKey) { 
-        elements.btn.disabled = false; elements.btn.classList.remove("active");
-        elements.btnText.innerText = "CONNECT AI";
-        return; 
-    }
+    if (!activeKey) { elements.btn.disabled = false; elements.btn.classList.remove("active"); elements.btnText.innerText = "CONNECT AI"; return; }
 
     setStatus("LINKING", "yellow");
     try {
         state.nextStartTime = 0; state.isSpeaking = false; state.lastVoiceTimestamp = 0;
-        state.socket = io("/live", { 
-            query: { provider: PROVIDER, domain: DOMAIN, use_context: USE_CONTEXT, clearance: UPLINK_CLEARANCE, sovereign_key: activeKey }, 
-            transports: ["websocket"], forceNew: true 
-        });
+        state.socket = io("/live", { query: { provider: PROVIDER, domain: DOMAIN, use_context: USE_CONTEXT, clearance: UPLINK_CLEARANCE, sovereign_key: activeKey }, transports: ["websocket"], forceNew: true });
 
         state.socket.on('new_generative_stem', (data) => {
             state.isGeneratingStem = false; clearTimeout(state.stemTimeout); if (state.stemInterval) clearInterval(state.stemInterval);
@@ -2066,7 +2081,7 @@ async function connect() {
             
             // Build the DJ Deck Widget in chat
             const stemHtml = `
-                <div style="background:rgba(5,5,5,0.9); border:1px solid var(--border); border-top:3px solid #b000ff; border-radius:12px; padding:20px; width:100%; box-sizing:border-box;">
+                <div style="background:var(--panel-bg); border:1px solid var(--border); border-top:3px solid #b000ff; border-radius:12px; padding:20px; width:100%; box-sizing:border-box; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
                     <div style="display:flex; justify-content:space-between; color:#b000ff; font-size:0.8rem; font-weight:bold; margin-bottom:15px; font-family:'Share Tech Mono', monospace;">
                         <span>🎛️ STEM MATRIX RENDERED</span>
                         <span>${data.bpm} BPM</span>
@@ -2170,7 +2185,6 @@ async function connect() {
             
             textChunks.forEach(textChunk => {
                 const isThought = textChunk.startsWith("**") || textChunk.startsWith("Thinking Process:");
-                const msgType = isThought ? "thought" : "speech";
                 
                 let chatChildren = Array.from(elements.chat.children);
                 let lastMsg = chatChildren.reverse().find(el => el.classList.contains("msg-ai"));
@@ -2281,47 +2295,176 @@ elements.manualInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendManualInput(); } 
 });
 
-// RECORD PERFORMANCE LOGIC (Simplified for brevity)
+// FILE UPLOAD AND DRAG & DROP LOGIC (Fully Restored)
+const dropZone = elements.mainContainer;
+dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-active'); });
+dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('drag-active'); });
+
+function handleFiles(files) {
+    if (files.length === 0) return;
+    Array.from(files).forEach(file => {
+        appendChat("USER", `[UPLOADING: ${file.name}...]`, "sys-alert");
+        const reader = new FileReader();
+        reader.onload = async function(evt) {
+            const rawData = evt.target.result; 
+            if (state.socket && state.serverReady) {
+                if (file.type.startsWith('audio/') || file.name.toLowerCase().match(/\.(wav|mp3|m4a|ogg)$/)) {
+                    try {
+                        if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                        if (state.audioCtx.state === "suspended") await state.audioCtx.resume();
+                        appendChat("SYSTEM", `Decoding and resampling audio: ${file.name}...`, "sys-alert");
+                        
+                        const audioBuffer = await state.audioCtx.decodeAudioData(rawData);
+                        const duration = Math.min(audioBuffer.duration, 30); 
+                        const offlineCtx = new OfflineAudioContext(1, duration * 16000, 16000);
+                        const source = offlineCtx.createBufferSource();
+                        source.buffer = audioBuffer;
+                        source.connect(offlineCtx.destination);
+                        source.start();
+                        
+                        const renderedBuffer = await offlineCtx.startRendering();
+                        const float32Data = renderedBuffer.getChannelData(0);
+                        const sampleRate = 16000;
+                        for (let i = 0; i < float32Data.length; i += sampleRate) {
+                            const chunk = float32Data.subarray(i, i + sampleRate);
+                            const pcm16Data = floatTo16BitPCM(chunk);
+                            const b64Data = base64Encode(pcm16Data);
+                            state.socket.emit("audio_chunk", { data: b64Data });
+                        }
+                        setTimeout(() => {
+                            const prompt = `I just uploaded a track snippet named ${file.name}. Listen to the high-fidelity audio stream I just transmitted, analyze the vibe, and tell me exactly what stem, synth, or beat I should generate to add to it.`;
+                            appendChat("USER", prompt);
+                            state.socket.emit("user_message", { text: prompt });
+                        }, 500);
+                    } catch (err) { appendChat("SYSTEM", `Failed to process audio: ${err.message}`, "sys-alert"); }
+                } else {
+                    state.socket.emit('process_document', { filename: file.name, data: rawData });
+                }
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    });
+}
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault(); dropZone.classList.remove('drag-active');
+    handleFiles(e.dataTransfer.files);
+});
+
+elements.fileUpload.addEventListener('change', (e) => {
+    handleFiles(e.target.files);
+});
+
+// RECORD PERFORMANCE LOGIC
 elements.recordBtn.onclick = async () => {
     if (!state.mediaRecorder || state.mediaRecorder.state === "inactive") {
         if (!state.videoStream || !state.audioCtx) return;
-        let videoTracks = state.videoStream.getVideoTracks();
-        if (!state.recorderDest) { state.recorderDest = state.audioCtx.createMediaStreamDestination(); const source = state.audioCtx.createMediaStreamSource(state.audioStream); source.connect(state.recorderDest); }
+        
+        let videoTracks =[];
+        let displayStream = null;
+
+        try {
+            if (navigator.mediaDevices.getDisplayMedia) {
+                displayStream = await navigator.mediaDevices.getDisplayMedia({ video: { displaySurface: 'browser' }, preferCurrentTab: true, audio: false });
+                videoTracks = displayStream.getVideoTracks();
+            } else { throw new Error("Not supported"); }
+        } catch (err) { videoTracks = state.videoStream.getVideoTracks(); }
+
+        if (videoTracks.length === 0) return;
+        
+        if (!state.recorderDest) { 
+            state.recorderDest = state.audioCtx.createMediaStreamDestination(); 
+            const source = state.audioCtx.createMediaStreamSource(state.audioStream); 
+            source.connect(state.recorderDest); 
+        }
         const audioTracks = state.recorderDest.stream.getAudioTracks();
         const combinedStream = new MediaStream([...videoTracks, ...audioTracks]);
-        try { state.mediaRecorder = new MediaRecorder(combinedStream, {mimeType: 'video/webm;codecs=vp8,opus'}); } 
+        
+        let mimeType = 'video/webm;codecs=vp8,opus';
+        if (!MediaRecorder.isTypeSupported(mimeType)) { mimeType = 'video/webm'; if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/mp4'; }
+        
+        try { state.mediaRecorder = new MediaRecorder(combinedStream, mimeType ? { mimeType } : undefined); } 
         catch (e) { state.mediaRecorder = new MediaRecorder(combinedStream); }
+        
         state.recordedChunks =[];
         state.mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) state.recordedChunks.push(e.data); };
         state.mediaRecorder.onstop = () => {
-            const blob = new Blob(state.recordedChunks, { type: state.mediaRecorder.mimeType || 'video/mp4' });
+            if (displayStream) displayStream.getTracks().forEach(track => track.stop());
+            const finalMime = state.mediaRecorder.mimeType || 'video/mp4';
+            const blob = new Blob(state.recordedChunks, { type: finalMime });
             const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.style.display = 'none'; a.href = url;
-            a.download = `LensDNA_Performance_${Date.now()}.webm`; document.body.appendChild(a); a.click();
+            let ext = finalMime.includes("webm") ? "webm" : "mp4";
+            a.download = `LensDNA_Performance_${Date.now()}.${ext}`; document.body.appendChild(a); a.click();
             setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(url); }, 100);
+            
             elements.recordText.innerText = "RECORD"; elements.recordBtn.style.color = "var(--alert)"; elements.recordBtn.style.background = "rgba(255,59,48,0.1)";
         };
+        if (displayStream && videoTracks[0]) { videoTracks[0].onended = () => { if (state.mediaRecorder && state.mediaRecorder.state !== "inactive") state.mediaRecorder.stop(); }; }
+
         state.mediaRecorder.start();
         elements.recordText.innerText = "STOP REC"; elements.recordBtn.style.color = "var(--neon)"; elements.recordBtn.style.background = "rgba(0,255,65,0.1)";
     } else { state.mediaRecorder.stop(); }
 };
 
-// INITIALIZE DJ PRESETS (Hidden logic for the matrix generator)
+// FULL 12 DJ PRESETS LOGIC RESTORED
+const MAX_CHANNELS = 8;
 const channelsContainer = document.getElementById('channels-container');
+const btnAddChannel = document.getElementById('btn-add-channel');
 let activeChannels = 0;
-const chDefaults =[{ text: "techno kick", color: "#00ff41", weight: 1.5 }, { text: "dark sub", color: "#00e5ff", weight: 1.2 }, { text: "vocal hook", color: "#b000ff", weight: 1.0 }, { text: "acid arp", color: "#ff00aa", weight: 0.8 }];
+const chDefaults =[
+    { text: "filthy techno bass", color: "#00ff41", weight: 1.0 }, { text: "lush ambient strings", color: "#00e5ff", weight: 0.0 },
+    { text: "female vocal hook", color: "#b000ff", weight: 0.0 }, { text: "acid synth arp", color: "#ff00aa", weight: 0.0 },
+    { text: "tribal percussion", color: "#fadc00", weight: 0.0 }, { text: "ethereal pad", color: "#ff3b30", weight: 0.0 },
+    { text: "female vocals singing: 'type your lyrics here'", color: "#ff00ea", weight: 0.0 }, { text: "male vocals singing: 'type your lyrics here'", color: "#0055ff", weight: 0.0 }
+];
+
 function injectChannel() {
-    if (activeChannels >= 4) return;
+    if (activeChannels >= MAX_CHANNELS) return;
     const ch = chDefaults[activeChannels]; activeChannels++;
     const col = document.createElement('div'); col.className = "dj-channel";
     col.innerHTML = `
         <input type="text" id="ch${activeChannels}-prompt" class="key-input" value="${ch.text}" style="margin-bottom: 5px; text-align: center; padding: 4px; font-size: 0.55rem; background: var(--input-bg); color: var(--text-main);">
-        <input type="range" id="ch${activeChannels}-weight" min="0" max="2" step="0.1" value="${ch.weight}" style="writing-mode: vertical-lr; direction: rtl; height: 50px; width: 15px; accent-color: ${ch.color}; cursor: pointer;">
+        <input type="range" id="ch${activeChannels}-weight" min="0" max="2" step="0.1" value="${ch.weight}" style="writing-mode: vertical-lr; direction: rtl; flex: 1; height: 60px; width: 15px; accent-color: ${ch.color}; cursor: pointer;">
         <span id="ch${activeChannels}-val" style="font-size: 0.65rem; font-weight: bold; margin-top: 5px; color: ${ch.color};">${ch.weight.toFixed(1)}</span>
     `;
     channelsContainer.appendChild(col);
     col.querySelector(`#ch${activeChannels}-weight`).addEventListener('input', (e) => col.querySelector(`#ch${activeChannels}-val`).innerText = parseFloat(e.target.value).toFixed(1));
+    if (btnAddChannel) { btnAddChannel.innerText = `+ ADD CH (${activeChannels}/${MAX_CHANNELS})`; if (activeChannels >= MAX_CHANNELS) { btnAddChannel.style.opacity = "0.5"; btnAddChannel.style.cursor = "not-allowed"; } }
 }
-if (channelsContainer) { for(let i=0; i<4; i++) injectChannel(); }
+if (channelsContainer) { injectChannel(); injectChannel(); injectChannel(); if (btnAddChannel) btnAddChannel.onclick = injectChannel; }
+
+const djPresets =[
+    { name: "K-Pop Girl Crush Trap", bpm: 105, dur: 8, channels:[{ text: "heavy trap 808 punchy kick and snappy snare", weight: 1.5, color: "#00ff41" }, { text: "booming 808 sub bass glide", weight: 1.8, color: "#00e5ff" }, { text: "fast-paced staccato rhythmic trap hi-hat rolls", weight: 1.2, color: "#b000ff" }, { text: "aggressive cinematic brass stabs and middle eastern synth lead", weight: 1.5, color: "#ff00aa" }, { text: "sparkling arpeggios minimal trap sequence", weight: 0.8, color: "#fadc00" }, { text: "hype stadium vocal chants and siren fx", weight: 0.6, color: "#ff3b30" }, { text: "glossy autotuned high soprano female rapper, aggressive flow singing: 'Lens DNA APP'", weight: 1.6, color: "#ff00ea" }, { text: "deep gravelly male hype man with distorted ad-libs", weight: 0.8, color: "#0055ff" }] },
+    { name: "K-Pop Mainstage EDM", bpm: 130, dur: 16, channels:[{ text: "heavy four on the floor punchy kick drum edm", weight: 1.5, color: "#00ff41" }, { text: "filthy rolling dubstep sub bass", weight: 1.2, color: "#00e5ff" }, { text: "crisp 909 shakers and building drum rolls", weight: 1.0, color: "#b000ff" }, { text: "massive detuned rave synth lead drop", weight: 1.5, color: "#ff00aa" }, { text: "euphoric trance supersaw chords", weight: 1.2, color: "#fadc00" }, { text: "massive stadium riser sweep fx", weight: 0.8, color: "#ff3b30" }, { text: "anthemic powerful pop female vocals with large stadium reverb", weight: 1.5, color: "#ff00ea" }, { text: "harmonized robotic vocoder male backing vocals", weight: 0.7, color: "#0055ff" }] },
+    { name: "Moombahton Pink Groove", bpm: 110, dur: 16, channels:[{ text: "punchy kick reggaeton moombahton beat", weight: 1.5, color: "#00ff41" }, { text: "warm bouncy synth bass", weight: 1.2, color: "#00e5ff" }, { text: "tropical congas and crisp rhythmic snares", weight: 1.0, color: "#b000ff" }, { text: "bright tropical marimba synth pluck", weight: 1.2, color: "#ff00aa" }, { text: "lush strings and upbeat piano chords", weight: 1.0, color: "#fadc00" }, { text: "sweeping white noise fx", weight: 0.5, color: "#ff3b30" }, { text: "sultry soulful female vocals rhythmic reggaeton phrasing", weight: 1.5, color: "#ff00ea" }, { text: "laid-back baritone male vocals with warm analog saturation", weight: 0.8, color: "#0055ff" }] },
+    { name: "Peak-Time Melodic Techno", bpm: 126, dur: 16, channels:[{ text: "punchy deep room techno kick drum", weight: 1.5, color: "#00ff41" }, { text: "rolling dark sub bassline", weight: 1.2, color: "#00e5ff" }, { text: "crisp 909 hi-hats and driving shakers", weight: 0.8, color: "#b000ff" }, { text: "detuned cinematic brass stabs", weight: 1.0, color: "#ff00aa" }, { text: "euphoric analog synthesizer arpeggio", weight: 1.8, color: "#fadc00" }, { text: "distant haunting choral vocal wash", weight: 0.6, color: "#ff3b30" }, { text: "hypnotic high soprano female vocals dark ping-pong delay", weight: 1.0, color: "#ff00ea" }, { text: "commanding rhythmic baritone male vocals monotone techno", weight: 1.2, color: "#0055ff" }] },
+    { name: "High-Octane Psy-Trance", bpm: 142, dur: 8, channels:[{ text: "tight punchy psytrance kick", weight: 1.5, color: "#00ff41" }, { text: "galloping triplet FM bassline", weight: 1.8, color: "#00e5ff" }, { text: "metallic futuristic percussion loops", weight: 1.0, color: "#b000ff" }, { text: "swirling psychedelic 303 acid squelches", weight: 1.5, color: "#ff00aa" }, { text: "epic trance supersaw chords", weight: 1.0, color: "#fadc00" }, { text: "alien sci-fi riser FX", weight: 0.8, color: "#ff3b30" }, { text: "glitched rhythmic female vocal chops trippy echo trails", weight: 1.5, color: "#ff00ea" }, { text: "distant pitched-shifted male vocal drones", weight: 0.6, color: "#0055ff" }] },
+    { name: "Mainstage Future Rave", bpm: 128, dur: 8, channels:[{ text: "heavy distorted mainroom kick", weight: 1.5, color: "#00ff41" }, { text: "aggressive reese bass drone", weight: 1.2, color: "#00e5ff" }, { text: "driving mechanical snare build", weight: 1.0, color: "#b000ff" }, { text: "massive detuned rave synth lead", weight: 1.8, color: "#ff00aa" }, { text: "sidechained white noise sweep", weight: 0.6, color: "#fadc00" }, { text: "distorted hype male vocal shout with metallic crunch", weight: 1.0, color: "#ff3b30" }, { text: "high-energy pop female vocals bright sidechained processing", weight: 1.5, color: "#ff00ea" }, { text: "robotic vocoder male vocals futuristic texture", weight: 0.8, color: "#0055ff" }] },
+    { name: "Cyberpunk Synthwave", bpm: 105, dur: 8, channels:[{ text: "retro 80s gated snare and heavy kick", weight: 1.5, color: "#00ff41" }, { text: "fat moog analog bass sequence", weight: 1.8, color: "#00e5ff" }, { text: "driving 16th-note synth hi-hats", weight: 1.0, color: "#b000ff" }, { text: "neon-drenched polysynth chords", weight: 1.5, color: "#ff00aa" }, { text: "soaring outrun electric guitar solo", weight: 1.0, color: "#fadc00" }, { text: "dystopian vhs tape flutter noise", weight: 0.4, color: "#ff3b30" }, { text: "dreamy breathy female vocals vintage gated reverb", weight: 1.4, color: "#ff00ea" }, { text: "smooth multi-tracked male harmonies 80s chorus", weight: 0.8, color: "#0055ff" }] },
+    { name: "Organic Afro House", bpm: 122, dur: 16, channels:[{ text: "warm acoustic kick drum", weight: 1.2, color: "#00ff41" }, { text: "deep muted electric bass", weight: 1.0, color: "#00e5ff" }, { text: "live conga and bongo polyrhythms", weight: 1.8, color: "#b000ff" }, { text: "lush kalimba and marimba melodies", weight: 1.5, color: "#ff00aa" }, { text: "soulful emotive saxophone riff", weight: 1.2, color: "#fadc00" }, { text: "warm tribal group vocal chants earthy ad-libs", weight: 1.0, color: "#ff3b30" }, { text: "rich soulful female r&b vocals natural reverberant tone", weight: 1.5, color: "#ff00ea" }, { text: "smooth rhythmic male vocals organic texture", weight: 0.7, color: "#0055ff" }] },
+    { name: "Drum and Bass Chiptune", bpm: 174, dur: 8, channels:[{ text: "punchy kick and fast-paced breakbeat snare", weight: 1.5, color: "#00ff41" }, { text: "aggressive reese bass drone heavy distortion", weight: 1.8, color: "#00e5ff" }, { text: "fast-paced rhythmic hi-hats and rides", weight: 1.2, color: "#b000ff" }, { text: "dystopian sci-fi neuro sweeps", weight: 1.0, color: "#ff00aa" }, { text: "rapid chiptune style sequence", weight: 0.8, color: "#fadc00" }, { text: "dark ambient tension pad", weight: 0.5, color: "#ff3b30" }, { text: "ethereal high-speed female rhythmic chanting", weight: 1.2, color: "#ff00ea" }, { text: "commanding baritone male vocals bitcrushed grit", weight: 1.5, color: "#0055ff" }] },
+    { name: "Neo Soul Funk Groove", bpm: 95, dur: 16, channels:[{ text: "tight acoustic punchy kick and snare groove bossa nova feel", weight: 1.2, color: "#00ff41" }, { text: "warm slap bass funk groove", weight: 1.5, color: "#00e5ff" }, { text: "laid-back rhythmic shaker and congas", weight: 1.0, color: "#b000ff" }, { text: "smooth rhodes electric piano chords neo soul", weight: 1.2, color: "#ff00aa" }, { text: "soulful clean electric guitar licks", weight: 1.0, color: "#fadc00" }, { text: "lush strings background swell", weight: 0.8, color: "#ff3b30" }, { text: "silky soulful female r&b vocals jazz-inspired phrasing", weight: 1.5, color: "#ff00ea" }, { text: "smooth background male harmonies vintage warmth", weight: 1.0, color: "#0055ff" }] },
+    { name: "Dubstep Thrash Hybrid", bpm: 140, dur: 8, channels:[{ text: "heavy trap 808 punchy kick and metallic snare", weight: 1.5, color: "#00ff41" }, { text: "filthy wobbling dubstep sub bass", weight: 1.8, color: "#00e5ff" }, { text: "staccato rhythms trap hi-hat rolls", weight: 1.2, color: "#b000ff" }, { text: "aggressive metallic synth screech", weight: 1.2, color: "#ff00aa" }, { text: "heavy distorted thrash metal guitar riffs", weight: 0.8, color: "#fadc00" }, { text: "massive stadium riser fx", weight: 0.5, color: "#ff3b30" }, { text: "fast-paced rhythmic female vocals aggressive industrial", weight: 1.2, color: "#ff00ea" }, { text: "deep commanding gravelly male rap distorted growling", weight: 1.6, color: "#0055ff" }] },
+    { name: "Trip Hop Shoegaze", bpm: 85, dur: 16, channels:[{ text: "dusty vintage breakbeat punchy kick", weight: 1.2, color: "#00ff41" }, { text: "deep warm analog sub bass", weight: 1.2, color: "#00e5ff" }, { text: "vinyl crackle and staccato rimshots", weight: 1.0, color: "#b000ff" }, { text: "massive wall of sound distorted shoegaze guitars post punk", weight: 1.5, color: "#ff00aa" }, { text: "sparkling arpeggios tape delay", weight: 1.0, color: "#fadc00" }, { text: "ethereal lush strings pad", weight: 0.8, color: "#ff3b30" }, { text: "smoky breathy female vocals massive hall reverb", weight: 1.5, color: "#ff00ea" }, { text: "distant echoing male vocals lo-fi telephone filter", weight: 0.8, color: "#0055ff" }] }
+];
+
+let currentPresetIdx = -1;
+const btnNextPreset = document.getElementById('btn-next-preset');
+if (btnNextPreset) {
+    btnNextPreset.onclick = () => {
+        currentPresetIdx = (currentPresetIdx + 1) % djPresets.length; const preset = djPresets[currentPresetIdx];
+        while (activeChannels < 8) injectChannel();
+        for (let i = 0; i < 8; i++) {
+            const textEl = document.getElementById(`ch${i+1}-prompt`); const weightEl = document.getElementById(`ch${i+1}-weight`); const valEl = document.getElementById(`ch${i+1}-val`);
+            if (textEl && weightEl && valEl && preset.channels[i]) {
+                const chData = preset.channels[i]; textEl.value = chData.text; weightEl.value = chData.weight; valEl.innerText = chData.weight.toFixed(1);
+            }
+        }
+        document.getElementById('lyriaDur').value = preset.dur; document.getElementById('lyriaBpm').value = preset.bpm;
+        if (typeof window.updateBPM === 'function') window.updateBPM(preset.bpm);
+        appendChat("SYSTEM", `🎛️ **MATRIX LOADED:** ${preset.name}[${preset.bpm} BPM / ${preset.dur}s]`, "sys-alert");
+    };
+}
 
 const btnLyria = document.getElementById('btn-lyria-gen');
 if (btnLyria) {
