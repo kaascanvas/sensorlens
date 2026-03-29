@@ -1722,7 +1722,7 @@ LIVE_TEMPLATE = r"""
                 <button onclick="document.getElementById('prompts-overlay').classList.remove('hidden')" class="tool-btn" style="grid-column: span 4; border-top: 1px solid var(--border); color: var(--text-main); font-weight: bold; background: var(--neon-dim);">
                     🎙️ VIEW VOICE COMMANDS
                 </button>
-                <button id="btn-laser-game" class="tool-btn" style="grid-column: span 4;">LASER GAME</button>
+                <button id="btn-laser-game" class="tool-btn" style="grid-column: span 4; border: 1px dashed var(--neon); background: rgba(0,255,65,0.1);">🎮 SAVE THE DJS (AR)</button>
                 <button id="btn-record" class="tool-btn" style="grid-column: span 4; background: rgba(255, 59, 48, 0.1); border: 1px solid var(--alert); color: var(--alert); font-weight: bold; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(255, 59, 48, 0.2); transition: all 0.3s; margin-top: 2px;">
                     <span id="record-text-main" style="font-size: 1rem; letter-spacing: 2px;">🔴 RECORD PERFORMANCE</span>
                     <span style="font-size: 0.55rem; opacity: 0.8; margin-top: 4px; color: var(--text-main); font-weight: normal; letter-spacing: 0.5px;">BE AT THE TOP AS A DJ/VJ AND PRODUCER</span>
@@ -3424,7 +3424,7 @@ HTML_TEMPLATE = """
     </header>
     <section id="lensdj" class="section-container">
         <div class="section-header" style="color: var(--accent-sec);">Spatial Audio Matrix</div>
-        <h2>LensDJ Pro <span style="font-size: 1rem; vertical-align: middle; background: var(--accent-sec); color: #fff; padding: 4px 10px; border-radius: 4px; margin-left: 10px; font-weight: 800; text-shadow: none;">$59.99 LIFETIME</span></h2>
+        <h2>LensDNA Republic of DJs <span style="font-size: 1rem; vertical-align: middle; background: var(--accent-sec); color: #fff; padding: 4px 10px; border-radius: 4px; margin-left: 10px; font-weight: 800; text-shadow: none;">$89.99 LIFETIME</span></h2>
         
         <div class="feature-card blue-card" style="border-color: rgba(37, 99, 235, 0.3); padding: 0; overflow: hidden;">
             
