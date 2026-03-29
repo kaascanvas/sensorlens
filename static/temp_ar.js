@@ -58,10 +58,10 @@ class LaserGame {
         this.score = 0;
         this.gameStarted = false;
         this.gameOver = false;
-        this.enemies = [];
-        this.lasers =[];
+        this.enemies =[];
+        this.lasers = [];
         this.particles = [];
-        this.kittens =[];
+        this.djs =[]; // Formerly kittens
         this.lastEnemySpawn = 0;
         this.lastBombSpawn = 0;
         this.enemySpawnInterval = 1200;
@@ -82,7 +82,7 @@ class LaserGame {
         this.lastRecalibrationTime = 0;
 
         this.textureLoader = new THREE.TextureLoader();
-        this.kittenPositions =[{ x: -0.1, y: -0.15 }, { x: 0.0, y: -0.15 }, { x: 0.1, y: -0.15 }];
+        this.djPositions =[{ x: -0.1, y: -0.15 }, { x: 0.0, y: -0.15 }, { x: 0.1, y: -0.15 }]; // Formerly kittenPositions
 
         this.buildUI();
         this.initPromise = this.init(); 
@@ -116,7 +116,7 @@ class LaserGame {
             ${eyeMarkup('pl', '#00ffff')} ${eyeMarkup('pr', '#00ffff')}
             ${mouthMarkup('pm')}
             <div id="game-over-screen" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(15,15,15,0.96); padding:45px; border:5px solid #ff3b30; color:#ff3b30; text-align:center; display:none; pointer-events:auto; border-radius:8px;">
-                <h1 style="margin:0; font-size:42px; letter-spacing:4px;">KITTENS LOST</h1>
+                <h1 style="margin:0; font-size:42px; letter-spacing:4px;">DJS COMPROMISED</h1>
                 <p style="font-size:26px; color:#00ff41; margin:15px 0;">FINAL SCORE: <span id="final-score">0</span></p>
                 <button id="restart-game-btn" style="background:#ff3b30; color:#fff; border:none; padding:18px 40px; font-family:inherit; font-size:22px; cursor:pointer; margin-top:15px; letter-spacing:2px;">REBOOT SYSTEM</button>
             </div>
@@ -132,8 +132,8 @@ class LaserGame {
     }
 
     async loadSprites() {
-        const load = (f) => new Promise(res => this.textureLoader.load(`/static/${f}`, res, undefined, () => res(null)));[this.ghostTexture, this.ghost2Texture, this.kittenTexture, this.bombTexture] = await Promise.all([
-            load('ghost.png'), load('ghost2.png'), load('kitten.png'), load('bomb.png')
+        const load = (f) => new Promise(res => this.textureLoader.load(`/static/${f}`, res, undefined, () => res(null)));[this.ghostTexture, this.ghost2Texture, this.djTexture, this.bombTexture] = await Promise.all([
+            load('ghost.png'), load('ghost2.png'), load('dj_bot.png'), load('bomb.png')
         ]);
     }
 
@@ -185,16 +185,16 @@ class LaserGame {
         this.gameOver = false;
         document.getElementById('game-score').style.display = 'block';
         document.getElementById('game-score').innerText = "SCORE: 0";
-        document.getElementById('game-over-screen').style.display = 'none';[this.enemies, this.lasers, this.particles, this.kittens].forEach(arr => {
+        document.getElementById('game-over-screen').style.display = 'none';[this.enemies, this.lasers, this.particles, this.djs].forEach(arr => {
             arr.forEach(obj => this.scene.remove(obj)); 
             arr.length = 0;
         });
 
-        this.kittenPositions.forEach(pos => {
-            const k = new THREE.Mesh(new THREE.PlaneGeometry(95, 95), new THREE.MeshBasicMaterial({ map: this.kittenTexture, transparent: true, alphaTest: 0.1 }));
-            k.userData = { alive: true, rel: pos }; 
-            this.scene.add(k); 
-            this.kittens.push(k);
+        this.djPositions.forEach(pos => {
+            const djObj = new THREE.Mesh(new THREE.PlaneGeometry(95, 95), new THREE.MeshBasicMaterial({ map: this.djTexture, transparent: true, alphaTest: 0.1 }));
+            djObj.userData = { alive: true, rel: pos }; 
+            this.scene.add(djObj); 
+            this.djs.push(djObj);
         });
 
         this.player.calibrated = false;
@@ -422,7 +422,6 @@ class LaserGame {
 
         this.createLaser(lx, ly, tx, ty, player.color);
         this.createLaser(rx, ry, tx, ty, player.color);
-        // Cluttering tracking particles removed here.
         this.checkHit(tx, ty, player.color);
         playTone(820, 'sine', 0.04, 0.035);
     }
@@ -485,17 +484,17 @@ class LaserGame {
         });
     }
 
-    checkKittenCollisions() {
+    checkDjCollisions() {
         for (let i = this.enemies.length - 1; i >= 0; i--) {
             const e = this.enemies[i];
-            for (const k of this.kittens) {
-                if (k.userData.alive && Math.hypot(e.position.x - k.position.x, e.position.y - k.position.y) < 55) {
-                    k.userData.alive = false;
-                    k.visible = false;
+            for (const djObj of this.djs) {
+                if (djObj.userData.alive && Math.hypot(e.position.x - djObj.position.x, e.position.y - djObj.position.y) < 55) {
+                    djObj.userData.alive = false;
+                    djObj.visible = false;
                     this.scene.remove(e);
                     this.enemies.splice(i, 1);
-                    this.createParticles(k.position.x, k.position.y, 18, 'white');
-                    if (this.kittens.every(k => !k.userData.alive)) this.triggerGameOver();
+                    this.createParticles(djObj.position.x, djObj.position.y, 18, 'white');
+                    if (this.djs.every(dj => !dj.userData.alive)) this.triggerGameOver();
                     playTone(180, 'sawtooth', 0.6, 0.3);
                     return;
                 }
@@ -522,10 +521,10 @@ class LaserGame {
         if (this.player.calibrated) {
             const fx = (this.player.currentFaceCenter.x - 0.5) * window.innerWidth;
             const fy = -(this.player.currentFaceCenter.y - 0.5) * window.innerHeight;
-            this.kittens.forEach(k => {
-                if (k.userData.alive) {
-                    k.position.x = fx + k.userData.rel.x * window.innerWidth;
-                    k.position.y = fy - k.userData.rel.y * window.innerHeight;
+            this.djs.forEach(djObj => {
+                if (djObj.userData.alive) {
+                    djObj.position.x = fx + djObj.userData.rel.x * window.innerWidth;
+                    djObj.position.y = fy - djObj.userData.rel.y * window.innerHeight;
                 }
             });
         }
@@ -547,10 +546,10 @@ class LaserGame {
         }
 
         this.checkMouthEating();
-        this.checkKittenCollisions();
+        this.checkDjCollisions();
 
         this.enemies.forEach((e, i) => {
-            const target = this.kittens.find(k => k.userData.alive);
+            const target = this.djs.find(djObj => djObj.userData.alive);
             if (target) {
                 const dx = target.position.x - e.position.x;
                 const dy = target.position.y - e.position.y;
@@ -566,7 +565,7 @@ class LaserGame {
                         target.visible = false;
                         this.scene.remove(e);
                         this.enemies.splice(i, 1);
-                        if (this.kittens.filter(k => k.userData.alive).length === 0) this.triggerGameOver();
+                        if (this.djs.filter(djObj => djObj.userData.alive).length === 0) this.triggerGameOver();
                     }
                 }
             }
@@ -610,8 +609,7 @@ class LaserGame {
             
             if (res.faceLandmarks && res.faceLandmarks[0]) {
                 this.updatePlayer(res.faceLandmarks[0], this.player);
-            } else {
-                ['pl','pr','pm'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; }); 
+            } else {['pl','pr','pm'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; }); 
                 this.player.calibrated = false; 
             }
         }
@@ -639,7 +637,7 @@ window.toggleAR = async () => {
         if (activeGame) {
             activeGame.gameStarted = false;
             activeGame.gameOver = true;
-            if (document.getElementById('laser-game-overlay')) document.getElementById('laser-game-overlay').remove();[activeGame.enemies, activeGame.lasers, activeGame.particles, activeGame.kittens].forEach(arr => {
+            if (document.getElementById('laser-game-overlay')) document.getElementById('laser-game-overlay').remove();[activeGame.enemies, activeGame.lasers, activeGame.particles, activeGame.djs].forEach(arr => {
                 arr.forEach(obj => activeGame.scene.remove(obj)); 
                 arr.length = 0;
             });
