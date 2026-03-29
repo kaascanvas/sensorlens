@@ -1618,10 +1618,16 @@ LIVE_TEMPLATE = r"""
         @media (max-width: 900px) {
             #sidebar { position: absolute; left: -320px; height: 100%; box-shadow: 20px 0 50px rgba(0,0,0,0.5); margin-left: 0; }
             #sidebar.open { left: 0; }
-            .input-wrapper { padding: 15px 20px 20px 20px; }
+            .input-wrapper { padding: 10px; }
             #chat-history { padding: 20px 15px; }
+            
+            /* UI Fix: Wrap the input box on mobile */
+            .input-box { flex-wrap: wrap; padding: 10px; gap: 8px; justify-content: center; border-radius: 12px; }
+            #manualInject { flex: 1 1 100%; order: -1; margin-bottom: 5px; min-width: 100%; }
+            .action-btn, .btn-send { flex: 1; padding: 12px; }
+            .hero-mic-btn { flex: 2; display: flex; justify-content: center; padding: 12px; }
             .hero-mic-btn span.text { display: none; } 
-            .hero-mic-btn { padding: 10px 15px; }
+            
             #prompts-overlay { width: calc(100vw - 40px); right: 20px; top: 60px; }
             #dj-matrix-panel { width: 100%; bottom: 80px; padding: 15px; }
             .dj-channels { grid-template-columns: repeat(2, 1fr); max-height: 50vh; }
@@ -2054,8 +2060,11 @@ async function startLocalMedia() {
         state.worklet = new AudioWorkletNode(state.audioCtx, "recorder-processor"); 
         source.connect(state.worklet);
         
-        state.micMuted = true;
-        state.audioStream.getAudioTracks()[0].enabled = false;
+        state.micMuted = false;
+        state.audioStream.getAudioTracks()[0].enabled = true;
+        
+        elements.micBtn.classList.add("active");
+        elements.micBtn.querySelector(".text").innerText = "MIC ON";
         
         log("Local Hardware Engines Initialized.");
     } catch(err) {
