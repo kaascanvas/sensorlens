@@ -1574,10 +1574,10 @@ LIVE_TEMPLATE = r"""
         #dj-matrix-panel { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 900px; background: rgba(10,10,10,0.95); border: 1px solid #b000ff; border-radius: 12px; padding: 20px; z-index: 50; backdrop-filter: blur(20px); box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(176,0,255,0.2); transition: all 0.3s ease; display: flex; flex-direction: column; }
         #dj-matrix-panel.hidden { transform: translate(-50%, 100%); opacity: 0; pointer-events: none; }
         .dj-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .dj-channels { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: #b000ff transparent; }
-        .dj-channels::-webkit-scrollbar { height: 8px; }
+        .dj-channels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: #b000ff transparent; overflow-y: auto; max-height: 400px; }
+        .dj-channels::-webkit-scrollbar { width: 8px; height: 8px; }
         .dj-channels::-webkit-scrollbar-thumb { background-color: #b000ff; border-radius: 4px; }
-        .dj-channel { flex: 0 0 100px; display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+        .dj-channel { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; padding: 10px; min-width: 0; }
 
         .drag-overlay { position: absolute; inset: 0; background: rgba(0,255,65,0.1); border: 2px dashed var(--neon); z-index: 999; display: none; justify-content: center; align-items: center; color: var(--neon); font-size: 2rem; font-weight: bold; backdrop-filter: blur(5px); }
         #main-stage.drag-active .drag-overlay { display: flex; }
@@ -1622,6 +1622,7 @@ LIVE_TEMPLATE = r"""
             .hero-mic-btn { padding: 10px 15px; }
             #prompts-overlay { width: calc(100vw - 40px); right: 20px; top: 60px; }
             #dj-matrix-panel { width: 100%; bottom: 80px; padding: 15px; }
+            .dj-channels { grid-template-columns: repeat(2, 1fr); max-height: 50vh; }
         }
 
         .thought { display: none !important; }
@@ -2222,7 +2223,18 @@ async function connect() {
                             state.isGeneratingStem = true; clearTimeout(state.stemTimeout); if (state.stemInterval) clearInterval(state.stemInterval);
                             state.stemStartTime = Date.now();
                             state.stemTimeout = setTimeout(() => { state.isGeneratingStem = false; if (state.stemInterval) clearInterval(state.stemInterval); }, 600000); 
+                            
+                            const btnLyria = document.getElementById('btn-lyria-gen');
+                            if (btnLyria) { btnLyria.innerText = "🛑 STOP & RENDER"; btnLyria.style.background = "var(--alert)"; }
+                            
                             state.socket.emit("trigger_stem_generation", { prompt: stemStr });
+                        } else {
+                            // If it's already playing, stop the current one, package it, and start the new one!
+                            appendChat("SYSTEM", "Interrupting current track and queueing new generation...", "sys-alert");
+                            state.socket.emit("cancel_stem");
+                            setTimeout(() => {
+                                state.socket.emit("trigger_stem_generation", { prompt: stemStr });
+                            }, 1500);
                         }
                     }
                 }
@@ -2472,7 +2484,16 @@ if (btnNextPreset) {
 const btnLyria = document.getElementById('btn-lyria-gen');
 if (btnLyria) {
     btnLyria.onclick = () => {
-        if (!state.serverReady || state.isGeneratingStem) return;
+        if (!state.serverReady) return;
+        
+        if (state.isGeneratingStem) {
+            btnLyria.innerText = "PACKAGING AUDIO...";
+            btnLyria.style.background = "var(--alert)";
+            state.socket.emit("cancel_stem");
+            appendChat("USER", "[MANUAL OVERRIDE]: Halting stream and packaging current audio...", "sys-alert");
+            return;
+        }
+
         const payload =[]; let summaryText =[];
         for (let i = 1; i <= activeChannels; i++) {
             const textEl = document.getElementById(`ch${i}-prompt`); const weightEl = document.getElementById(`ch${i}-weight`);
@@ -2483,7 +2504,7 @@ if (btnLyria) {
         }
         if (payload.length === 0) return;
         state.isGeneratingStem = true;
-        btnLyria.innerText = "SYNTHESIZING..."; btnLyria.style.background = "var(--neon-dim)";
+        btnLyria.innerText = "🛑 STOP & RENDER"; btnLyria.style.background = "var(--alert)";
         const dur = document.getElementById('lyriaDur').value || "120"; const bpm = document.getElementById('lyriaBpm').value || "138";
         appendChat("USER", `[MATRIX TRIGGER]: Interpolating -> ${summaryText.join(' + ')}`, "sys-alert");
         state.socket.emit("trigger_stem_generation", { prompts: payload, duration: parseInt(dur), bpm: parseInt(bpm) });
