@@ -1462,1069 +1462,702 @@ def index():
 def privacy():
     return PRIVACY_TEMPLATE
 
-LIVE_TEMPLATE = r"""
-<!DOCTYPE html>
-<html lang="en">`ar_engine.js:124`):** The AR game script is hardcoded to look for a specific
-<head>
-    <meta charset="UTF-8">
-    <title>LensDJ Pro // Sovereign Uplink</title>
-    <meta name="viewport" content="width=device-width, initial-scale `<div>` called `main-container` to inject its score and game-over screens. Because I renamed the main=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover wrapper to `#app-ui`, the AR engine crashed when trying to load.
-2. **The Streaming Error:**">
-    <link rel="icon" type="image/png" href="/static/app-icon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400 To simplify the code, I temporarily replaced your real `AudioWorklet` (the code that captures raw microphone data and streams it to;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.socket the AI) with a fake "push-to-talk" text simulator. This broke the live voice engine.
 
-*(Note: The `evmAsk.js:15` error regarding `ethereum` is actually caused by a crypto wallet extension installed in.io/4.7.4/socket.io.min.js"></script>
-    <style>
-        :root {
-            --bg-dark: #0a0a0c; --surface: #1 your browser, like MetaMask. It injects itself into every webpage and is completely unrelated to your app!)*
-
-Here41418; --surface-hover: #1f1f25;
-            --primary: #00ff41; --primary-dim: rgba(0, 255, 65 is the **fully corrected `LIVE_TEMPLATE`**. It perfectly merges the gorgeous new "Pro Audio" UI with your **, 0.15);
-            --secondary: #00e5ff; --accent: #boriginal, robust WebRTC audio streaming** and restores the `#main-container` so the AR game works flawlessly.
-
-### Replace000ff; --danger: #ff3b30;
-            --text-main: #ffffff; --text-dim: #8e8e93;
-            --border: rgba(255, 255, 255, 0.1); --radius: 12px;
-            -- your `LIVE_TEMPLATE` in `app.py` with this:
-
-```html
 LIVE_TEMPLATE = r"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">glass: rgba(10, 10, 12, 0.75);
-        }
+    <meta charset="UTF-8">
     <title>LensDJ Pro // Sovereign Uplink</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user
-
-        * { box-sizing: border-box; margin: 0; padding: 0; user--scalable=no, viewport-fit=cover">
-    <link rel="icon" type="image/pngselect: none; -webkit-user-select: none; }
-        
-        body { background-color:" href="/static/app-icon.png">
-    <link href="https://fonts.googleapis.com var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif/css2?family=Inter:wght@400;600;800&family=; overflow: hidden; height: 100dvh; width: 100vw; }JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-
-        /* --- BACKGROUND & CONTAINERS --- */
-        #main-container { position: relative; width: 10
-    <script src="https://cdn.socket.io/4.7.4/socket.io.min0%; height: 100%; display: flex; flex-direction: column; overflow: hidden; }.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link rel="icon" type="image/png" href="/static/app-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <style>
         :root {
-            --bg-dark: #0
-        #video-bg { position: absolute; top: 0; left: 0; width: 10a0a0c;
+            --bg-dark: #0a0a0c;
             --surface: #141418;
-            --surface-0%; height: 100%; object-fit: cover; z-index: 0; transform:hover: #1f1f25;
-            --primary: #00ff41; scaleX(-1); opacity: 0; transition: opacity 0.5s ease; }
-        #
-            --primary-dim: rgba(0, 255, 65, 0.15);ar-overlay { position: absolute; top: 0; left: 0; width: 100
+            --surface-hover: #1f1f25;
+            --primary: #00ff41;
+            --primary-dim: rgba(0, 255, 65, 0.15);
             --secondary: #00e5ff;
-            --accent: #b000ff;%; height: 100%; z-index: 1; pointer-events: none; }
+            --accent: #b000ff;
             --danger: #ff3b30;
             --text-main: #ffffff;
-        
-        body.performance-mode #video-bg { opacity: 1; }
-        body.performance-
             --text-dim: #8e8e93;
             --border: rgba(255, 255, 255, 0.1);
             --radius: 12px;
-            --glass: rgba(10, 10, 12, 0.7);
+            --glass: rgba(10, 10, 12, 0.75);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
         
-        body {mode #app-ui { background: transparent; }
-
-        /* --- MAIN UI OVERLAY --- */
-        #app-ui { position: relative; z-index: 10; flex: 1; display: flex
+        body {
             background-color: var(--bg-dark); color: var(--text-main);
             font-family: 'Inter', sans-serif; overflow: hidden;
-            height: 100dvh; width; flex-direction: column; background: var(--bg-dark); transition: background 0.5s ease: 100vw; display: flex; flex-direction: column;
+            height: 100dvh; width: 100vw;
         }
 
-        /* Must; }
-
-        /* --- TOP NAVIGATION --- */
-        header { display: flex; justify-content: space-between; align exist for ar_engine.js compatibility */
+        /* Essential for ar_engine.js integration */
         #main-container {
-            position: relative; width: 100%; height: 100%; 
-            display: flex; flex-direction: column;-items: center; padding: 16px 20px; background: linear-gradient(to bottom overflow: hidden;
+            position: relative; width: 100%; height: 100%;
+            display: flex; flex-direction: column; overflow: hidden;
         }
 
-        /* --- BACKGROUND MODES --- */
-        #video-bg {, rgba(0,0,0,0.8), transparent); }
-        .header-brand { font-weight: 800; font-size: 1.2rem; letter-spacing: -0
+        #video-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; z-index: 0; transform: scaleX.5px; display: flex; align-items: center; gap: 8px; }
-        .(-1);
+            object-fit: cover; z-index: 0; transform: scaleX(-1);
             opacity: 0; transition: opacity 0.5s ease;
-        }status-dot { width: 8px; height: 8px; border-radius: 50%;
-        #ar-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; } background: var(--danger); box-shadow: 0 0 10px var(--danger); }
-        .status-dot.connected { background: var(--primary); box-shadow: 0 0 1
+        }
+        #ar-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
         
         .performance-mode #video-bg { opacity: 1; }
-        .performance-0px var(--primary); }
-        
-        .header-controls { display: flex; gap: 12px; }
-        .icon-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-main); width: 40px; height: 40px; border-mode #app-ui { background: transparent; }
+        .performance-mode #app-ui { background: transparent; }
 
-        /* --- MAIN UI OVERLAY --- */
-        #radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
-        .icon-btn:hover { background: var(--surface-hover); }
-        .icon-btn.active { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); }
-
-        /* --- DECKS / STEMS AREA --- */
-        #decks-container { flex: 1; overflowapp-ui {
-            position: relative; z-index: 10; flex: 1; display-y: auto; padding: 20px; display: flex; flex-direction: column; gap:: flex; flex-direction: column;
+        #app-ui {
+            position: relative; z-index: 10; flex: 1; display: flex; flex-direction: column;
             background: var(--bg-dark); transition: background 0.5s ease;
         }
 
-        /* --- TOP NAVIGATION --- */
         header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 16px 16px; scroll-behavior: smooth; }
-        .dj-deck { background: var(--glass 20px; background: linear-gradient(to bottom, rgba(0,0,0,0.); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);8), transparent);
+            padding: 16px 20px; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
         }
-        .header-brand { font-weight: 800; font border: 1px solid var(--border); border-radius: var(--radius); padding: 16px-size: 1.2rem; letter-spacing: -0.5px; display: flex; align; display: flex; flex-direction: column; gap: 12px; animation: slideIn 0-items: center; gap: 8px; }
-        .status-dot { width: 8px.3s ease-out forwards; }
-        @keyframes slideIn { from { opacity: 0; transform; height: 8px; border-radius: 50%; background: var(--danger); box-shadow: translateY(20px); } to { opacity: 1; transform: translateY(0); } }: 0 0 10px var(--danger); transition: 0.3s; }
-        .status
+        .header-brand { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 10px var(--danger); transition: 0.3s; }
+        .status-dot.connected { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
         
-        .deck-header { display: flex; justify-content: space-between; align-items:-dot.connected { background: var(--primary); box-shadow: 0 0 10px var center; }
-        .deck-title { font-size: 0.9rem; font-weight:(--primary); }
-        
-        .header-controls { display: flex; gap: 12px; 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow }
+        .header-controls { display: flex; gap: 12px; }
         .icon-btn {
-            background: var(--surface); border: 1px solid var(--: ellipsis; max-width: 70%; }
-        .deck-bpm { font-family: 'border); color: var(--text-main);
-            width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items:JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-dim); background: var(--surface); padding: 4px 8px; border-radius: 4px; center;
-            font-size: 1.1rem; cursor: pointer; transition: 0.2 }
-        
-        .deck-controls { display: flex; align-items: center; gap: 1s;
+            background: var(--surface); border: 1px solid var(--border); color: var(--text-main);
+            width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 1.1rem; cursor: pointer; transition: 0.2s;
         }
-        .icon-btn:hover { background: var(--surface-hover); }6px; }
-        .play-btn { width: 50px; height: 50px
-        .icon-btn.active { background: var(--primary-dim); border-color: var(--primary);; border-radius: 50%; background: var(--primary); color: #000; border: color: var(--primary); }
+        .icon-btn:hover { background: var(--surface-hover); }
+        .icon-btn.active { background: var(--primary-dim); border-color: var(--primary); color: var(--primary); }
 
-        /* --- DECKS / STEMS AREA --- */
-        #decks- none; font-size: 1.2rem; display: flex; justify-content: center; align-container {
-            flex: 1; overflow-y: auto; padding: 20px; display:items: center; cursor: pointer; box-shadow: 0 4px 15px var(--primary flex; flex-direction: column; gap: 16px; scroll-behavior: smooth;
-        }-dim); transition: 0.2s; }
-        .play-btn:active { transform: scale
+        #decks-container {
+            flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth;
+        }
         
         .dj-deck {
-            background: var(--glass); backdrop-filter: blur(2(0.95); }
-        .visualizer-placeholder { flex: 1; height: 40px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid0px; background: repeating-linear-gradient(90deg, var(--surface) 0px, var var(--border); border-radius: var(--radius); padding: 16px;
-            display: flex(--surface) 2px, transparent 2px, transparent 4px); border-radius: 4px; flex-direction: column; gap: 12px; animation: slideIn 0.3s ease; position: relative; overflow: hidden; opacity: 0.5; }
-        .deck-options {-out forwards;
+            background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border); border-radius: var(--radius); padding: 16px;
+            display: flex; flex-direction: column; gap: 12px; animation: slideIn 0.3s ease-out forwards;
         }
-        @keyframes slideIn { from { opacity: 0; transform: translateY display: flex; gap: 12px; }
-        .toggle-btn { flex: 1;(20px); } to { opacity: 1; transform: translateY(0); } } background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); padding: 8px; border-radius: 6px; font-size: 0.75rem
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
         .deck-header { display: flex; justify-content: space-between; align-items: center; }
-        .deck-title { font-size: 0.9rem; font-weight: 6; font-weight: 600; cursor: pointer; transition: 0.2s; }00; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis
-        .toggle-btn.active { background: var(--primary-dim); color: var(--primary); border-; max-width: 70%; }
-        .deck-bpm { font-family: 'JetBrainscolor: var(--primary); }
+        .deck-title { font-size: 0.9rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; }
+        .deck-bpm { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-dim); background: var(--surface); padding: 4px 8px; border-radius: 4px; }
         
-        input[type=range] { -webkit-appearance: none Mono', monospace; font-size: 0.75rem; color: var(--text-dim); background: var(--surface); padding: 4px 8px; border-radius: 4px; }; width: 100px; background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px
-        
-        .deck-controls { display: flex; align-items: center; gap: 16px; border-radius: 50%; background: var(--text-main); cursor: pointer; margin-top; }
+        .deck-controls { display: flex; align-items: center; gap: 16px; }
         .play-btn {
-            width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: #000;: -6px; box-shadow: 0 0 10px rgba(0,0,0
-            border: none; font-size: 1.2rem; display: flex; justify-content: center;,0.5); }
-        input[type=range]::-webkit-slider-runnable-track { width align-items: center;
-            cursor: pointer; box-shadow: 0 4px 15: 100%; height: 4px; cursor: pointer; background: var(--surface-hover);px var(--primary-dim); transition: 0.2s;
+            width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: #000;
+            border: none; font-size: 1.2rem; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; box-shadow: 0 4px 15px var(--primary-dim); transition: 0.2s;
         }
-        .play-btn border-radius: 2px; }
-
-        /* --- BOTTOM CONTROLS --- */
-        footer { padding:active { transform: scale(0.95); }
+        .play-btn:active { transform: scale(0.95); }
         
-        .visualizer-placeholder {: 20px; padding-bottom: calc(20px + env(safe-area-inset-
-            flex: 1; height: 40px; background: repeating-linear-gradient(90degbottom)); background: linear-gradient(to top, rgba(0,0,0,0.9), transparent, var(--surface) 0px, var(--surface) 2px, transparent 2px, transparent); display: flex; flex-direction: column; align-items: center; gap: 16px; 4px);
-            border-radius: 4px; position: relative; overflow: hidden; opacity: }
-        .ai-subtitle { font-family: 'JetBrains Mono', monospace; font-size: 0.5;
-        }
-        .visualizer-placeholder::after {
-            content: ''; position: 0.85rem; color: var(--secondary); text-align: center; min-height: 2 absolute; top: 0; left: 0; height: 100%; width: 0%;4px; text-shadow: 0 2px 4px rgba(0,0,0,0
-            background: rgba(0, 255, 65, 0.3); transition:.8); opacity: 0.8; }
-        .action-row { display: flex; justify- width 0.1s linear;
+        .visualizer-placeholder {
+            flex: 1; height: 40px; background: repeating-linear-gradient(90deg, var(--surface) 0px, var(--surface) 2px, transparent 2px, transparent 4px);
+            border-radius: 4px; position: relative; overflow: hidden; opacity: 0.5;
         }
         
         .deck-options { display: flex; gap: 12px; }
         .toggle-btn {
-            flex: 1; background:content: space-between; align-items: center; width: 100%; max-width: var(--surface); border: 1px solid var(--border); color: var(--text-dim); 400px; }
-        
-        .mic-btn-container { position: relative; }
+            flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text-dim);
             padding: 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: 0.2s;
         }
         .toggle-btn.active { background: var(--primary-dim); color: var(--primary); border-color: var(--primary); }
         
         input[type=range] { -webkit-appearance: none; width: 100px; background: transparent; }
-        input[type=range]::-
-        .mic-btn { width: 80px; height: 80px; border-radius: 50%; border: none; background: linear-gradient(135deg, var(--surface), var(--surface-hover)); box-shadow: 0 10px 30px rgba(0,0,webkit-slider-thumb {
+        input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
-            background: var(--text-main); cursor: pointer;0,0.5), inset 0 2px 2px rgba(255,255 margin-top: -6px; box-shadow: 0 0 10px rgba(0,,255,0.1); color: var(--text-main); font-size: 2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);0,0,0.5);
+            background: var(--text-main); cursor: pointer; margin-top: -6px; box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
-        input[type=range]::-webkit-slider-run }
-        .mic-btn.active-mic { background: var(--primary); color: #000; box-shadow: 0 0 25px var(--primary-dim); }
-        .mic-btn.nable-track { width: 100%; height: 4px; cursor: pointer; background: varlistening { transform: scale(1.05); animation: pulseMic 1.5s infinite; }
-        @keyframes(--surface-hover); border-radius: 2px; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--surface-hover); border-radius: 2px; }
 
-        /* --- BOTTOM CONTROLS --- */ pulseMic { 0% { box-shadow: 0 0 0 0 var(--primary-dim
         footer {
             padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom));
-            background: linear-gradient(to top, rgba(0,); } 70% { box-shadow: 0 0 0 20px rgba(0, 255, 65, 0); } 100% { box-shadow:0,0,0.9), transparent);
-            display: flex; flex-direction: column; align- 0 0 0 0 rgba(0, 255, 65, 0);items: center; gap: 16px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            display: flex; flex-direction: column; align-items: center; gap: 16px;
         }
         
-        .ai-subtitle { } }
-
-        /* --- MODALS --- */
-        .modal-overlay { position: absolute; top:
-            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color 0; left: 0; width: 100%; height: 100%; background: rgba: var(--secondary);
-            text-align: center; min-height: 24px; text-(0,0,0,0.8); backdrop-filter: blur(10px); -webkit-shadow: 0 2px 4px rgba(0,0,0,0.8); opacity: 0.backdrop-filter: blur(10px); z-index: 100; display: none; justify8;
+        .ai-subtitle {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--secondary);
+            text-align: center; min-height: 24px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); opacity: 0.8;
         }
 
-        .action-row { display: flex; justify-content: space-between;-content: center; align-items: center; padding: 20px; }
-        .modal- align-items: center; width: 100%; max-width: 400px; }overlay.active { display: flex; }
-        .modal-content { background: var(--surface); border:
+        .action-row { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 400px; }
         
         .mic-btn-container { position: relative; }
-        .mic-btn { 1px solid var(--border); border-radius: var(--radius); width: 100%; max
-            width: 80px; height: 80px; border-radius: 50%; border-width: 400px; padding: 24px; max-height: 85vh: none;
-            background: linear-gradient(135deg, var(--surface), var(--surface-; overflow-y: auto; box-shadow: 0 20px 50px rgba(0hover));
-            box-shadow: 0 10px 30px rgba(0,0,,0,0,0.5); }
-        .modal-title { font-size: 1.0,0.5), inset 0 2px 2px rgba(255,2552rem; font-weight: 800; margin-bottom: 20px; color: var,255,0.1);
-            color: var(--text-main); font-size:(--text-main); display: flex; justify-content: space-between; }
-        .close-modal 2rem; cursor: pointer;
-            display: flex; justify-content: center; align-items: center { background: none; border: none; color: var(--text-dim); font-size: 1.; transition: all 0.2s cubic-bezier(0.4, 0, 0.25rem; cursor: pointer; }
-        .input-group { margin-bottom: 16px;, 1);
+        .mic-btn {
+            width: 80px; height: 80px; border-radius: 50%; border: none;
+            background: linear-gradient(135deg, var(--surface), var(--surface-hover));
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 2px 2px rgba(255,255,255,0.1);
+            color: var(--text-main); font-size: 2rem; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .mic-btn.active {
-            background: var(--danger); box }
-        .input-group label { display: block; font-size: 0.75rem;-shadow: 0 0 30px rgba(255, 59, 48 color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; font-, 0.4);
-            color: #fff; animation: pulseMic 1.5s infinite;weight: 600; }
-        .input-group input { width: 100%; background
-        }
-        @keyframes pulseMic { 0% { box-shadow: 0 0 0: var(--bg-dark); border: 1px solid var(--border); color: var(--text-main 0 rgba(255, 59, 48, 0.7); } 70); padding: 12px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none; }
-        .input-% { box-shadow: 0 0 0 20px rgba(255, 59, 48, 0); } 100% { box-shadow: 0 0group input:focus { border-color: var(--primary); }
-        .btn-primary { width: 0 0 rgba(255, 59, 48, 0); } } 100%; background: var(--primary); color: #000; border: none; padding:
+        .mic-btn.active-mic { background: var(--primary); color: #000; box-shadow: 0 0 25px var(--primary-dim); }
+        .mic-btn.listening { transform: scale(1.05); animation: pulseMic 1.5s infinite; }
+        @keyframes pulseMic { 0% { box-shadow: 0 0 0 0 var(--primary-dim); } 70% { box-shadow: 0 0 0 20px rgba(0, 255, 65, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0); } }
 
-        /* --- MODALS --- */
         .modal-overlay {
-            position: absolute; top: 0 14px; border-radius: 8px; font-weight: 800; font-size; left: 0; width: 100%; height: 100%;
-            background:: 0.9rem; text-transform: uppercase; cursor: pointer; transition: 0.2s rgba(0,0,0,0.8); backdrop-filter: blur(10px); -webkit; margin-top: 10px; }
-        .btn-primary:active { transform: scale(-backdrop-filter: blur(10px);
-            z-index: 100; display:0.98); }
-        .btn-danger { background: rgba(255, 59 none; justify-content: center; align-items: center; padding: 20px;
-        }, 48, 0.1); color: var(--danger); border: 1px solid var(--danger); }
-        #terminal-logs { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--text-dim); background: #000; padding: 10px; border-radius: 6px; height: 150px; overflow-
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            z-index: 100; display: none; justify-content: center; align-items: center; padding: 20px;
+        }
         .modal-overlay.active { display: flex; }
+        
         .modal-content {
             background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-            width: 100%; max-width: 400px; padding: 24px; max-height: 85vh; overflow-y: auto; box-shadow: 0 2y: auto; margin-top: 20px; border: 1px solid var(--border); display0px 50px rgba(0,0,0,0.5);
+            width: 100%; max-width: 400px; padding: 24px; max-height: 85vh; overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        .: none; }
-    </style>
-</head>
-<body>
-
-    <!-- CRITICAL: ID main-modal-title { font-size: 1.2rem; font-weight: 800; margincontainer must exist for ar_engine.js -->
-    <div id="main-container">
-        <!-- BACKGROUND CAMERA -->-bottom: 20px; color: var(--text-main); display: flex; justify-content:
-        <video id="video-bg" autoplay muted playsinline></video>
-        <canvas id="ar space-between; }
-        .close-modal { background: none; border: none; color: var(---overlay"></canvas>
-
-        <!-- MAIN UI -->
-        <div id="app-ui">
-            <!-- HEADER -->text-dim); font-size: 1.5rem; cursor: pointer; }
+        .modal-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; color: var(--text-main); display: flex; justify-content: space-between; }
+        .close-modal { background: none; border: none; color: var(--text-dim); font-size: 1.5rem; cursor: pointer; }
         
-        .
-            <header>
-                <div class="header-brand">
-                    <div class="status-dot"input-group { margin-bottom: 16px; }
-        .input-group label { display: id="connection-dot"></div>
-                    LENSDJ PRO
-                </div>
-                <div class="header- block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; font-weight: 600; }
-        .controls">
-                    <button class="icon-btn" id="btn-mode-toggle" title="Performance Mode">📷</input-group input {
-            width: 100%; background: var(--bg-dark); border:button>
-                    <button class="icon-btn" id="btn-laser" style="color:var(--secondary 1px solid var(--border); color: var(--text-main);
-            padding: 12px); border-color:rgba(0,229,255,0.3);" title="AR Sync; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size:">AR</button>
-                    <button class="icon-btn" id="btn-settings" title="Settings">⚙ 0.85rem; outline: none;
+        .input-group { margin-bottom: 16px; }
+        .input-group label { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; font-weight: 600; }
+        .input-group input {
+            width: 100%; background: var(--bg-dark); border: 1px solid var(--border); color: var(--text-main);
+            padding: 12px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none;
         }
         .input-group input:focus { border-color: var(--primary); }
 
         .btn-primary {
-            width: 100️</button>
-                </div>
-            </header>
-
-            <!-- DECKS AREA -->
-            <div id%; background: var(--primary); color: #000; border: none; padding: 14px="decks-container">
-                <div class="dj-deck" id="welcome-deck" style="text;
-            border-radius: 8px; font-weight: 800; font-size:-align:center; padding: 30px 20px; border-color: var(--primary- 0.9rem; text-transform: uppercase; cursor: pointer; transition: 0.2s;dim);">
-                    <div style="font-size: 2rem; margin-bottom: 10px margin-top: 10px;
+            width: 100%; background: var(--primary); color: #000; border: none; padding: 14px;
+            border-radius: 8px; font-weight: 800; font-size: 0.9rem; text-transform: uppercase;
+            cursor: pointer; transition: 0.2s; margin-top: 10px;
         }
-        .btn-primary:active { transform: scale;">🎧</div>
-                    <h3 style="margin-bottom: 8px;">Decks Empty</h3>(0.98); }
-        .btn-danger { background: rgba(255, 5
-                    <p style="font-size: 0.85rem; color: var(--text-dim); line9, 48, 0.1); color: var(--danger); border: 1px solid var-height: 1.5;">Tap the Microphone below to speak your command.</p>
-                </div>(--danger); }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-danger { background: rgba(255, 59, 48, 0.1); color: var(--danger); border: 1px solid var(--danger); }
 
         #terminal-logs {
-            font-family: 'JetBrains Mono', monospace;
-            </div>
-
-            <!-- BOTTOM CONTROLS -->
-            <footer>
-                <div class="ai-subtitle" id=" font-size: 0.65rem; color: var(--text-dim);
-            background: #ai-subtitle">Awaiting command...</div>
-                <div class="action-row">
-                    <button class000; padding: 10px; border-radius: 6px; height: 15="icon-btn" id="btn-matrix" title="Matrix">🎛️</button>0px; overflow-y: auto;
-            margin-top: 20px; border: 1
-                    <div class="mic-btn-container">
-                        <button class="mic-btn" id="btnpx solid var(--border); display: none;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--text-dim);
+            background: #000; padding: 10px; border-radius: 6px; height: 150px; overflow-y: auto;
+            margin-top: 20px; border: 1px solid var(--border); display: none;
         }
     </style>
 </head>
 <body>
 
-<-mic" title="Toggle Mic">🎙️</button>
-                    </div>
-                    <button class="icon-btn"div id="main-container">
-    <!-- BACKGROUND CAMERA -->
-    <video id="video-bg" autoplay id="btn-power" title="Power Uplink">🔌</button>
-                </div>
-            </footer> muted playsinline></video>
-    <canvas id="ar-overlay"></canvas>
+    <div id="main-container">
+        <!-- BACKGROUND CAMERA -->
+        <video id="video-bg" autoplay muted playsinline></video>
+        <canvas id="ar-overlay"></canvas>
 
-    <!-- MAIN UI -->
+        <!-- MAIN UI -->
+        <div id="app-ui">
+            <header>
+                <div class="header-brand">
+                    <div class="status-dot" id="connection-dot"></div>
+                    LENSDJ PRO
+                </div>
+                <div class="header-controls">
+                    <button class="icon-btn" id="btn-mode-toggle" title="Performance Mode">📷</button>
+                    <button class="icon-btn" id="btn-ar-game" style="color:var(--secondary); border-color:rgba(0,229,255,0.3);" title="AR Sync">AR</button>
+                    <button class="icon-btn" id="btn-settings" title="Settings">⚙️</button>
+                </div>
+            </header>
+
+            <div id="decks-container">
+                <div class="dj-deck" id="welcome-deck" style="text-align:center; padding: 30px 20px; border-color: var(--primary-dim);">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🎧</div>
+                    <h3 style="margin-bottom: 8px;">Decks Empty</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-dim); line-height: 1.5;">Tap the Microphone below to toggle live listening, then say:<br><strong>"Generate a heavy techno bassline"</strong></p>
+                </div>
+            </div>
+
+            <footer>
+                <div class="ai-subtitle" id="ai-subtitle">Awaiting Uplink...</div>
+                <div class="action-row">
+                    <button class="icon-btn" style="opacity: 0; pointer-events: none;">.</button>
+                    <div class="mic-btn-container">
+                        <button class="mic-btn" id="btn-mic" title="Toggle Mic">🎙️</button>
+                    </div>
+                    <button class="icon-btn" id="btn-power" title="Power Uplink">🔌</button>
+                </div>
+            </footer>
         </div>
     </div>
 
     <!-- SETTINGS MODAL -->
-    <div class="modal-overlay" id="
-    <div id="app-ui">
-        
-        <!-- HEADER -->
-        <header>modal-settings">
+    <div class="modal-overlay" id="modal-settings">
         <div class="modal-content">
             <div class="modal-title">
-            <div class="header-brand">
-                <div class="status-dot" id="connection-dot">Sovereign Settings<button class="close-modal" id="close-settings">&times;</button></div></div>
-                LENSDJ PRO
+                Sovereign Settings
+                <button class="close-modal" id="close-settings">&times;</button>
             </div>
-            <div class="header-controls">
-                <!-- Record
+            
             <div class="input-group">
-                <label>Gemini API Key (Live Engine)</label> Performance -->
-                <button class="icon-btn" id="btn-record" style="color: var(--
+                <label>Gemini API Key (Live Engine)</label>
                 <input type="password" id="geminiKey" placeholder="AIza...">
             </div>
-            <danger); border-color: rgba(255,59,48,0.3);" title="button class="btn-primary" id="btn-save-keys" style="margin-bottom: 20px;">SaveRecord Mix">⏺</button>
-                <!-- AR Game Toggle -->
-                <button class="icon-btn" & Connect</button>
-            <div style="border-top: 1px solid var(--border); margin id="btn-ar-game" style="color: var(--primary);" title="AR Mode">🎮</button>: 20px 0;"></div>
-            <button class="btn-primary" id="btn-toggle
-                <!-- Mode Toggle (Studio vs Performance) -->
-                <button class="icon-btn" id="btn-mode-logs" style="background: var(--surface-hover); color: var(--text-main); border:-toggle" title="Toggle Camera">📷</button>
-                <!-- Settings -->
-                <button class="icon 1px solid var(--border);">Show Diagnostic Terminal</button>
-            <div id="terminal-logs"></div>-btn" id="btn-settings" title="Settings">⚙️</button>
-            </div>
-        </
-            <button class="btn-primary btn-danger" id="btn-purge" style="margin-topheader>
+            
+            <button class="btn-primary" id="btn-save-keys" style="margin-bottom: 20px;">Save & Connect</button>
+            
+            <div style="border-top: 1px solid var(--border); margin: 20px 0;"></div>
+            
+            <button class="btn-primary" id="btn-toggle-logs" style="background: var(--surface-hover); color: var(--text-main); border: 1px solid var(--border);">Show Diagnostic Terminal</button>
+            <div id="terminal-logs"></div>
 
-        <!-- DECKS AREA -->
-        <div id="decks-container">
-            <div class: 20px;">Purge Cache & Disconnect</button>
+            <button class="btn-primary btn-danger" id="btn-purge" style="margin-top: 20px;">Purge Cache & Disconnect</button>
         </div>
     </div>
 
-    <!--="dj-deck" id="welcome-deck" style="text-align:center; padding: 30px 20px; border-color: var(--primary-dim);">
-                <div style="font- ONBOARDING MODAL -->
+    <!-- ONBOARDING MODAL -->
     <div class="modal-overlay active" id="modal-onboarding">
         <div class="modal-content" style="text-align: center;">
-            <img src="/size: 2rem; margin-bottom: 10px;">🎧</div>
-                <h3 style="static/app-icon.png" style="width: 80px; border-radius: 16margin-bottom: 8px;">Decks Empty</h3>
-                <p style="font-size: 0px; margin-bottom: 16px;">
-            <h2 style="margin-bottom: 1.85rem; color: var(--text-dim); line-height: 1.5;">Tap the2px;">Welcome to LensDJ</h2>
-            <p style="font-size: 0.9rem; Microphone below to toggle live listening, then say:<br><strong>"Generate a heavy techno bassline"</strong></p> color: var(--text-dim); margin-bottom: 24px; line-height: 1.
-            </div>
-        </div>
-
-        <!-- BOTTOM CONTROLS -->
-        <footer>
-            <div class="ai-6;">
+            <img src="/static/app-icon.png" style="width: 80px; border-radius: 16px; margin-bottom: 16px;">
+            <h2 style="margin-bottom: 12px;">Welcome to LensDJ</h2>
+            <p style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 24px; line-height: 1.6;">
+                The world's first agentic AI DJ interface. <br><br>
                 1. Add your AI Key in Settings.<br>
-                2. Tap 🎙️ to activate yoursubtitle" id="ai-subtitle">Awaiting Uplink...</div>
-            <div class="action-row">
-                < mic and stream.<br>
+                2. Tap 🎙️ to activate your mic and stream.<br>
                 3. Speak commands to generate stems.
             </p>
-            <button class="button class="icon-btn" id="btn-matrix" title="Stem Matrix">🎛️</btn-primary" id="btn-start-onboarding">Initialize Deck</button>
+            <button class="btn-primary" id="btn-start-onboarding">Initialize Deck</button>
+            <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 16px;">By initializing, you agree to our <a href="/privacy.html" style="color:var(--primary);">Privacy Protocol</a>.</p>
         </div>
-    </div>button>
-                <div class="mic-btn-container">
-                    <button class="mic-btn"
-
-<script type="module">
-    import '/static/ar_engine.js';
-
-    // --- STATE id="btn-mic">🎙️</button>
-                </div>
-                <button class="icon-btn" id=" & CONSTANTS ---
-    const state = {
-        socket: null, audioCtx: null, videoStream: null,btn-power" title="Power Uplink">🔌</button>
-            </div>
-        </footer>
-    </div> audioStream: null,
-        worklet: null, serverReady: false, isPerformanceMode: false,
-        mic
-</div>
-
-<!-- SETTINGS MODAL -->
-<div class="modal-overlay" id="modal-settings">Muted: true, isSpeaking: false, lastVoiceTimestamp: 0, nextStartTime: 0,
-        recorder
-    <div class="modal-content">
-        <div class="modal-title">
-            SovereignDest: null
-    };
-
-    const PROVIDER = "{{ provider }}";
-    const DOMAIN = "dj"; Settings
-            <button class="close-modal" id="close-settings">&times;</button>
-        </div>
-    const UPLINK_CLEARANCE = "coDe7777";
-
-    // --- DOM ELEMENTS ---
-        <div class="input-group">
-            <label>Gemini API Key (Live Engine)</label>
-    const el = {
-        video: document.getElementById("video-bg"), btnMic: document.getElementById("btn-
-            <input type="password" id="geminiKey" placeholder="AIza...">
-        </div>
-        <buttonmic"),
-        btnMode: document.getElementById("btn-mode-toggle"), btnPower: document.getElementById(" class="btn-primary" id="btn-save-keys" style="margin-bottom: 20px;">Savebtn-power"),
-        btnLaser: document.getElementById("btn-laser"), btnSettings: document.getElementById(" & Connect</button>
-        <div style="border-top: 1px solid var(--border); marginbtn-settings"),
-        decksContainer: document.getElementById("decks-container"), welcomeDeck: document.getElementById(": 20px 0;"></div>
-        <button class="btn-primary" id="btn-togglewelcome-deck"),
-        subtitle: document.getElementById("ai-subtitle"), statusDot: document.getElementById("connection-logs" style="background: var(--surface-hover); color: var(--text-main); border:-dot"),
-        geminiInput: document.getElementById("geminiKey"), terminalLogs: document.getElementById(" 1px solid var(--border);">Show Diagnostic Terminal</button>
-        <div id="terminal-logs"></div>
-        <button class="btn-primary btn-danger" id="btn-purge" style="margin-topterminal-logs")
-    };
-
-    // --- ONBOARDING & SETTINGS ---
-    document.getElementById(': 20px;">Purge Cache & Disconnect</button>
     </div>
-</div>
 
-<!-- ONBOARDbtn-start-onboarding').onclick = () => {
-        document.getElementById('modal-onboarding').classListING MODAL -->
-<div class="modal-overlay active" id="modal-onboarding">
-    <.remove('active');
-        if(!localStorage.getItem("enigma_gemini_key")) document.getElementByIddiv class="modal-content" style="text-align: center;">
-        <img src="/static/app('modal-settings').classList.add('active');
-        else connect();
-    };
-    el.btn-icon.png" style="width: 80px; border-radius: 16px; marginSettings.onclick = () => document.getElementById('modal-settings').classList.add('active');
-    document.-bottom: 16px;">
-        <h2 style="margin-bottom: 12px;">getElementById('close-settings').onclick = () => document.getElementById('modal-settings').classList.remove('active');Welcome to LensDJ</h2>
-        <p style="font-size: 0.9rem; color: var
-    if (localStorage.getItem("enigma_gemini_key")) el.geminiInput.value = localStorage.getItem("enigma_gemini_key");
+    <script type="module">
+        import '/static/ar_engine.js';
 
-    document.getElementById('btn-save-keys').(--text-dim); margin-bottom: 24px; line-height: 1.6;">
-            The world's first agentic AI DJ interface. <br><br>
-            1. Add your AIonclick = () => {
-        const key = el.geminiInput.value.trim();
-        if(key) localStorage.setItem("enigma_gemini_key", key);
-        document.getElementById('modal- Key in Settings.<br>
-            2. Tap the Microphone to command the AI.<br>
-            3. Mix and loopsettings').classList.remove('active');
-        if(!state.serverReady) connect();
-    }; the generated stems.
-        </p>
-        <button class="btn-primary" id="btn-start
+        const PROVIDER = "{{ provider }}";
+        const DOMAIN = "dj"; 
+        const UPLINK_CLEARANCE = "coDe7777";
 
-    function logMsg(msg) {
-        const entry = document.createElement("div");
-        entry.innerText = `-onboarding">Initialize Deck</button>
-        <p style="font-size: 0.7rem[${new Date().toLocaleTimeString()}] ${msg}`;
-        el.terminalLogs.appendChild(entry);
-        el; color: var(--text-dim); margin-top: 16px;">By initializing, you agree to.terminalLogs.scrollTop = el.terminalLogs.scrollHeight;
-    }
-    document.getElementById('btn- our <a href="/privacy.html" style="color:var(--primary);">Privacy Protocol</a>.</p>toggle-logs').onclick = () => el.terminalLogs.style.display = el.terminalLogs.style.
-    </div>
-</div>
+        const state = {
+            socket: null, audioCtx: null, worklet: null, videoStream: null, audioStream: null,
+            serverReady: false, isPerformanceMode: false, micMuted: true,
+            isSpeaking: false, lastVoiceTimestamp: 0, nextStartTime: 0, lyriaNextStartTime: 0,
+            recorderDest: null
+        };
 
-<script type="module">
-    import '/static/ar_engine.js';display === 'none' ? 'block' : 'none';
+        const el = {
+            main: document.getElementById("main-container"),
+            video: document.getElementById("video-bg"),
+            btnMic: document.getElementById("btn-mic"),
+            btnMode: document.getElementById("btn-mode-toggle"),
+            btnPower: document.getElementById("btn-power"),
+            btnAr: document.getElementById("btn-ar-game"),
+            btnSettings: document.getElementById("btn-settings"),
+            decksContainer: document.getElementById("decks-container"),
+            welcomeDeck: document.getElementById("welcome-deck"),
+            subtitle: document.getElementById("ai-subtitle"),
+            statusDot: document.getElementById("connection-dot"),
+            geminiInput: document.getElementById("geminiKey"),
+            terminalLogs: document.getElementById("terminal-logs")
+        };
 
-    // --- AUDIO ENCODING WORKLET ---
-
-    const PROVIDER = "{{ provider }}";
-    const DOMAIN = "dj";
-    const UPLINK_CLEAR
-    const WORKLET_CODE = `class RecorderProcessor extends AudioWorkletProcessor { constructor() { super(); thisANCE = "coDe7777";
-
-    const state = {
-        socket: null, audioCtx.bufferSize = 4096; this.buffer = new Float32Array(this.bufferSize: null, worklet: null, videoStream: null, audioStream: null,
-        serverReady: false); this.ptr = 0; } process(inputs) { const input = inputs[0]; if (!input, isPerformanceMode: false, micMuted: true,
-        nextStartTime: 0, lyriaNextStartTime: || input.length === 0) return true; const channel = input[0]; for (let i = 0,
-        recorderDest: null
-    };
-
-    const el = {
-        main: document.getElementById("main 0; i < channel.length; i++) { this.buffer[this.ptr++] = channel[i];-container"),
-        video: document.getElementById("video-bg"),
-        btnMic: document.getElementById(" if (this.ptr >= this.bufferSize) { this.port.postMessage(this.buffer); thisbtn-mic"),
-        btnMode: document.getElementById("btn-mode-toggle"),
-        btnPower:.ptr = 0; } } return true; } } registerProcessor("recorder-processor", RecorderProcessor);`; document.getElementById("btn-power"),
-        btnSettings: document.getElementById("btn-settings"),
-        btn
-    function downsampleBuffer(buffer, sampleRate) { if (sampleRate === 16000ArGame: document.getElementById("btn-ar-game"),
-        decksContainer: document.getElementById("decks-) return buffer; const ratio = sampleRate / 16000; const result = new Float32container"),
-        welcomeDeck: document.getElementById("welcome-deck"),
-        subtitle: document.getElementById("aiArray(Math.round(buffer.length / ratio)); let offsetResult = 0, offsetBuffer = 0-subtitle"),
-        statusDot: document.getElementById("connection-dot"),
-        geminiInput: document.; while (offsetResult < result.length) { const nextOffsetBuffer = Math.round((offsetResult +getElementById("geminiKey"),
-        terminalLogs: document.getElementById("terminal-logs")
-    }; 1) * ratio); let accum = 0, count = 0; for (let i = offsetBuffer; i < nextOffsetBuffer && i < buffer.length; i++) { accum += buffer[i]; count++; }
-
-    // --- AUDIO UTILS (Original Streaming Logic) ---
-    const WORKLET_CODE = `
-    class RecorderProcessor extends result[offsetResult] = count > 0 ? accum / count : 0; offsetResult++; offsetBuffer = AudioWorkletProcessor { 
-        constructor() { super(); this.bufferSize = 4096; this. nextOffsetBuffer; } return result; }
-    function floatTo16BitPCM(float32Arr)buffer = new Float32Array(this.bufferSize); this.ptr = 0; } { const buffer = new ArrayBuffer(float32Arr.length * 2); const view = new DataView 
-        process(inputs) { 
-            const input = inputs[0]; 
-            if (!input || input.(buffer); for (let i = 0; i < float32Arr.length; i++) { let s = Math.max(-1, Math.min(1, float32Arr[i])); view.setIntlength === 0) return true; 
-            const channel = input[0]; 
-            for (let i = 0; i < channel.length; i++) { 
-                this.buffer16(i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true); } return buffer; }
-    function base64Encode(buffer)[this.ptr++] = channel[i]; 
-                if (this.ptr >= this.bufferSize) { this.port.post { let binary = ""; const bytes = new Uint8Array(buffer); for (let i = 0; iMessage(this.buffer); this.ptr = 0; } 
-            } 
-            return true; 
-        } 
-    } 
-    registerProcessor("recorder-processor", RecorderProcessor);`; < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]); return window.btoa(
-
-    function downsampleBuffer(buffer, sampleRate) { 
-        if (sampleRate === 1600binary); }
-
-    // --- HARDWARE INIT ---
-    async function startLocalMedia() {
-        try {
-            if0) return buffer; 
-        const ratio = sampleRate / 16000; (!state.audioStream) {
-                state.audioStream = await navigator.mediaDevices.getUserMedia({ audio: { 
-        const result = new Float32Array(Math.round(buffer.length / ratio)); 
-        let offset echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 } });Result = 0, offsetBuffer = 0; 
-        while (offsetResult < result.length) {
-                // Start muted
-                state.audioStream.getAudioTracks()[0].enabled = false; 
-            const nextOffsetBuffer = Math.round((offsetResult + 1) * ratio);
-                state.micMuted = true;
-            }
-            if (!state.videoStream && state.isPerformanceMode) {
-                state.videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: " 
-            let accum = 0, count = 0; 
-            for (let i = offsetBuffer; i <user" } });
-                el.video.srcObject = state.videoStream;
-            }
-            if nextOffsetBuffer && i < buffer.length; i++) { accum += buffer[i]; count++; } (!state.audioCtx) {
-                state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                state.recorderDest = state.audioCtx.createMediaStreamDestination();
-                const blob = new 
-            result[offsetResult] = count > 0 ? accum / count : 0; 
-            offsetResult Blob([WORKLET_CODE], { type: "application/javascript" });
-                await state.audioCtx.++; offsetBuffer = nextOffsetBuffer; 
-        } 
-        return result; 
-    }
-
-    function floatTo16BitPCM(float32Arr) { 
-        const buffer = new ArrayBuffer(float32audioWorklet.addModule(URL.createObjectURL(blob));
-                const source = state.audioCtx.Arr.length * 2); 
-        const view = new DataView(buffer); 
-        for (let i = 0; i < float32Arr.length; i++) { 
-            let s =createMediaStreamSource(state.audioStream);
-                state.worklet = new AudioWorkletNode(state. Math.max(-1, Math.min(1, float32Arr[i])); 
-            view.audioCtx, "recorder-processor");
-                source.connect(state.worklet);
-            }setInt16(i * 2, s < 0 ? s * 0x8000 :
-            if (state.audioCtx.state === "suspended") await state.audioCtx.resume();
-            logMsg("Hardware s * 0x7FFF, true); 
-        } 
-        return buffer; 
-    } Engines Init Success.");
-        } catch(err) {
-            logMsg("HARDWARE INIT FAILED: " +
-
-    function base64Encode(buffer) { 
-        let binary = ""; const bytes = new Uint8Array(buffer err.message);
-            el.subtitle.innerText = "Error: Camera/Mic permissions denied.";
-        }); 
-        for (let i = 0; i < bytes.byteLength; i++) binary += String
-    }
-
-    // --- AUDIO PLAYBACK ---
-    async function playAudio(b64Data) {.fromCharCode(bytes[i]); 
-        return window.btoa(binary); 
-    }
-
-    async function playAudio(b64Data) { 
-        if (!state.audioCtx) return; 
-        if (!state.audioCtx) return; 
-        try { 
-            const bin = window.atob(b64Data); 
-            const len = bin.length; const arr = new Uint8Array(len); 
-            for(let i=0; i<len; i++) arr 
-        try { 
-            const bin = window.atob(b64Data); const len = bin.[i] = bin.charCodeAt(i); 
-            const int16 = new Int16Array(arr.length; const arr = new Uint8Array(len); 
-            for(let i=0; i<len; ibuffer); 
-            const float32 = new Float32Array(int16.length);++) arr[i] = bin.charCodeAt(i); 
-            const int16 = new Int16 
-            for(let i=0; i<int16.length; i++) float32[i]Array(arr.buffer); const float32 = new Float32Array(int16.length); 
-            for = int16[i] / 32768.0; 
-            const audioBuffer =(let i=0; i<int16.length; i++) float32[i] = int state.audioCtx.createBuffer(1, float32.length, 24000);16[i] / 32768.0; 
-            const audioBuffer = state.audioCtx. 
-            audioBuffer.getChannelData(0).set(float32); 
-            const src = statecreateBuffer(1, float32.length, 24000); 
-            audioBuffer..audioCtx.createBufferSource(); 
-            src.buffer = audioBuffer; src.connect(state.getChannelData(0).set(float32); 
-            const src = state.audioCtx.createaudioCtx.destination); 
-            if (state.recorderDest) src.connect(state.recorderDest);BufferSource(); 
-            src.buffer = audioBuffer; 
-            src.connect(state.audioCtx 
-            const currentTime = state.audioCtx.currentTime; 
-            if (state.nextStartTime < currentTime) state.nextStartTime = currentTime + 0.05; 
-            src.start(state.next.destination); 
-            if (state.recorderDest) src.connect(state.recorderDest);
-            const currentTime =StartTime); 
-            state.nextStartTime += audioBuffer.duration; 
-        } catch(e) {} state.audioCtx.currentTime; 
-            if (state.nextStartTime < currentTime) state.nextStartTime = 
-    }
-
-    async function playLyriaAudioStream(b64Data) { 
-        if (! currentTime + 0.05; 
-            src.start(state.nextStartTime); 
-            statestate.audioCtx) return; 
-        try { 
-            const bin = window.atob(b.nextStartTime += audioBuffer.duration; 
-        } catch(e) { logMsg("Audio Playback Error:64Data); 
-            const len = bin.length; const arr = new Uint8Array(len); " + e.message); } 
-    }
-
-    async function playLyriaAudioStream(b64 
-            for(let i=0; i<len; i++) arr[i] = bin.charCodeAtData) { 
-        if (!state.audioCtx) return; 
-        try { 
-            const(i); 
-            const int16 = new Int16Array(arr.buffer); bin = window.atob(b64Data); const len = bin.length; const arr = new Uint 
-            const numFrames = int16.length / 2;
-            const audioBuffer = state.audioCtx.8Array(len); 
-            for(let i=0; i<len; i++) arrcreateBuffer(2, numFrames, 48000); 
-            const channel0 = audioBuffer[i] = bin.charCodeAt(i); 
-            const int16 = new Int16Array(arr..getChannelData(0); const channel1 = audioBuffer.getChannelData(1);
-            for (let i =buffer); 
-            const numFrames = int16.length / 2;
-            const audioBuffer = 0; i < numFrames; i++) { channel0[i] = int16 state.audioCtx.createBuffer(2, numFrames, 48000); 
-            const[i * 2] / 32768.0; channel1[i] = int16 channel0 = audioBuffer.getChannelData(0); const channel1 = audioBuffer.getChannelData(1[i * 2 + 1] / 32768.0; }
-            const src = state.audioCtx.createBufferSource(); 
-            src.buffer = audioBuffer; src.connect(state.audio);
-            for (let i = 0; i < numFrames; i++) { channel0[i]Ctx.destination); 
-            if (state.recorderDest) src.connect(state.recorderDest); = int16[i * 2] / 32768.0; channel1 
-            const currentTime = state.audioCtx.currentTime; 
-            if (window.lyriaNextStartTime ===[i] = int16[i * 2 + 1] / 32768.0; undefined || window.lyriaNextStartTime < currentTime) window.lyriaNextStartTime = currentTime + 0.0 }
-            const src = state.audioCtx.createBufferSource(); 
-            src.buffer = audioBuffer5; 
-            src.start(window.lyriaNextStartTime); 
-            window.lyriaNext; src.connect(state.audioCtx.destination); 
-            if (state.recorderDest) src.connect(StartTime += audioBuffer.duration; 
-        } catch(e) {} 
-    }
-
-    // ---state.recorderDest);
-            const currentTime = state.audioCtx.currentTime; 
-            if (state. CONNECTION ---
-    async function connect() {
-        let activeKey = el.geminiInput.value.trimlyriaNextStartTime === undefined || state.lyriaNextStartTime < currentTime) state.lyriaNextStartTime = currentTime +() || localStorage.getItem("enigma_gemini_key");
-        if (!activeKey) { el.subtitle. 0.05; 
-            src.start(state.lyriaNextStartTime); 
-            stateinnerText = "Error: Sovereign Key required."; document.getElementById('modal-settings').classList.add('active'); return; }
-
-        await startLocalMedia();
-        el.subtitle.innerText = "Initiating Neural Uplink...";.lyriaNextStartTime += audioBuffer.duration; 
-        } catch(e) { logMsg("Ly
-
-        state.socket = io("/live", { query: { provider: PROVIDER, domain: DOMAIN,ria Stream Error"); } 
-    }
-
-    // --- HARDWARE INIT ---
-    async function startLocalMedia() {
-        if (state.audioStream) return;
-        try {
-            state.audioStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: clearance: UPLINK_CLEARANCE, sovereign_key: activeKey }, transports: ["websocket"], forceNew: true });
-
-        state.socket.on("connect", () => {
-            state.serverReady = true; true, channelCount: 1 } });
-            // Start muted by default to avoid sending background noise until requested
-            state. el.statusDot.classList.add('connected'); el.btnPower.classList.add('active');
-            el.subtitle.innerText = "Uplink Secure. Tap mic to speak."; el.subtitle.style.color = "audioStream.getAudioTracks()[0].enabled = false;
-            
-            state.audioCtx = new (window.var(--primary)";
-            logMsg("WebSocket Connected.");
-
-            // Start sending chunks if mic is onAudioContext || window.webkitAudioContext)(); 
-            if (state.audioCtx.state === "suspended
-            if (state.worklet) {
-                state.worklet.port.onmessage = (e) =>") await state.audioCtx.resume();
-            
-            state.recorderDest = state.audioCtx.create { 
-                    if (state.serverReady && !state.micMuted) { 
-                        const floatMediaStreamDestination();
-            
-            const blob = new Blob([WORKLET_CODE], { type: "application32 = e.data;
-                        let sum = 0; for (let i = 0; i/javascript" }); 
-            await state.audioCtx.audioWorklet.addModule(URL.createObjectURL < float32.length; i += 4) sum += float32[i] * float32[i]; 
-                        const rms = Math.sqrt(sum / (float32.length / 4(blob));
-            const source = state.audioCtx.createMediaStreamSource(state.audioStream);));
-                        if (rms > 0.05) {
-                            state.lastVoiceTimestamp = Date.now(); 
-            source.connect(state.recorderDest);
-            
-            state.worklet = new AudioWorkletNode(state
-                            if (!state.isSpeaking) { state.isSpeaking = true; el.btnMic.classList.add.audioCtx, "recorder-processor"); 
-            source.connect(state.worklet);
-            log('listening'); }
-                        }
-                        if (state.isSpeaking && (Date.now() - state.Msg("Microphone Initialized & Routed.");
-        } catch(err) {
-            logMsg("HARDWARElastVoiceTimestamp > 2000)) {
-                            state.isSpeaking = false; el.btnMic.classList INIT FAILED: " + err.message);
-            el.subtitle.innerText = "Error: Microphone access denied.remove('listening');
-                        }
-                        const audioData = base64Encode(floatTo16Bit.";
-        }
-    }
-
-    // --- ONBOARDING & SETTINGS ---
-    function logMsg(msgPCM(downsampleBuffer(e.data, state.audioCtx.sampleRate))); 
-                        state.socket) {
-        const entry = document.createElement("div");
-        entry.innerText = `.emit("audio_chunk", { data: audioData }); 
-                    } 
-                };
-            }[${new Date().toLocaleTimeString()}] ${msg}`;
-        el.terminalLogs.appendChild(entry);
-        el.terminal
-        });
-
-        state.socket.on("message", (rawMsg) => {
-            let msg =Logs.scrollTop = el.terminalLogs.scrollHeight;
-    }
-
-    document.getElementById('btn-start- typeof rawMsg === "string" ? JSON.parse(rawMsg || '{}') : rawMsg;onboarding').onclick = () => {
-        document.getElementById('modal-onboarding').classList.remove('active');
-        if(!localStorage.getItem("enigma_gemini_key")) {
-            document.getElementById('
-            
-            // Audio Playback Routing
-            if (msg.serverContent?.modelTurn?.parts) { msg.serverContent.modal-settings').classList.add('active');
-        } else {
-            connect();
-        }modelTurn.parts.forEach(p => { if (p.inlineData?.data) playAudio(p.inline
-    };
-
-    el.btnSettings.onclick = () => document.getElementById('modal-settings').classList.add('Data.data); }); }
-            if (msg.type === "response.audio.delta" || msg.active');
-    document.getElementById('close-settings').onclick = () => document.getElementById('modal-settings').type === "audio_delta") playAudio(msg.delta || msg.data);
-            
-            // Text routing
-            let textChunks =classList.remove('active');
-    if (localStorage.getItem("enigma_gemini_key")) el.geminiInput.value = localStorage.getItem("enigma_gemini_key");
-
-    document.getElementById('btn-save-keys').onclick = () => {
-        const key = el.geminiInput.value.trim();
-        if(key) localStorage.setItem("enigma_gemini_key", key);[];
-            if (msg.serverContent?.modelTurn?.parts) { msg.serverContent.modelTurn.parts.forEach(p => { if (p.text) textChunks.push(p.text); }); }
-            if (msg.text) textChunks.push(msg.text);
-
-            textChunks.forEach(txt => {
-                logMsg("AI: " + txt);
-                if (txt.includes("
-        document.getElementById('modal-settings').classList.remove('active');
-        if(!state.serverReady) connect();
-    };
-
-    document.getElementById('btn-toggle-logs').onclick = () => {
-        el.terminalLogs.style.display = el.terminalLogs.style.display === 'none' ? 'block' : 'none';
-    };
-
-    // --- CONNECTION LOGIC ---
-    async function connect() {
-        let activeKey = el.geminiInput.value.trim() || localStorage.getItem("enigma_gemini_key");
-        if (!activeKey) {
-            el.subtitle.innerText = "Error: Sovereign Key required.";
-            document.getElementById('modal-settings').classList.add('active');
-            return;
-        }
-
-        el.subtitle.innerText = "Initiating Neural Uplink...";
-        await startLocalMedia(); // Request Mic
-
-        state.socket = io("/live", { 
-            query: { provider: PROVIDER, domain: DOMAIN, clearance: UPLINK_CLEARANCE, sovereign_key: activeKey }, 
-            transports: ["websocket"], forceNew: true 
-        });
-
-        state.socket.on("connect", () => {
-            state.serverReady = true;
-            el.statusDot.classList.add('connected');
-            el.btnPower.classList[GENERATE_STEM:")) {
-                    el.subtitle.innerText = "⚡ Synthesizing Audio..."; el.subtitle.style.color = "var(--accent)";
-                } else if (!txt.startsWith("**") && !txt.startsWith("Thinking")) {
-                    el.subtitle.innerText = txt; el.subtitle.style.color = "var(--secondary)";
-                }
-            });
-        });
-
-        state.socket.on("new_generative_stem", (data) => {
-            el.welcomeDeck.style.display = 'none';
-            el.subtitle.innerText = "Stem received. Ready to mix."; el.subtitle.style.color = "var(--primary)";
-            createDJDeck(data);
-        });
-
-        state.socket.on('lyria_audio_stream_chunk', (data) => {
-            if (state.audioCtx?.state === "suspended") state.audioCtx.resume();
-            playLyriaAudioStream(data.data);
-        });
-
-        state.socket.on("disconnect", () => disconnect());
-    }
-
-    function disconnect() {
-        state.serverReady = false; el.statusDot.classList.remove('connected'); el.btnPower.classList.remove('active');
-        el.subtitle.innerText = "Uplink Severed."; el.subtitle.style.color = "var(--text-dim)";
-        if(state.socket) state.socket.disconnect();
-        if(state.audioStream) { state.audioStream.getAudioTracks()[0].enabled.add('active');
-            el.subtitle.innerText = "Uplink Secure. Tap Mic to command.";
-            log = false; state.micMuted = true; el.btnMic.classList.remove('active-mic');Msg("WebSocket Connected.");
-            
-            // Bridge Worklet to Socket
-            if (state.worklet) }
-    }
-
-    el.btnPower.onclick = () => { state.serverReady ? disconnect() : {
-                state.worklet.port.onmessage = (e) => { 
-                    if (state connect(); };
-
-    // --- MIC TOGGLE ---
-    el.btnMic.onclick = () => {.serverReady && !state.micMuted) { 
-                        const audioData = base64Encode(
-        if(!state.serverReady) { document.getElementById('modal-settings').classList.add('active'); return; }floatTo16BitPCM(downsampleBuffer(e.data, state.audioCtx.sampleRate)));
-        if(state.audioCtx?.state === "suspended") state.audioCtx.resume(); 
-                        state.socket.emit("audio_chunk", { data: audioData }); 
-                    }
-        
-        if (state.audioStream && state.audioStream.getAudioTracks().length > 0) { 
-                };
-            }
-        });
-
-        state.socket.on("message", (rawMsg) => {
-            let
-            state.micMuted = !state.micMuted;
-            state.audioStream.getAudioTracks msg = typeof rawMsg === "string" ? JSON.parse(rawMsg || '{}') : rawMsg;()[0].enabled = !state.micMuted;
-            if (state.micMuted) {
-            
-            // Handle AI Voice Audio
-            if (msg.serverContent?.modelTurn?.parts) {
-                el.btnMic.classList.remove('active-mic', 'listening');
-                el.subtitle.innerText = " 
-                msg.serverContent.modelTurn.parts.forEach(p => { 
-                    if (p.inlineData && p.inlineData.data) playAudio(p.inlineData.data); 
-                });Mic Muted. Tap to speak."; el.subtitle.style.color = "var(--text-dim)";
+        // --- ONBOARDING & SETTINGS ---
+        document.getElementById('btn-start-onboarding').onclick = () => {
+            document.getElementById('modal-onboarding').classList.remove('active');
+            if(!localStorage.getItem("enigma_gemini_key")) {
+                document.getElementById('modal-settings').classList.add('active');
             } else {
-                el.btnMic.classList.add('active-mic');
-                el.subtitle. 
+                connect();
             }
-            if (msg.type === "response.audio.delta" || msg.type === "audio_delta") playAudio(msg.delta || msg.data);
-            
-            // Handle SubtitlesinnerText = "Listening... Speak your command."; el.subtitle.style.color = "var(--primary)";
+        };
+
+        el.btnSettings.onclick = () => document.getElementById('modal-settings').classList.add('active');
+        document.getElementById('close-settings').onclick = () => document.getElementById('modal-settings').classList.remove('active');
+        
+        if (localStorage.getItem("enigma_gemini_key")) el.geminiInput.value = localStorage.getItem("enigma_gemini_key");
+
+        document.getElementById('btn-save-keys').onclick = () => {
+            const key = el.geminiInput.value.trim();
+            if(key) localStorage.setItem("enigma_gemini_key", key);
+            document.getElementById('modal-settings').classList.remove('active');
+            if(!state.serverReady) connect();
+        };
+
+        function logMsg(msg) {
+            const entry = document.createElement("div");
+            entry.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            el.terminalLogs.appendChild(entry);
+            el.terminalLogs.scrollTop = el.terminalLogs.scrollHeight;
+        }
+
+        document.getElementById('btn-toggle-logs').onclick = () => {
+            el.terminalLogs.style.display = el.terminalLogs.style.display === 'none' ? 'block' : 'none';
+        };
+
+        // --- AUDIO ENCODING WORKLET ---
+        const WORKLET_CODE = `
+        class RecorderProcessor extends AudioWorkletProcessor { 
+            constructor() { super(); this.bufferSize = 4096; this.buffer = new Float32Array(this.bufferSize); this.ptr = 0; } 
+            process(inputs) { 
+                const input = inputs[0]; 
+                if (!input || input.length === 0) return true; 
+                const channel = input[0]; 
+                for (let i = 0; i < channel.length; i++) { 
+                    this.buffer[this.ptr++] = channel[i]; 
+                    if (this.ptr >= this.bufferSize) { 
+                        this.port.postMessage(this.buffer); 
+                        this.ptr = 0; 
+                    } 
+                } 
+                return true; 
+            } 
+        } 
+        registerProcessor("recorder-processor", RecorderProcessor);`;
+
+        function downsampleBuffer(buffer, sampleRate) { 
+            if (sampleRate === 16000) return buffer; 
+            const ratio = sampleRate / 16000; 
+            const result = new Float32Array(Math.round(buffer.length / ratio)); 
+            let offsetResult = 0, offsetBuffer = 0; 
+            while (offsetResult < result.length) { 
+                const nextOffsetBuffer = Math.round((offsetResult + 1) * ratio); 
+                let accum = 0, count = 0; 
+                for (let i = offsetBuffer; i < nextOffsetBuffer && i < buffer.length; i++) { accum += buffer[i]; count++; } 
+                result[offsetResult] = count > 0 ? accum / count : 0; 
+                offsetResult++; offsetBuffer = nextOffsetBuffer; 
+            } 
+            return result; 
+        }
+
+        function floatTo16BitPCM(float32Arr) { 
+            const buffer = new ArrayBuffer(float32Arr.length * 2); 
+            const view = new DataView(buffer); 
+            for (let i = 0; i < float32Arr.length; i++) { 
+                let s = Math.max(-1, Math.min(1, float32Arr[i])); 
+                view.setInt16(i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true); 
+            } 
+            return buffer; 
+        }
+
+        function base64Encode(buffer) { 
+            let binary = ""; const bytes = new Uint8Array(buffer); 
+            for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]); 
+            return window.btoa(binary); 
+        }
+
+        // --- HARDWARE INIT ---
+        async function startLocalMedia() {
+            try {
+                if (!state.audioStream) {
+                    state.audioStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 } });
+                    // Start muted by default to avoid sending background noise until explicitly enabled
+                    state.audioStream.getAudioTracks()[0].enabled = false;
+                    state.micMuted = true;
+                }
+
+                if (!state.videoStream && state.isPerformanceMode) {
+                    state.videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                    el.video.srcObject = state.videoStream;
+                }
+
+                if (!state.audioCtx) {
+                    state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    state.recorderDest = state.audioCtx.createMediaStreamDestination();
+                    
+                    const blob = new Blob([WORKLET_CODE], { type: "application/javascript" });
+                    await state.audioCtx.audioWorklet.addModule(URL.createObjectURL(blob));
+                    
+                    const source = state.audioCtx.createMediaStreamSource(state.audioStream);
+                    source.connect(state.recorderDest);
+                    
+                    state.worklet = new AudioWorkletNode(state.audioCtx, "recorder-processor");
+                    source.connect(state.worklet);
+                }
+                if (state.audioCtx.state === "suspended") await state.audioCtx.resume();
+                logMsg("Hardware Engines Init Success.");
+            } catch(err) {
+                logMsg("HARDWARE INIT FAILED: " + err.message);
+                el.subtitle.innerText = "Error: Camera/Mic permissions denied.";
             }
         }
-    };
 
-    // --- DECK CREATION ---
-    function createDJDeck(data
-            let textChunks =) {
-        const byteCharacters = atob(data.b64_wav);
-        const byteArray = new Uint8Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) byteArray[i] = byteCharacters.charCodeAt(i);
-        const blob = new Blob([byteArray], { type: 'audio/wav' });
-        const audioUrl = URL.createObjectURL(blob);
-        
-        const trackId = "stem_" + Date.now();
-        const displayBpm = data.bpm[];
-            if (msg.serverContent?.outputTranscription?.text) textChunks.push(msg.serverContent.outputTranscription.text);
-            if (msg.serverContent?.modelTurn?.parts) { msg.serverContent.modelTurn.parts.forEach(p => { if (p.text) textChunks.push(p.text); }); }
-            if (msg.text) textChunks.push(msg.text);
+        // --- AUDIO PLAYBACK ---
+        async function playAudio(b64Data) { 
+            if (!state.audioCtx) return; 
+            try { 
+                const bin = window.atob(b64Data); 
+                const len = bin.length; const arr = new Uint8Array(len); 
+                for(let i=0; i<len; i++) arr[i] = bin.charCodeAt(i); 
+                const int16 = new Int16Array(arr.buffer); 
+                const float32 = new Float32Array(int16.length); 
+                for(let i=0; i<int16.length; i++) float32[i] = int16[i] / 32768.0; 
+                const audioBuffer = state.audioCtx.createBuffer(1, float32.length, 24000); 
+                audioBuffer.getChannelData(0).set(float32); 
+                const src = state.audioCtx.createBufferSource(); 
+                src.buffer = audioBuffer; 
+                src.connect(state.audioCtx.destination); 
+                if (state.recorderDest) src.connect(state.recorderDest); 
+                const currentTime = state.audioCtx.currentTime; 
+                if (state.nextStartTime < currentTime) state.nextStartTime = currentTime + 0.05; 
+                src.start(state.nextStartTime); 
+                state.nextStartTime += audioBuffer.duration; 
+            } catch(e) { logMsg("Audio Playback Error: " + e.message); } 
+        }
 
-            textChunks.forEach(txt => {
-                logMsg("AI: " + txt);
-                if (txt.includes(" || "138";
-        
-        const deck = document.createElement('div');
-        deck.className = 'dj-deck';
-        deck.innerHTML = `
-            <div class="deck-header"><div class="deck-title">${data.description.replace('[OFFLINE SYNTH]', '').trim()}</div><div class="deck-bpm">${displayBpm} BPM</div></div>
-            <div class="deck-controls"><button class="play-btn" id="play-${trackId}">▶</button><div class="visualizer-placeholder" id="vis-${trackId}"></div><input type="range" id="vol-${trackId}" min="0" max="1" step="0.01" value="0.9" style="width: 80px;"></div>
-            <div class="deck-options"><button class="toggle-btn" id="loop-${trackId}">🔁 LOOP: OFF</button><button class="toggle-btn" style="flex: 0.5; color: var(--danger); border-color: rgba(255,59,48,0.3);" onclick="this.parentElement.parentElement.remove()">X</button></div>
-            <audio id="audio-${trackId}" src="${audioUrl}" style="display:none;"></audio>
-        `;
-        el.decksContainer.prepend(deck);
+        async function playLyriaAudioStream(b64Data) { 
+            if (!state.audioCtx) return; 
+            try { 
+                const bin = window.atob(b64Data); const len = bin.length; const arr = new Uint8Array(len); 
+                for(let i=0; i<len; i++) arr[i] = bin.charCodeAt(i); 
+                const int16 = new Int16Array(arr.buffer); 
+                const numFrames = int16.length / 2;
+                const audioBuffer = state.audioCtx.createBuffer(2, numFrames, 48000); 
+                const channel0 = audioBuffer.getChannelData(0); const channel1 = audioBuffer.getChannelData(1);
+                for (let i = 0; i < numFrames; i++) { 
+                    channel0[i] = int16[i * 2] / 32768.0; channel1[i] = int16[i * 2 + 1] / 32768.0; 
+                }
+                const src = state.audioCtx.createBufferSource(); 
+                src.buffer = audioBuffer; 
+                src.connect(state.audioCtx.destination); 
+                if (state.recorderDest) src.connect(state.recorderDest); 
+                const currentTime = state.audioCtx.currentTime; 
+                if (state.lyriaNextStartTime === undefined || state.lyriaNextStartTime < currentTime) state.lyriaNextStartTime = currentTime + 0.05; 
+                src.start(state.lyriaNextStartTime); 
+                state.lyriaNextStartTime += audioBuffer.duration; 
+            } catch(e) { logMsg("Lyria Stream Error: " + e.message); } 
+        }
 
-        const audioEl = document.getElementById(`audio-${trackId}`);
-        const playBtn = document.getElementById(`play-${trackId}`);
-        const loopBtn = document.getElementById(`loop-${trackId}`);
-        
-        if(state.audioCtx) {
-            const sourceNode = state.audioCtx.createMediaElementSource(audioEl);
-            sourceNode.connect(state.audioCtx.destination);[GENERATE_STEM:")) {
-                    el.subtitle.innerText = "⚡ Synthesizing Audio Stem...";
-                    el.subtitle.style.color = "var(--accent)";
-                } else if (!txt.startsWith("**") && !txt.startsWith("Thinking")) {
-                    el.subtitle.innerText = txt;
-                    el.subtitle.style.color = "var(--secondary)";
+        // --- CONNECTION LOGIC ---
+        async function connect() {
+            let activeKey = el.geminiInput.value.trim() || localStorage.getItem("enigma_gemini_key");
+            if (!activeKey) {
+                el.subtitle.innerText = "Error: Sovereign Key required.";
+                document.getElementById('modal-settings').classList.add('active');
+                return;
+            }
+
+            el.subtitle.innerText = "Initiating Neural Uplink...";
+            await startLocalMedia(); 
+
+            state.socket = io("/live", { 
+                query: { provider: PROVIDER, domain: DOMAIN, clearance: UPLINK_CLEARANCE, sovereign_key: activeKey }, 
+                transports: ["websocket"], forceNew: true 
+            });
+
+            state.socket.on("connect", () => {
+                state.serverReady = true;
+                el.statusDot.classList.add('connected');
+                el.btnPower.classList.add('active');
+                el.subtitle.innerText = "Uplink Secure. Tap Mic to command.";
+                logMsg("WebSocket Connected.");
+
+                if (state.worklet) {
+                    state.worklet.port.onmessage = (e) => { 
+                        if (state.serverReady && !state.micMuted) { 
+                            const float32 = e.data;
+                            let sum = 0; 
+                            for (let i = 0; i < float32.length; i += 4) sum += float32[i] * float32[i]; 
+                            const rms = Math.sqrt(sum / (float32.length / 4));
+                            
+                            if (rms > 0.05) {
+                                state.lastVoiceTimestamp = Date.now();
+                                if (!state.isSpeaking) {
+                                    state.isSpeaking = true;
+                                    el.btnMic.classList.add('listening');
+                                }
+                            }
+                            if (state.isSpeaking && (Date.now() - state.lastVoiceTimestamp > 2000)) {
+                                state.isSpeaking = false;
+                                el.btnMic.classList.remove('listening');
+                            }
+
+                            const audioData = base64Encode(floatTo16BitPCM(downsampleBuffer(e.data, state.audioCtx.sampleRate))); 
+                            state.socket.emit("audio_chunk", { data: audioData }); 
+                        } 
+                    };
                 }
             });
-        });
 
-        state.socket.on('lyria_audio_stream_chunk', (data) => {
-            if (state.audioCtx && state.audioCtx.state === "suspended") state.audioCtx.resume();
-            playLyriaAudioStream(data.data);
-        });
+            state.socket.on("message", (rawMsg) => {
+                let msg = typeof rawMsg === "string" ? JSON.parse(rawMsg || '{}') : rawMsg;
+                
+                // Voice Audio Routing
+                if (msg.serverContent?.modelTurn?.parts) { 
+                    msg.serverContent.modelTurn.parts.forEach(p => { 
+                        if (p.inlineData && p.inlineData.data) playAudio(p.inlineData.data); 
+                    }); 
+                }
+                if (msg.type === "response.audio.delta" || msg.type === "audio_delta") playAudio(msg.delta || msg.data);
+                
+                // Text / Subtitle Routing
+                let textChunks =[];
+                if (msg.serverContent?.outputTranscription?.text) textChunks.push(msg.serverContent.outputTranscription.text);
+                if (msg.serverContent?.modelTurn?.parts) { msg.serverContent.modelTurn.parts.forEach(p => { if (p.text) textChunks.push(p.text); }); }
+                if (msg.text) textChunks.push(msg.text);
 
-        state.socket.on("new_generative_stem", (data) => {
-            el.welcomeDeck.style.display = 'none';
-            el.subtitle.innerText = "Stem received. Ready to mix.";
-            el.subtitle.style.color = "var(--primary)";
-            createDJDeck(data);
-        });
+                textChunks.forEach(txt => {
+                    logMsg("AI: " + txt);
+                    if (txt.includes("[GENERATE_STEM:")) {
+                        el.subtitle.innerText = "⚡ Synthesizing Audio Stem...";
+                        el.subtitle.style.color = "var(--accent)";
+                    } else if (!txt.startsWith("**") && !txt.startsWith("Thinking")) {
+                        el.subtitle.innerText = txt;
+                        el.subtitle.style.color = "var(--secondary)";
+                    }
+                });
+            });
 
-        state.socket.on("disconnect", () => disconnect());
-    }
+            state.socket.on('lyria_audio_stream_chunk', (data) => {
+                if (state.audioCtx && state.audioCtx.state === "suspended") state.audioCtx.resume();
+                playLyriaAudioStream(data.data);
+            });
 
-    function disconnect() {
-        state.serverReady = false;
-        el.statusDot.classList.remove('connected');
-        el.btnPower.classList.remove('active');
-        el.subtitle.innerText = "Uplink Severed.";
-        el.subtitle.style.color = "var(--text-dim)";
-        
-        // Ensure mic visually resets if disconnected
-        state.micMuted = true;
-        if(state.audioStream) state.audioStream.getAudioTracks()[0].enabled = false;
-        el.btnMic.classList.remove('active');
+            state.socket.on("new_generative_stem", (data) => {
+                el.welcomeDeck.style.display = 'none';
+                el.subtitle.innerText = "Stem received. Ready to mix.";
+                el.subtitle.style.color = "var(--primary)";
+                createDJDeck(data);
+            });
 
-        if(
-            if(state.recorderDest) sourceNode.connect(state.recorderDest);
-        }state.socket) { state.socket.disconnect(); state.socket = null; }
-    }
+            state.socket.on("disconnect", () => disconnect());
+        }
 
-    el.
-
-        playBtn.onclick = () => { if (audioEl.paused) { audioEl.play(); playBtn.btnPower.onclick = () => { state.serverReady ? disconnect() : connect(); };
-
-    // --- MICROinnerText = "⏸"; playBtn.style.background = "var(--secondary)"; } else { audioEl.pausePHONE TOGGLE LOGIC ---
-    el.btnMic.onclick = () => {
-        if(!state.serverReady(); playBtn.innerText = "▶"; playBtn.style.background = "var(--primary)"; } };) { alert("Connect Uplink First."); return; }
-        if(!state.audioStream) return;
-
-        state
-        document.getElementById(`vol-${trackId}`).oninput = (e) => audioEl.volume = e..micMuted = !state.micMuted;
-        state.audioStream.getAudioTracks()target.value;
-        loopBtn.onclick = () => { audioEl.loop = !audioEl.loop[0].enabled = !state.micMuted;
-        
-        if (!state.micMuted) {; loopBtn.classList.toggle('active'); loopBtn.innerText = audioEl.loop ? "🔁 LOOP: ON" : "🔁 LOOP: OFF"; };
-        audioEl.ontimeupdate = () => { const percent
-            el.btnMic.classList.add('active');
-            el.subtitle.innerText = "Mic Live. The = (audioEl.currentTime / audioEl.duration) * 100; document.getElementById(`vis-${ AI is listening...";
-            el.subtitle.style.color = "var(--danger)";
-        } else {trackId}`).innerHTML = `<div style="height:100%; width:${percent}%; background:rgba(
-            el.btnMic.classList.remove('active');
-            el.subtitle.innerText = "Mic M0,255,65,0.4); border-right:2px solid var(--primary);">uted.";
+        function disconnect() {
+            state.serverReady = false;
+            el.statusDot.classList.remove('connected');
+            el.btnPower.classList.remove('active');
+            el.subtitle.innerText = "Uplink Severed.";
             el.subtitle.style.color = "var(--text-dim)";
-        }
-    };</div>`; };
-        setTimeout(() => playBtn.click(), 100);
-    }
-
-    //
-
-    // --- UI: CREATING A DJ DECK ---
-    function createDJDeck(data) { --- MODES & AR ---
-    el.btnMode.onclick = async () => {
-        state.is
-        const byteCharacters = atob(data.b64_wav);
-        const byteArray = new Uint8ArrayPerformanceMode = !state.isPerformanceMode;
-        if(state.isPerformanceMode) {
-            document(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i.body.classList.add('performance-mode'); el.btnMode.classList.add('active');++) byteArray[i] = byteCharacters.charCodeAt(i);
-        const blob = new Blob([byteArray], {
-            if(!state.videoStream) { try { state.videoStream = await navigator.mediaDevices.getUserMedia({ video: type: 'audio/wav' });
-        const audioUrl = URL.createObjectURL(blob); { facingMode: "user" } }); el.video.srcObject = state.videoStream; } catch(
-        
-        const trackId = "stem_" + Date.now();
-        const displayBpm = data.bpm ||e) { logMsg("Camera failed: " + e); } }
-        } else {
-            document. "138";
-        
-        const deck = document.createElement('div');
-        deck.className =body.classList.remove('performance-mode'); el.btnMode.classList.remove('active');
-        } 'dj-deck';
-        deck.innerHTML = `
-            <div class="deck-header">
-    };
-
-    el.btnLaser.onclick = () => {
-        if(typeof window.toggleAR ===
-                <div class="deck-title">${data.description.replace('[OFFLINE SYNTH]', '').trim()}</div> 'function') {
-            window.toggleAR();
-            el.btnLaser.classList.toggle('active');
-                <div class="deck-bpm">${displayBpm} BPM</div>
-            </div>
             
-            <div
-        }
-    };
+            state.micMuted = true;
+            if(state.audioStream) state.audioStream.getAudioTracks()[0].enabled = false;
+            el.btnMic.classList.remove('active-mic', 'listening');
 
-    document.getElementById('btn-purge').onclick = () => {
-        if( class="deck-controls">
-                <button class="play-btn" id="play-${trackId}">▶confirm("Wipe all local stems and disconnect?")) {
-            localStorage.removeItem("enigma_gemini_</button>
-                <div class="visualizer-placeholder" id="vis-${trackId}"></div>key"); el.geminiInput.value = ""; el.decksContainer.innerHTML = ''; el.decksContainer.
-                <input type="range" id="vol-${trackId}" min="0" max="1" step="0appendChild(el.welcomeDeck); el.welcomeDeck.style.display = 'block'; disconnect(); document.getElementById.01" value="0.9">
-            </div>
-            
-            <div class="deck-options">('modal-settings').classList.remove('active');
+            if(state.socket) { state.socket.disconnect(); state.socket = null; }
         }
-    };
-</script>
+
+        el.btnPower.onclick = () => { state.serverReady ? disconnect() : connect(); };
+
+        // --- MIC TOGGLE LOGIC ---
+        el.btnMic.onclick = () => {
+            if(!state.serverReady) { document.getElementById('modal-settings').classList.add('active'); return; }
+            if(!state.audioStream) return;
+
+            state.micMuted = !state.micMuted;
+            state.audioStream.getAudioTracks()[0].enabled = !state.micMuted;
+            
+            if (!state.micMuted) {
+                el.btnMic.classList.add('active-mic');
+                el.subtitle.innerText = "Mic Live. The AI is listening...";
+                el.subtitle.style.color = "var(--danger)";
+            } else {
+                el.btnMic.classList.remove('active-mic', 'listening');
+                el.subtitle.innerText = "Mic Muted. Tap to speak.";
+                el.subtitle.style.color = "var(--text-dim)";
+            }
+        };
+
+        // --- DECK CREATION ---
+        function createDJDeck(data) {
+            const byteCharacters = atob(data.b64_wav);
+            const byteArray = new Uint8Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) byteArray[i] = byteCharacters.charCodeAt(i);
+            const blob = new Blob([byteArray], { type: 'audio/wav' });
+            const audioUrl = URL.createObjectURL(blob);
+            
+            const trackId = "stem_" + Date.now();
+            const displayBpm = data.bpm || "138";
+            
+            const deck = document.createElement('div');
+            deck.className = 'dj-deck';
+            deck.innerHTML = `
+                <div class="deck-header">
+                    <div class="deck-title">${data.description.replace('[OFFLINE SYNTH]', '').trim()}</div>
+                    <div class="deck-bpm">${displayBpm} BPM</div>
+                </div>
+                <div class="deck-controls">
+                    <button class="play-btn" id="play-${trackId}">▶</button>
+                    <div class="visualizer-placeholder" id="vis-${trackId}"></div>
+                    <input type="range" id="vol-${trackId}" min="0" max="1" step="0.01" value="0.9">
+                </div>
+                <div class="deck-options">
+                    <button class="toggle-btn" id="loop-${trackId}">🔁 LOOP: OFF</button>
+                    <button class="toggle-btn" style="flex: 0.5; color: var(--danger); border-color: rgba(255,59,48,0.3);" onclick="this.parentElement.parentElement.remove()">X</button>
+                </div>
+                <audio id="audio-${trackId}" src="${audioUrl}" style="display:none;"></audio>
+            `;
+            
+            el.decksContainer.prepend(deck);
+
+            const audioEl = document.getElementById(`audio-${trackId}`);
+            const playBtn = document.getElementById(`play-${trackId}`);
+            const loopBtn = document.getElementById(`loop-${trackId}`);
+
+            if(state.audioCtx) {
+                const sourceNode = state.audioCtx.createMediaElementSource(audioEl);
+                sourceNode.connect(state.audioCtx.destination);
+                if(state.recorderDest) sourceNode.connect(state.recorderDest);
+            }
+
+            playBtn.onclick = () => { 
+                if (audioEl.paused) { 
+                    audioEl.play(); 
+                    playBtn.innerText = "⏸"; 
+                    playBtn.style.background = "var(--secondary)"; 
+                } else { 
+                    audioEl.pause(); 
+                    playBtn.innerText = "▶"; 
+                    playBtn.style.background = "var(--primary)"; 
+                } 
+            };
+
+            document.getElementById(`vol-${trackId}`).oninput = (e) => audioEl.volume = e.target.value;
+            
+            loopBtn.onclick = () => { 
+                audioEl.loop = !audioEl.loop; 
+                loopBtn.classList.toggle('active'); 
+                loopBtn.innerText = audioEl.loop ? "🔁 LOOP: ON" : "🔁 LOOP: OFF"; 
+            };
+
+            audioEl.ontimeupdate = () => { 
+                const percent = (audioEl.currentTime / audioEl.duration) * 100; 
+                document.getElementById(`vis-${trackId}`).innerHTML = `<div style="height:100%; width:${percent}%; background:rgba(0,255,65,0.4); border-right:2px solid var(--primary);"></div>`; 
+            };
+            
+            setTimeout(() => playBtn.click(), 100);
+        }
+
+        // --- MODES & AR ---
+        el.btnMode.onclick = async () => {
+            state.isPerformanceMode = !state.isPerformanceMode;
+            if(state.isPerformanceMode) {
+                document.body.classList.add('performance-mode');
+                el.btnMode.classList.add('active');
+                if(!state.videoStream) {
+                    try {
+                        state.videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                        el.video.srcObject = state.videoStream;
+                    } catch(e) { logMsg("Camera failed: " + e.message); }
+                }
+            } else {
+                document.body.classList.remove('performance-mode');
+                el.btnMode.classList.remove('active');
+            }
+        };
+
+        el.btnAr.onclick = () => {
+            if(typeof window.toggleAR === 'function') {
+                window.toggleAR();
+                el.btnAr.classList.toggle('active');
+            }
+        };
+
+        document.getElementById('btn-purge').onclick = () => {
+            if(confirm("Wipe all local stems and disconnect?")) {
+                localStorage.removeItem("enigma_gemini_key");
+                el.geminiInput.value = "";
+                el.decksContainer.innerHTML = '';
+                el.decksContainer.appendChild(el.welcomeDeck);
+                el.welcomeDeck.style.display = 'block';
+                disconnect();
+                document.getElementById('modal-settings').classList.remove('active');
+            }
+        };
+    </script>
 </body>
 </html>
-                <button class="toggle-btn" id="loop-${trackId}">🔁 LOOP: OFF</button>
 """
 
 HTML_TEMPLATE = """
