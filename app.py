@@ -1473,6 +1473,10 @@ LIVE_TEMPLATE = r"""
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <script>
+        window.dismissGeminiPromo = function() {
+            document.getElementById('geminiPromoBox').style.display = 'none';
+            localStorage.setItem('geminiPromoDismissed', 'true');
+        };
         (function() {
             const theme = localStorage.getItem('lensdna_hud_theme') || 'auto';
             if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
@@ -1511,21 +1515,23 @@ LIVE_TEMPLATE = r"""
         body { background-color: var(--bg); color: var(--text-main); font-family: "Inter", sans-serif; margin: 0; overflow: hidden; display: flex; height: 100dvh; width: 100vw; transition: background-color 0.3s, color 0.3s; }
         .mono { font-family: "Share Tech Mono", monospace; }
         
-        /* GROK-STYLE LAYOUT */
-        #layout { display: flex; width: 100%; height: 100%; position: relative; }
+        #layout { display: flex; width: 100%; height: 100%; position: relative; overflow: hidden; }
         
-        /* SIDEBAR */
         #sidebar { 
             width: 320px; background: var(--panel-bg); border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; z-index: 100; transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            display: flex; flex-direction: column; z-index: 100; transition: margin-left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), left 0.3s;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); flex-shrink: 0;
         }
+        #sidebar.collapsed { margin-left: -320px; }
+        
         .sidebar-header {
             padding: 20px; font-size: 1.1rem; font-weight: 800; letter-spacing: 2px;
             border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;
         }
         .brand-logo { display: flex; align-items: center; gap: 10px; color: var(--text-main); text-decoration: none; }
         .brand-dot { width: 8px; height: 8px; background: var(--neon); border-radius: 50%; box-shadow: 0 0 10px var(--neon); }
+        .btn-toggle-sidebar { background: transparent; border: none; color: var(--text-main); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        
         .sidebar-content { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 24px; }
         
         .nav-section { display: flex; flex-direction: column; gap: 10px; }
@@ -1542,30 +1548,19 @@ LIVE_TEMPLATE = r"""
         .connect-btn.active { border-color: var(--alert); color: var(--alert); box-shadow: inset 0 0 15px var(--danger-bg); }
         .connect-btn.active:hover { background: var(--alert); color: #fff; box-shadow: 0 0 25px rgba(255,59,48,0.4); }
 
-        /* DJ MATRIX IN SIDEBAR */
-        .dj-panel { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; padding: 15px; }
-        .dj-channels { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
-        .dj-channels::-webkit-scrollbar { height: 6px; }
-        .dj-channels::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 3px; }
-        .dj-channel { flex: 0 0 65px; display: flex; flex-direction: column; align-items: center; background: var(--panel-bg-solid); border: 1px solid var(--border); border-radius: 4px; padding: 5px; }
-        
-        /* MAIN STAGE */
         #main-stage { flex: 1; position: relative; display: flex; flex-direction: column; overflow: hidden; }
         
-        /* CAMERA BACKGROUND */
         #video-feed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: contrast(110%) brightness(0.9); }
         .mirror { transform: scaleX(-1); }
         #ar-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
         .camera-tint { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; background: linear-gradient(to bottom, var(--bg) 0%, transparent 20%, transparent 70%, var(--bg) 100%); opacity: 0.85; pointer-events: none; }
 
-        /* TOP BAR */
         .top-bar { position: relative; z-index: 10; padding: 15px 24px; display: flex; justify-content: space-between; align-items: center; }
-        .hamburger { background: transparent; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; display: none; padding: 5px; }
+        .hamburger { background: transparent; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; padding: 5px; }
         .status-pill { background: var(--glass); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; display: flex; gap: 10px; align-items: center; backdrop-filter: blur(10px); }
         .record-btn-top { background: rgba(255, 59, 48, 0.1); border: 1px solid var(--alert); color: var(--alert); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.75rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
         .record-btn-top:hover { background: var(--alert); color: #fff; box-shadow: 0 0 15px rgba(255,59,48,0.4); }
 
-        /* CHAT AREA */
         #chat-history { flex: 1; position: relative; z-index: 10; overflow-y: auto; padding: 20px 40px; display: flex; flex-direction: column; gap: 24px; align-items: center; scroll-behavior: smooth; }
         .msg-row { width: 100%; max-width: 850px; display: flex; flex-direction: column; gap: 6px; }
         .msg-sender { font-size: 0.7rem; color: var(--text-mut); text-transform: uppercase; letter-spacing: 1px; }
@@ -1576,30 +1571,23 @@ LIVE_TEMPLATE = r"""
         .thought { font-size: 0.85rem; color: var(--neon); font-style: italic; border-left: 1px solid var(--border) !important; opacity: 0.8; }
         .sys-alert { border-left: 3px solid var(--alert) !important; background: rgba(255,59,48,0.05) !important; color: var(--alert); }
 
-        /* DRAG AND DROP INDICATOR */
+        #dj-matrix-panel { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 900px; background: rgba(10,10,10,0.95); border: 1px solid #b000ff; border-radius: 12px; padding: 20px; z-index: 50; backdrop-filter: blur(20px); box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(176,0,255,0.2); transition: all 0.3s ease; display: flex; flex-direction: column; }
+        #dj-matrix-panel.hidden { transform: translate(-50%, 100%); opacity: 0; pointer-events: none; }
+        .dj-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .dj-channels { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: #b000ff transparent; }
+        .dj-channels::-webkit-scrollbar { height: 8px; }
+        .dj-channels::-webkit-scrollbar-thumb { background-color: #b000ff; border-radius: 4px; }
+        .dj-channel { flex: 0 0 100px; display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+
         .drag-overlay { position: absolute; inset: 0; background: rgba(0,255,65,0.1); border: 2px dashed var(--neon); z-index: 999; display: none; justify-content: center; align-items: center; color: var(--neon); font-size: 2rem; font-weight: bold; backdrop-filter: blur(5px); }
         #main-stage.drag-active .drag-overlay { display: flex; }
 
-        /* VOICE PROMPTS OVERLAY */
-        #prompts-overlay {
-            position: absolute; top: 70px; right: 24px; width: 320px; 
-            background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--neon); border-radius: 12px; z-index: 1005; 
-            padding: 20px; box-shadow: 0 0 25px var(--neon-dim); 
-            display: flex; flex-direction: column; transition: all 0.3s ease;
-            transform-origin: top right;
-        }
+        #prompts-overlay { position: absolute; top: 70px; right: 24px; width: 320px; background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--neon); border-radius: 12px; z-index: 1005; padding: 20px; box-shadow: 0 0 25px var(--neon-dim); display: flex; flex-direction: column; transition: all 0.3s ease; transform-origin: top right; }
         #prompts-overlay.hidden { transform: scale(0.95); opacity: 0; pointer-events: none; }
         .prompt-category { font-size: 0.65rem; margin-bottom: 6px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; color: var(--text-main); }
-        .prompt-example { 
-            font-size: 0.75rem; color: var(--text-dim); background: var(--msg-bg); 
-            padding: 8px 10px; margin-bottom: 6px; border-radius: 0 4px 4px 0; 
-            font-style: italic; letter-spacing: 0.5px; border-left: 3px solid var(--neon);
-            transition: background 0.2s, color 0.2s;
-        }
+        .prompt-example { font-size: 0.75rem; color: var(--text-dim); background: var(--msg-bg); padding: 8px 10px; margin-bottom: 6px; border-radius: 0 4px 4px 0; font-style: italic; letter-spacing: 0.5px; border-left: 3px solid var(--neon); transition: background 0.2s, color 0.2s; }
         .prompt-example:hover { background: var(--neon-dim); color: var(--text-main); }
 
-        /* UNIFIED INPUT BOTTOM BAR */
         .input-wrapper { position: relative; z-index: 10; padding: 20px 40px 40px 40px; display: flex; justify-content: center; }
         .input-box { width: 100%; max-width: 850px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 16px; display: flex; align-items: flex-end; padding: 12px; gap: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); transition: border 0.3s; }
         .input-box:focus-within { border-color: var(--neon); box-shadow: 0 10px 40px rgba(0,0,0,0.4), 0 0 20px var(--neon-dim); }
@@ -1608,7 +1596,6 @@ LIVE_TEMPLATE = r"""
         .action-btn:hover:not(:disabled) { background: var(--btn-hover); color: var(--text-main); }
         .action-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         
-        /* HERO MIC BUTTON */
         .hero-mic-btn { background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 30px; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); white-space: nowrap; }
         .hero-mic-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--text-main); }
         .hero-mic-btn.active { background: var(--danger-bg); color: var(--alert); border-color: var(--alert); box-shadow: 0 0 20px rgba(255,59,48,0.3); }
@@ -1623,37 +1610,45 @@ LIVE_TEMPLATE = r"""
         #manualInject { flex: 1; background: transparent; border: none; color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 1rem; line-height: 1.5; resize: none; outline: none; padding: 10px 0; max-height: 150px; }
         #manualInject::placeholder { color: var(--text-mut); }
 
-        /* LOGS */
         #logs-container { max-height: 100px; overflow-y: auto; font-size: 0.6rem; color: var(--text-mut); background: var(--panel-bg-solid); padding: 10px; border-radius: 6px; border: 1px solid var(--border); font-family: "Share Tech Mono", monospace; }
         .log-entry { margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 2px; }
 
         @media (max-width: 900px) {
-            #sidebar { position: absolute; left: -100%; height: 100%; box-shadow: 20px 0 50px rgba(0,0,0,0.5); }
+            #sidebar { position: absolute; left: -320px; height: 100%; box-shadow: 20px 0 50px rgba(0,0,0,0.5); margin-left: 0; }
             #sidebar.open { left: 0; }
-            .hamburger { display: block; }
             .input-wrapper { padding: 15px 20px 20px 20px; }
             #chat-history { padding: 20px 15px; }
             .hero-mic-btn span.text { display: none; } 
             .hero-mic-btn { padding: 10px 15px; }
             #prompts-overlay { width: calc(100vw - 40px); right: 20px; top: 60px; }
+            #dj-matrix-panel { width: 100%; bottom: 80px; padding: 15px; }
         }
+
+        .thought { display: none !important; }
+        .msg-ai:has(.thought) { display: none !important; }
+        .msg-sender:has(+ .thought) { display: none !important; }
     </style>
 </head>
 <body>
 
 <div id="layout">
 
-    <!-- SIDEBAR (COMMAND CENTER) -->
     <div id="sidebar" class="mono">
         <div class="sidebar-header">
             <a href="/" class="brand-logo">
                 <div class="brand-dot"></div>
                 LENSDNA OS
             </a>
-            <button id="closeSidebar" class="hamburger" style="font-size: 1.2rem;">×</button>
+            <button id="toggleSidebarBtn" class="btn-toggle-sidebar" style="font-size: 1.5rem;">×</button>
         </div>
         
         <div class="sidebar-content">
+            <div id="geminiPromoBox" style="background: rgba(0, 255, 65, 0.05); border: 1px solid var(--neon); border-radius: 8px; padding: 15px; position: relative;">
+                <button onclick="window.dismissGeminiPromo()" style="position: absolute; top: 5px; right: 10px; background: none; border: none; color: var(--text-mut); font-size: 1.2rem; cursor: pointer;">×</button>
+                <div style="color: var(--neon); font-size: 0.8rem; font-weight: bold; margin-bottom: 8px;">NEED A FREE API KEY?</div>
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" style="display: block; background: var(--input-bg); color: var(--text-main); padding: 10px; text-align: center; text-decoration: none; border-radius: 6px; font-size: 0.8rem; border: 1px solid var(--neon);">Get Google AI Key in 2 clicks</a>
+            </div>
+
             <div class="nav-section">
                 <div class="nav-label">Active Matrix</div>
                 <div style="font-size: 0.85rem; color: var(--neon); padding: 8px; background: var(--neon-dim); border: 1px solid rgba(0,255,65,0.3); border-radius: 6px; display: flex; justify-content: space-between;">
@@ -1672,23 +1667,10 @@ LIVE_TEMPLATE = r"""
                 <input type="password" id="openaiKey" class="key-input" placeholder="OpenAI Key (sk-...)">
             </div>
 
-            <!-- DJ Infinite Crate Panel -->
-            <div class="nav-section dj-panel">
-                <div class="nav-label" style="color:#b000ff; margin-bottom:12px;">
-                    Infinite Stem Matrix
-                    <button id="btn-next-preset" style="background:transparent; border:1px solid #b000ff; color:#b000ff; border-radius:4px; padding:2px 6px; font-size:0.6rem; cursor:pointer;">PRESET ⏭️</button>
-                </div>
-                <div class="dj-channels" id="channels-container">
-                    <!-- Channels injected via JS -->
-                </div>
-                <div style="display:flex; justify-content:center; margin-top:8px;">
-                    <button id="btn-add-channel" style="background:none; border:1px dashed #b000ff; color:#b000ff; font-size:0.6rem; padding:4px 8px; cursor:pointer; border-radius:4px;">+ ADD CH (0/8)</button>
-                </div>
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                    <input type="number" id="lyriaDur" class="key-input" value="120" placeholder="Sec" style="width:50%;">
-                    <input type="number" id="lyriaBpm" class="key-input" value="138" placeholder="BPM" style="width:50%;">
-                </div>
-                <button id="btn-lyria-gen" class="btn-clear" style="margin-top:10px; background:rgba(176,0,255,0.1); border-color:#b000ff; color:#b000ff;">SYNTHESIZE AUDIO</button>
+            <div class="nav-section">
+                <div class="nav-label" style="color:#b000ff; margin-bottom:5px;">Infinite Stem Matrix</div>
+                <button id="btn-toggle-matrix" class="btn-clear" style="background:rgba(176,0,255,0.1); border-color:#b000ff; color:#b000ff; margin-bottom:5px;">🎧 OPEN MIXER</button>
+                <button id="btn-next-preset" class="btn-clear" style="background:transparent; border:1px dashed #b000ff; color:#b000ff;">PRESET ⏭️</button>
             </div>
 
             <div class="nav-section">
@@ -1715,17 +1697,13 @@ LIVE_TEMPLATE = r"""
         </button>
     </div>
 
-    <!-- MAIN STAGE -->
     <div id="main-stage">
-        <!-- BACKGROUND VISION -->
         <video id="video-feed" autoplay muted playsinline class="mirror"></video>
         <canvas id="ar-overlay"></canvas>
         <div class="camera-tint"></div>
         
-        <!-- DRAG & DROP OVERLAY -->
         <div class="drag-overlay mono">DROP AUDIO OR DATA TO INGEST</div>
 
-        <!-- VOICE COMMANDS OVERLAY -->
         <div id="prompts-overlay" class="hidden">
             <button onclick="document.getElementById('prompts-overlay').classList.add('hidden')" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; color: var(--text-mut); font-size: 1.5rem; cursor: pointer; line-height: 1;">×</button>
             <div style="font-size: 0.9rem; color: var(--text-main); font-weight: bold; margin-bottom: 12px; border-bottom: 1px dashed var(--border); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
@@ -1751,7 +1729,24 @@ LIVE_TEMPLATE = r"""
             </div>
         </div>
 
-        <!-- TOP BAR -->
+        <div id="dj-matrix-panel" class="hidden mono">
+            <div class="dj-header">
+                <span style="color:#b000ff; font-weight:bold; font-size:1rem;">🎛️ 8-CHANNEL STEM MATRIX</span>
+                <button id="btn-close-matrix" style="background:none;border:none;color:#fff;cursor:pointer;font-size:1.5rem;line-height:1;">×</button>
+            </div>
+            <div class="dj-channels" id="channels-container"></div>
+            <div style="display:flex; justify-content:space-between; margin-top:15px; align-items:center; flex-wrap:wrap; gap:10px;">
+                <button id="btn-add-channel" class="btn-clear" style="border:1px dashed #b000ff; color:#b000ff; background:none;">+ ADD CH (0/8)</button>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <span style="color:#888; font-size:0.7rem;">DUR:</span>
+                    <input type="number" id="lyriaDur" class="key-input" value="120" placeholder="Sec" style="width:70px; padding:8px;">
+                    <span style="color:#888; font-size:0.7rem;">BPM:</span>
+                    <input type="number" id="lyriaBpm" class="key-input" value="138" placeholder="BPM" style="width:70px; padding:8px;">
+                </div>
+                <button id="btn-lyria-gen" class="btn-clear" style="background:#b000ff; color:#fff; border:none; padding:10px 20px; font-size:0.8rem;">SYNTHESIZE AUDIO</button>
+            </div>
+        </div>
+
         <div class="top-bar mono">
             <button id="hamburgerBtn" class="hamburger">☰</button>
             <div class="status-pill">
@@ -1765,7 +1760,6 @@ LIVE_TEMPLATE = r"""
             </button>
         </div>
 
-        <!-- CHAT STREAM -->
         <div id="chat-history">
             <div class="msg-row msg-ai">
                 <div class="msg-sender">SYSTEM</div>
@@ -1776,10 +1770,8 @@ LIVE_TEMPLATE = r"""
             </div>
         </div>
 
-        <!-- UNIFIED COMMAND BAR -->
         <div class="input-wrapper">
             <div class="input-box">
-                <!-- Hidden inputs -->
                 <input type="file" id="file-upload" hidden multiple>
                 <button id="btn-ingest" style="display:none;"></button>
 
@@ -1808,6 +1800,11 @@ LIVE_TEMPLATE = r"""
 <script type="module">
 import '/static/ar_engine.js';
 
+if (localStorage.getItem('geminiPromoDismissed') === 'true') {
+    const promo = document.getElementById('geminiPromoBox');
+    if (promo) promo.style.display = 'none';
+}
+
 const PROVIDER = "{{ provider }}";
 const DOMAIN = "{{ domain }}";
 const USE_CONTEXT = "{{ use_context }}";
@@ -1822,6 +1819,7 @@ const elements = {
     sidebar: document.getElementById("sidebar"), 
     hamburgerBtn: document.getElementById("hamburgerBtn"),
     closeSidebarBtn: document.getElementById("closeSidebar"),
+    toggleSidebarBtn: document.getElementById("toggleSidebarBtn"),
     video: document.getElementById("video-feed"), 
     mainContainer: document.getElementById("main-stage"),
     btn: document.getElementById("btn-connect"), 
@@ -1841,7 +1839,10 @@ const elements = {
     chat: document.getElementById("chat-history"), 
     manualInput: document.getElementById("manualInject"),
     sendManualBtn: document.getElementById("btn-send-manual"),
-    fileUpload: document.getElementById("file-upload")
+    fileUpload: document.getElementById("file-upload"),
+    matrixPanel: document.getElementById("dj-matrix-panel"),
+    btnToggleMatrix: document.getElementById("btn-toggle-matrix"),
+    btnCloseMatrix: document.getElementById("btn-close-matrix")
 };
 
 let state = { socket: null, audioCtx: null, worklet: null, videoStream: null, audioStream: null, serverReady: false, nextStartTime: 0, mode: "camera", facingMode: "user", isSwapping: false, timerInterval: null, secondsLeft: SESSION_LIMIT_SEC, isSpeaking: false, lastVoiceTimestamp: 0, isGeneratingStem: false, stemTimeout: null, stemInterval: null, stemStartTime: 0, mediaRecorder: null, recordedChunks:[], recorderDest: null, micMuted: true };
@@ -1851,9 +1852,19 @@ let engineState = { currentBPM: 138 };
 window.updateBPM = function(newBPM) { engineState.currentBPM = newBPM; };
 window.arState = window.arState || { active: false };
 
-// UI Layout Logic
-elements.hamburgerBtn.onclick = () => elements.sidebar.classList.add('open');
-elements.closeSidebarBtn.onclick = () => elements.sidebar.classList.remove('open');
+function toggleSidebar() {
+    if (window.innerWidth > 900) {
+        elements.sidebar.classList.toggle('collapsed');
+    } else {
+        elements.sidebar.classList.toggle('open');
+    }
+}
+elements.hamburgerBtn.onclick = toggleSidebar;
+if(elements.toggleSidebarBtn) elements.toggleSidebarBtn.onclick = toggleSidebar;
+if(elements.closeSidebarBtn) elements.closeSidebarBtn.onclick = toggleSidebar;
+
+elements.btnToggleMatrix.onclick = () => elements.matrixPanel.classList.toggle('hidden');
+elements.btnCloseMatrix.onclick = () => elements.matrixPanel.classList.add('hidden');
 
 elements.laserGameBtn.onclick = async () => {
     if (typeof window.toggleAR === 'function') {
@@ -2039,7 +2050,6 @@ async function startLocalMedia() {
         state.worklet = new AudioWorkletNode(state.audioCtx, "recorder-processor"); 
         source.connect(state.worklet);
         
-        // Mute mic by default until user presses the Hero Mic Button
         state.micMuted = true;
         state.audioStream.getAudioTracks()[0].enabled = false;
         
@@ -2079,7 +2089,6 @@ async function connect() {
             const blob = new Blob([byteArray], { type: 'audio/wav' }); const audioDataUrl = URL.createObjectURL(blob); 
             const trackId = "stem_" + Date.now();
             
-            // Build the DJ Deck Widget in chat
             const stemHtml = `
                 <div style="background:var(--panel-bg); border:1px solid var(--border); border-top:3px solid #b000ff; border-radius:12px; padding:20px; width:100%; box-sizing:border-box; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
                     <div style="display:flex; justify-content:space-between; color:#b000ff; font-size:0.8rem; font-weight:bold; margin-bottom:15px; font-family:'Share Tech Mono', monospace;">
@@ -2130,7 +2139,6 @@ async function connect() {
             startTimer();
             setTimeout(() => { captureContextFrame("INITIAL_RECON"); }, 1500);
             
-            // Close sidebar on mobile automatically after connect
             if(window.innerWidth < 900) elements.sidebar.classList.remove('open');
             
             if (state.worklet) {
@@ -2235,7 +2243,6 @@ async function connect() {
 async function disconnect() {
     setStatus("LOCAL ONLY", "#00ccff"); elements.btnText.innerText = "CONNECT AI"; elements.btn.classList.remove("active"); state.serverReady = false;
     
-    // Auto-mute mic on disconnect
     state.micMuted = true;
     if (state.audioStream && state.audioStream.getAudioTracks().length > 0) state.audioStream.getAudioTracks()[0].enabled = false;
     elements.micBtn.classList.remove("active");
@@ -2252,7 +2259,7 @@ async function disconnect() {
 elements.btn.onclick = async () => { if (state.serverReady) { await disconnect(); } else { connect(); } };
 
 elements.clearKeysBtn.onclick = () => {
-    if(confirm("UNLINK SOVEREIGN KEYS?\\n\\nThis will remove your API keys from local memory.")) {
+    if(confirm("UNLINK SOVEREIGN KEYS?\n\nThis will remove your API keys from local memory.")) {
         localStorage.removeItem("enigma_gemini_key"); localStorage.removeItem("enigma_grok_key"); localStorage.removeItem("enigma_openai_key");
         elements.geminiInput.value = ""; elements.grokInput.value = ""; elements.openaiInput.value = "";
     }
@@ -2262,7 +2269,6 @@ elements.screenBtn.onclick = toggleScreenShare;
 elements.flipBtn.onclick = flipCamera; 
 elements.lensBtn.onclick = triggerLens; 
 
-// HERO MIC BUTTON LOGIC
 elements.micBtn.onclick = () => {
     if (!state.audioStream) return;
     const audioTracks = state.audioStream.getAudioTracks();
@@ -2280,7 +2286,6 @@ elements.micBtn.onclick = () => {
     }
 }; 
 
-// MANUAL SEND BUTTON
 function sendManualInput() {
     const t = elements.manualInput.value.trim(); 
     if(t && state.serverReady) { 
@@ -2295,7 +2300,6 @@ elements.manualInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendManualInput(); } 
 });
 
-// FILE UPLOAD AND DRAG & DROP LOGIC (Fully Restored)
 const dropZone = elements.mainContainer;
 dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-active'); });
 dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('drag-active'); });
@@ -2355,7 +2359,6 @@ elements.fileUpload.addEventListener('change', (e) => {
     handleFiles(e.target.files);
 });
 
-// RECORD PERFORMANCE LOGIC
 elements.recordBtn.onclick = async () => {
     if (!state.mediaRecorder || state.mediaRecorder.state === "inactive") {
         if (!state.videoStream || !state.audioCtx) return;
@@ -2406,7 +2409,6 @@ elements.recordBtn.onclick = async () => {
     } else { state.mediaRecorder.stop(); }
 };
 
-// FULL 12 DJ PRESETS LOGIC RESTORED
 const MAX_CHANNELS = 8;
 const channelsContainer = document.getElementById('channels-container');
 const btnAddChannel = document.getElementById('btn-add-channel');
@@ -2424,7 +2426,7 @@ function injectChannel() {
     const col = document.createElement('div'); col.className = "dj-channel";
     col.innerHTML = `
         <input type="text" id="ch${activeChannels}-prompt" class="key-input" value="${ch.text}" style="margin-bottom: 5px; text-align: center; padding: 4px; font-size: 0.55rem; background: var(--input-bg); color: var(--text-main);">
-        <input type="range" id="ch${activeChannels}-weight" min="0" max="2" step="0.1" value="${ch.weight}" style="writing-mode: vertical-lr; direction: rtl; flex: 1; height: 60px; width: 15px; accent-color: ${ch.color}; cursor: pointer;">
+        <input type="range" id="ch${activeChannels}-weight" min="0" max="2" step="0.1" value="${ch.weight}" style="writing-mode: vertical-lr; direction: rtl; flex: 1; height: 80px; width: 15px; accent-color: ${ch.color}; cursor: pointer;">
         <span id="ch${activeChannels}-val" style="font-size: 0.65rem; font-weight: bold; margin-top: 5px; color: ${ch.color};">${ch.weight.toFixed(1)}</span>
     `;
     channelsContainer.appendChild(col);
@@ -2452,6 +2454,7 @@ let currentPresetIdx = -1;
 const btnNextPreset = document.getElementById('btn-next-preset');
 if (btnNextPreset) {
     btnNextPreset.onclick = () => {
+        elements.matrixPanel.classList.remove('hidden');
         currentPresetIdx = (currentPresetIdx + 1) % djPresets.length; const preset = djPresets[currentPresetIdx];
         while (activeChannels < 8) injectChannel();
         for (let i = 0; i < 8; i++) {
@@ -2487,11 +2490,9 @@ if (btnLyria) {
     };
 }
 
-// RESTORE SAVED KEYS
 const savedGemini = localStorage.getItem("enigma_gemini_key"); const savedGrok = localStorage.getItem("enigma_grok_key"); const savedOpenAI = localStorage.getItem("enigma_openai_key");
 if (savedGemini) elements.geminiInput.value = savedGemini; if (savedGrok) elements.grokInput.value = savedGrok; if (savedOpenAI) elements.openaiInput.value = savedOpenAI;
 
-// THEME TOGGLE
 const themeBtn = document.getElementById('themeToggle');
 const themes =['auto', 'dark', 'light'];
 let currentTheme = localStorage.getItem('lensdna_hud_theme') || 'auto';
