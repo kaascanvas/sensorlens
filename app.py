@@ -423,29 +423,32 @@ def ai_bridge_thread(sid, provider, system_instruction, input_queue, sovereign_k
                                 "audio": data
                             }))
                     else:
-                        # ---> FIX 3: Updated v1beta RealtimeInput JSON structure
                         if m_type == 'text':
                             ws.send(json.dumps({
-                                "realtimeInput": {
-                                    "text": data
+                                "clientContent": {
+                                    "turns":[{
+                                        "role": "user",
+                                        "parts": [{"text": data}]
+                                    }],
+                                    "turnComplete": True
                                 }
                             }))
                         elif m_type == 'audio':
                             ws.send(json.dumps({
                                 "realtimeInput": {
-                                    "audio": {
-                                        "data": data,
-                                        "mimeType": "audio/pcm;rate=16000"
-                                    }
+                                    "mediaChunks":[{
+                                        "mimeType": "audio/pcm;rate=16000",
+                                        "data": data
+                                    }]
                                 }
                             }))
                         elif m_type == 'video':
                             ws.send(json.dumps({
                                 "realtimeInput": {
-                                    "video": {
-                                        "data": data,
-                                        "mimeType": "image/jpeg"
-                                    }
+                                    "mediaChunks":[{
+                                        "mimeType": "image/jpeg",
+                                        "data": data
+                                    }]
                                 }
                             }))
                         elif m_type == 'lens_ocr':
@@ -1492,11 +1495,11 @@ LIVE_TEMPLATE = r"""
             --cyan: #00e5ff; --cyan-dim: rgba(0, 229, 255, 0.1);
             --border: rgba(255, 255, 255, 0.15); --glass: rgba(10, 10, 10, 0.85); 
             --bg: #050505; --alert: #ff3b30; 
-            --text-main: #fff; --text-dim: #ccc; --text-mut: #666;
+            --text-main: #fff; --text-dim: #ccc; --text-mut: #888;
             --panel-bg: rgba(15,15,15,0.95); --panel-bg-solid: #0f0f0f;
-            --input-bg: rgba(25,25,25,0.85); --chat-bg: transparent;
-            --msg-bg: rgba(25,25,25,0.7); --btn-bg: transparent; --btn-hover: rgba(255,255,255,0.1);
-            --danger-bg: rgba(255,59,48,0.1); --danger-border: rgba(255,59,48,0.3);
+            --input-bg: rgba(15,15,15,0.95); --chat-bg: transparent;
+            --msg-bg: rgba(15,15,15,0.95); --btn-bg: transparent; --btn-hover: rgba(255,255,255,0.1);
+            --danger-bg: rgba(255,59,48,0.15); --danger-border: rgba(255,59,48,0.4);
             --shadow-glow: 0 0 10px rgba(0,255,65,0.2);
         }
         :root[data-theme="light"] {
@@ -1506,9 +1509,9 @@ LIVE_TEMPLATE = r"""
             --bg: #f8fafc; --alert: #dc2626; 
             --text-main: #111; --text-dim: #333; --text-mut: #555;
             --panel-bg: rgba(245,245,245,0.95); --panel-bg-solid: #f0f0f0;
-            --input-bg: rgba(255,255,255,0.9); --chat-bg: transparent;
-            --msg-bg: rgba(255,255,255,0.8); --btn-bg: transparent; --btn-hover: rgba(0,0,0,0.05);
-            --danger-bg: rgba(220, 38, 38, 0.1); --danger-border: rgba(220, 38, 38, 0.3);
+            --input-bg: rgba(255,255,255,0.95); --chat-bg: transparent;
+            --msg-bg: rgba(255,255,255,0.95); --btn-bg: transparent; --btn-hover: rgba(0,0,0,0.05);
+            --danger-bg: rgba(220, 38, 38, 0.15); --danger-border: rgba(220, 38, 38, 0.4);
             --shadow-glow: none;
         }
 
@@ -1569,7 +1572,7 @@ LIVE_TEMPLATE = r"""
         .msg-user { align-items: flex-end; }
         .msg-user .msg-content { border-right: 3px solid var(--cyan); background: rgba(0,229,255,0.03); text-align: right; }
         .thought { font-size: 0.85rem; color: var(--neon); font-style: italic; border-left: 1px solid var(--border) !important; opacity: 0.8; }
-        .sys-alert { border-left: 3px solid var(--alert) !important; background: rgba(255,59,48,0.05) !important; color: var(--alert); }
+        .sys-alert { border-left: 3px solid var(--alert) !important; background: var(--panel-bg-solid) !important; color: var(--alert); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
         #dj-matrix-panel { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 900px; background: rgba(10,10,10,0.95); border: 1px solid #b000ff; border-radius: 12px; padding: 20px; z-index: 50; backdrop-filter: blur(20px); box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(176,0,255,0.2); transition: all 0.3s ease; display: flex; flex-direction: column; }
         #dj-matrix-panel.hidden { transform: translate(-50%, 100%); opacity: 0; pointer-events: none; }
@@ -1701,6 +1704,7 @@ LIVE_TEMPLATE = r"""
     <div id="main-stage">
         <video id="video-feed" autoplay muted playsinline class="mirror"></video>
         <canvas id="ar-overlay"></canvas>
+        <div id="ar-ui-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; pointer-events: none;"></div>
         <div class="camera-tint"></div>
         
         <div class="drag-overlay mono">DROP AUDIO OR DATA TO INGEST</div>
