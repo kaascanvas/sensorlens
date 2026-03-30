@@ -2592,11 +2592,27 @@ const djPresets =[
     { name: "Trip Hop Shoegaze", bpm: 85, dur: 16, channels:[{ text: "dusty vintage breakbeat punchy kick", weight: 1.2, color: "#00ff41" }, { text: "deep warm analog sub bass", weight: 1.2, color: "#00e5ff" }, { text: "vinyl crackle and staccato rimshots", weight: 1.0, color: "#b000ff" }, { text: "massive wall of sound distorted shoegaze guitars post punk", weight: 1.5, color: "#ff00aa" }, { text: "sparkling arpeggios tape delay", weight: 1.0, color: "#fadc00" }, { text: "ethereal lush strings pad", weight: 0.8, color: "#ff3b30" }, { text: "smoky breathy female vocals massive hall reverb", weight: 1.5, color: "#ff00ea" }, { text: "distant echoing male vocals lo-fi telephone filter", weight: 0.8, color: "#0055ff" }] }
 ];
 
+if (elements.btnToggleMatrix) {
+    elements.btnToggleMatrix.onclick = () => {
+        elements.matrixPanel.classList.remove('hidden');
+        // Auto-close sidebar on mobile devices so the user can see the matrix
+        if (window.innerWidth <= 900) elements.sidebar.classList.remove('open');
+    };
+}
+
+if (elements.btnCloseMatrix) {
+    elements.btnCloseMatrix.onclick = () => {
+        elements.matrixPanel.classList.add('hidden');
+    };
+}
 let currentPresetIdx = -1;
 const btnNextPreset = document.getElementById('btn-next-preset');
 if (btnNextPreset) {
     btnNextPreset.onclick = () => {
         elements.matrixPanel.classList.remove('hidden');
+        
+        if (window.innerWidth <= 900) elements.sidebar.classList.remove('open');
+        
         currentPresetIdx = (currentPresetIdx + 1) % djPresets.length; const preset = djPresets[currentPresetIdx];
         while (activeChannels < 8) injectChannel();
         for (let i = 0; i < 8; i++) {
