@@ -1891,7 +1891,9 @@ elements.purgeBtn.onclick = () => {
         elements.logs.innerHTML = '<div class="log-entry"><span style="color:#555;">[SYS]</span> Telemetry Purged.</div>';
         telemetry = { scanCount: 0, totalBytes: 0, startTime: Date.now() };
         // Reset Stems
-        state.activeStems = [];
+        state.activeStems =[];
+    }
+};
 
 elements.laserGameBtn.onclick = async () => {
     if (typeof window.toggleAR === 'function') {
