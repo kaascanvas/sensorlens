@@ -436,19 +436,19 @@ def ai_bridge_thread(sid, provider, system_instruction, input_queue, sovereign_k
                         elif m_type == 'audio' and data:
                             ws.send(json.dumps({
                                 "realtimeInput": {
-                                    "audio": {
+                                    "mediaChunks":[{
                                         "mimeType": "audio/pcm;rate=16000",
                                         "data": data
-                                    }
+                                    }]
                                 }
                             }))
                         elif m_type == 'video' and data:
                             ws.send(json.dumps({
                                 "realtimeInput": {
-                                    "video": {
+                                    "mediaChunks":[{
                                         "mimeType": "image/jpeg",
                                         "data": data
-                                    }
+                                    }]
                                 }
                             }))
                         elif m_type == 'lens_ocr':
