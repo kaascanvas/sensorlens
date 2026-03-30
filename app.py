@@ -382,11 +382,11 @@ def ai_bridge_thread(sid, provider, system_instruction, input_queue, sovereign_k
             }
             ws.send(json.dumps(setup_msg))
         else:
-            # ---> FIX 2: Defaulting to Gemini 3.1 Flash Live Preview
             setup_msg = {
                 "setup": {
                     "model": os.getenv('GEMINI_LIVE_MODEL', 'models/gemini-3.1-flash-live-preview'),
                     "systemInstruction": {"parts":[{"text": system_instruction}]},
+                    "tools": [{"googleSearch": {}}],  
                     "generationConfig": {
                         "responseModalities":["AUDIO"],
                         "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": "Charon"}}}
@@ -548,6 +548,12 @@ def handle_socket_connect(auth=None):
     t.start()
     
     active_sessions[sid] = {'queue': q, 'running': True}
+
+    if domain.lower() == 'dj':
+        q.put({
+            'type': 'text', 
+            'data': '[SYSTEM COMMAND]: You just stepped on the mainstage! 1. Use Google Search to find the current #1 track on Beatport or DJ Mag or Spotify or Apple Music or SoundCloud or https://www.internationalmusicsummit.com/. 2. Hype the crowd and announce the track. 3. Immediately drop a stem inspired by it using exactly: [GENERATE_STEM: <track description>, T=16]'
+        })
 
 @socketio.on('disconnect', namespace='/live')
 def handle_socket_disconnect():
