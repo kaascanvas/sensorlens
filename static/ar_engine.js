@@ -9,6 +9,12 @@ window.arState = window.arState || {
     lastVideoTime: -1
 };
 
+// --- INJECT GOOGLE FONT ---
+const fontLink = document.createElement('link');
+fontLink.rel = 'stylesheet';
+fontLink.href = 'https://fonts.googleapis.com/css2?family=Titan+One&display=swap';
+document.head.appendChild(fontLink);
+
 // --- SETUP MEDIAPIPE HAND TRACKING ---
 window.setupAR = async () => {
     if (window.arState.landmarker) return true;
@@ -19,7 +25,7 @@ window.setupAR = async () => {
             delegate: "GPU" 
         }, 
         runningMode: "VIDEO", 
-        numHands: 1
+        numHands: 2 // Upgraded to 2 hands for the create/scale gestures
     });
     return true;
 };
@@ -35,7 +41,6 @@ class InteractiveTextAR {
 
         // --- THREE.JS SETUP ---
         this.scene = new THREE.Scene();
-        // Use Orthographic camera to map 1:1 with screen pixels
         this.camera = new THREE.OrthographicCamera(-window.innerWidth/2, window.innerWidth/2, window.innerHeight/2, -window.innerHeight/2, 1, 1000);
         this.camera.position.z = 100;
         
@@ -43,36 +48,34 @@ class InteractiveTextAR {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setClearColor(0x000000, 0);
 
-        // Lights for the Gem
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        // Lighting for solid shapes
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
         this.scene.add(ambientLight);
-        const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
-        dirLight.position.set(100, 100, 100);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        dirLight.position.set(200, 300, 200);
         this.scene.add(dirLight);
-
-        // Create the Red Low-Poly Gem (Dodecahedron)
-        const geometry = new THREE.DodecahedronGeometry(60, 0);
-        const material = new THREE.MeshStandardMaterial({ 
-            color: 0xff0033, 
-            roughness: 0.2, 
-            metalness: 0.1,
-            flatShading: true 
-        });
-        this.gem = new THREE.Mesh(geometry, material);
-        this.gem.scale.set(0, 0, 0); // Hidden initially
-        this.scene.add(this.gem);
 
         // --- STATE & PHYSICS VARIABLES ---
         this.gameStarted = false;
-        this.handPos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-        this.targetGemScale = 0;
-        this.currentGemScale = 0;
         this.words =[];
         
-        this.buildUI();
-        this.setupText("Lens DNA Republic of DJs");
+        // --- GESTURE VARIABLES ---
+        this.shapes =[];
+        this.currentShape = null;
+        this.isPinchingDouble = false;
+        this.shapeScale = 1;
+        this.originalDistance = null;
+        this.selectedShape = null;
+        this.shapeCreatedThisPinch = false;
+        this.lastShapeCreationTime = 0;
+        this.shapeCreationCooldown = 1000;
+        
+        this.neonColors =[0xFF00FF, 0x00FFFF, 0xFF3300, 0x39FF14, 0xFF0099, 0x00FF00, 0xFF6600, 0xFFFF00];
+        this.colorIndex = 0;
 
-        // Handle Window Resize for Text Layout
+        this.buildUI();
+        this.setupText("the future of text layout is not css");
+
         window.addEventListener('resize', this.onWindowResize.bind(this));
         
         this.animate();
@@ -83,18 +86,25 @@ class InteractiveTextAR {
         
         this.ui = document.createElement('div');
         this.ui.id = 'ar-text-overlay';
-        this.ui.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; z-index:2005; display:flex; flex-direction:column; justify-content:center; align-items:center; pointer-events:none; overflow:hidden;';
+        this.ui.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; z-index:2005; display:flex; flex-direction:column; justify-content:center; align-items:center; pointer-events:none; overflow:hidden; padding: 40px; box-sizing: border-box;';
         
-        // Container where the repelling words will live
+        // Container where the repelling words will live (Fills screen, wraps text)
         this.textContainer = document.createElement('div');
-        this.textContainer.style.cssText = 'width: 80%; text-align: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;';
+        this.textContainer.style.cssText = 'width: 100%; height: 100%; text-align: center; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 2vw;';
         this.ui.appendChild(this.textContainer);
+
+        // Recycle Bin
+        this.recycleBin = document.createElement('img');
+        this.recycleBin.src = '/static/recyclebin.png'; // Make sure you have this file!
+        this.recycleBin.alt = '🗑️';
+        this.recycleBin.style.cssText = 'position:absolute; bottom: 40px; right: 40px; width: 80px; height: 80px; opacity: 0.5; transition: 0.3s ease; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,0,0,0));';
+        this.ui.appendChild(this.recycleBin);
 
         // The text input box at the bottom
         this.inputBox = document.createElement('input');
         this.inputBox.type = 'text';
         this.inputBox.placeholder = "type here...";
-        this.inputBox.style.cssText = 'position:absolute; bottom: 50px; width: 300px; padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.4); background: rgba(0,0,0,0.4); color: white; font-family: "Share Tech Mono", monospace; font-size: 16px; text-align: center; pointer-events: auto; outline: none; backdrop-filter: blur(10px);';
+        this.inputBox.style.cssText = 'position:absolute; bottom: 50px; width: 300px; padding: 12px 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.4); background: rgba(0,0,0,0.6); color: white; font-family: "Share Tech Mono", monospace; font-size: 16px; text-align: center; pointer-events: auto; outline: none; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);';
         
         this.inputBox.addEventListener('input', (e) => {
             this.setupText(e.target.value || "type something");
@@ -116,12 +126,13 @@ class InteractiveTextAR {
             span.style.cssText = `
                 color: transparent;
                 -webkit-text-stroke: 3px #ccff00;
-                font-family: 'Inter', 'Share Tech Mono', sans-serif;
-                font-size: 8vw;
-                font-weight: 900;
+                font-family: 'Titan One', sans-serif;
+                font-size: clamp(3rem, 8vw, 12rem); /* Adapts to screen size */
+                line-height: 1.1;
                 text-transform: lowercase;
                 display: inline-block;
                 will-change: transform;
+                text-shadow: 0 0 15px rgba(204, 255, 0, 0.2);
             `;
             this.textContainer.appendChild(span);
 
@@ -134,16 +145,14 @@ class InteractiveTextAR {
             });
         });
 
-        // Use a timeout to allow the browser to flow the text, then measure bases
-        setTimeout(() => this.measureBasePositions(), 50);
+        // Delay measurement to let the browser reflow the flexbox
+        setTimeout(() => this.measureBasePositions(), 100);
     }
 
     measureBasePositions() {
         this.words.forEach(wordObj => {
-            // Reset transforms to get natural layout positions
             wordObj.element.style.transform = `translate(0px, 0px)`;
             const rect = wordObj.element.getBoundingClientRect();
-            // Store the center of the word in screen space
             wordObj.baseX = rect.left + rect.width / 2;
             wordObj.baseY = rect.top + rect.height / 2;
         });
@@ -159,32 +168,111 @@ class InteractiveTextAR {
         this.measureBasePositions();
     }
 
+    // --- 3D SHAPE GENERATION ---
+    getNextNeonColor() {
+        const color = this.neonColors[this.colorIndex];
+        this.colorIndex = (this.colorIndex + 1) % this.neonColors.length;
+        return color;
+    }
+
+    createRandomShape(screenX, screenY) {
+        const geometries =[
+            new THREE.BoxGeometry(60, 60, 60),
+            new THREE.SphereGeometry(40, 32, 32),
+            new THREE.ConeGeometry(40, 80, 32),
+            new THREE.DodecahedronGeometry(45, 0)
+        ];
+        const geometry = geometries[Math.floor(Math.random() * geometries.length)];
+        const color = this.getNextNeonColor();
+        const group = new THREE.Group();
+
+        // Solid Fill
+        const material = new THREE.MeshStandardMaterial({ 
+            color: color, 
+            roughness: 0.3,
+            metalness: 0.2
+        });
+        const fillMesh = new THREE.Mesh(geometry, material);
+
+        // White Wireframe Overlay
+        const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.6 });
+        const wireframeMesh = new THREE.Mesh(geometry, wireframeMaterial);
+        // Slightly scale up wireframe to prevent z-fighting
+        wireframeMesh.scale.set(1.02, 1.02, 1.02);
+
+        group.add(fillMesh);
+        group.add(wireframeMesh);
+        
+        group.position.x = screenX - window.innerWidth / 2;
+        group.position.y = -(screenY - window.innerHeight / 2);
+        group.position.z = 20;
+
+        this.scene.add(group);
+        this.shapes.push(group);
+        return group;
+    }
+
+    findNearestShape(screenX, screenY) {
+        let minDist = Infinity;
+        let closest = null;
+        const threeX = screenX - window.innerWidth / 2;
+        const threeY = -(screenY - window.innerHeight / 2);
+
+        this.shapes.forEach(shape => {
+            const dist = Math.hypot(shape.position.x - threeX, shape.position.y - threeY);
+            // Grab threshold based on scale
+            if (dist < 80 * shape.scale.x && dist < minDist) {
+                minDist = dist;
+                closest = shape;
+            }
+        });
+        return closest;
+    }
+
+    isInRecycleBinZone(screenX, screenY) {
+        const binRect = this.recycleBin.getBoundingClientRect();
+        // Add a 20px forgiving padding around the bin
+        return (
+            screenX >= binRect.left - 20 &&
+            screenX <= binRect.right + 20 &&
+            screenY >= binRect.top - 20 &&
+            screenY <= binRect.bottom + 20
+        );
+    }
+
+    // --- PHYSICS ENGINE ---
     updatePhysics() {
-        const repelRadius = 250; // How far the gem pushes text
-        const maxPush = 150;     // Max pixels a word can be pushed
+        const repelRadius = 280; 
+        const maxPush = 200;     
 
         this.words.forEach(wordObj => {
             let targetOffsetX = 0;
             let targetOffsetY = 0;
 
-            // Only apply force if the gem is visible (pinched)
-            if (this.currentGemScale > 0.1) {
-                const dx = wordObj.baseX - this.handPos.x;
-                const dy = wordObj.baseY - this.handPos.y;
+            // Calculate repulsion for ALL active shapes
+            this.shapes.forEach(shape => {
+                // Convert Three.js coords back to Screen space
+                const shapeScreenX = shape.position.x + window.innerWidth / 2;
+                const shapeScreenY = -(shape.position.y - window.innerHeight / 2);
+
+                const dx = wordObj.baseX - shapeScreenX;
+                const dy = wordObj.baseY - shapeScreenY;
                 const dist = Math.hypot(dx, dy);
 
-                if (dist < repelRadius && dist > 0) {
-                    const force = Math.pow((repelRadius - dist) / repelRadius, 1.5); // Exponential falloff
-                    targetOffsetX = (dx / dist) * force * maxPush;
-                    targetOffsetY = (dy / dist) * force * maxPush;
-                }
-            }
+                // Multiply repel radius by the shape's scale so big shapes push more
+                const effectiveRadius = repelRadius * Math.max(0.5, shape.scale.x);
 
-            // Lerp (smoothly move) current offset towards target offset
+                if (dist < effectiveRadius && dist > 0) {
+                    const force = Math.pow((effectiveRadius - dist) / effectiveRadius, 1.8); 
+                    targetOffsetX += (dx / dist) * force * maxPush;
+                    targetOffsetY += (dy / dist) * force * maxPush;
+                }
+            });
+
+            // Smoothly move current offset towards target offset
             wordObj.currentOffsetX += (targetOffsetX - wordObj.currentOffsetX) * 0.15;
             wordObj.currentOffsetY += (targetOffsetY - wordObj.currentOffsetY) * 0.15;
 
-            // Apply to DOM
             wordObj.element.style.transform = `translate(${wordObj.currentOffsetX}px, ${wordObj.currentOffsetY}px)`;
         });
     }
@@ -199,48 +287,139 @@ class InteractiveTextAR {
             window.arState.lastVideoTime = this.video.currentTime;
             const res = window.arState.landmarker.detectForVideo(this.video, performance.now());
             
-            if (res.landmarks && res.landmarks[0]) {
-                const hand = res.landmarks[0];
-                const thumbTip = hand[4];
-                const indexTip = hand[8];
+            // Helper to get Screen Coordinates from normalized landmarks
+            const getScreenPos = (landmark) => ({
+                x: (isMirrored ? (1 - landmark.x) : landmark.x) * window.innerWidth,
+                y: landmark.y * window.innerHeight
+            });
 
-                // Calculate pinch distance
-                const pinchDist = Math.hypot(thumbTip.x - indexTip.x, thumbTip.y - indexTip.y);
-                const isPinched = pinchDist < 0.08;
+            const isPinch = (hand) => Math.hypot(hand[4].x - hand[8].x, hand[4].y - hand[8].y) < 0.06;
 
-                // Midpoint between thumb and index
-                const midX = (thumbTip.x + indexTip.x) / 2;
-                const midY = (thumbTip.y + indexTip.y) / 2;
+            if (res.landmarks && res.landmarks.length > 0) {
+                
+                // TWO HANDS DETECTED: CREATE & SCALE
+                if (res.landmarks.length === 2) {
+                    const[l, r] = res.landmarks;
+                    const leftPinch = isPinch(l);
+                    const rightPinch = isPinch(r);
+                    
+                    const leftPos = getScreenPos(l[8]);
+                    const rightPos = getScreenPos(r[8]);
+                    const distBetweenHands = Math.hypot(leftPos.x - rightPos.x, leftPos.y - rightPos.y);
+                    const indexesClose = distBetweenHands < 180; // pixels
 
-                // Convert normalized hand coords to Screen Pixels
-                const screenX = isMirrored ? (1 - midX) * window.innerWidth : midX * window.innerWidth;
-                const screenY = midY * window.innerHeight;
+                    if (leftPinch && rightPinch) {
+                        const centerX = (leftPos.x + rightPos.x) / 2;
+                        const centerY = (leftPos.y + rightPos.y) / 2;
 
-                // Smoothly update hand tracking position
-                this.handPos.x += (screenX - this.handPos.x) * 0.3;
-                this.handPos.y += (screenY - this.handPos.y) * 0.3;
+                        if (!this.isPinchingDouble) {
+                            const now = Date.now();
+                            if (!this.shapeCreatedThisPinch && indexesClose && now - this.lastShapeCreationTime > this.shapeCreationCooldown) {
+                                this.currentShape = this.createRandomShape(centerX, centerY);
+                                this.lastShapeCreationTime = now;
+                                this.shapeCreatedThisPinch = true;
+                                this.originalDistance = distBetweenHands;
+                            }
+                        } else if (this.currentShape && this.originalDistance) {
+                            // Scale shape based on hand distance
+                            this.shapeScale = Math.max(0.2, distBetweenHands / this.originalDistance);
+                            this.currentShape.scale.set(this.shapeScale, this.shapeScale, this.shapeScale);
+                            
+                            // Keep shape centered between hands while scaling
+                            this.currentShape.position.x = centerX - window.innerWidth / 2;
+                            this.currentShape.position.y = -(centerY - window.innerHeight / 2);
+                        }
 
-                this.targetGemScale = isPinched ? 1 : 0;
+                        this.isPinchingDouble = true;
+                        this.recycleBin.style.opacity = '0.5';
+                        this.recycleBin.style.filter = 'drop-shadow(0 0 0px rgba(255,0,0,0))';
+                    } else {
+                        this.isPinchingDouble = false;
+                        this.shapeCreatedThisPinch = false;
+                        this.originalDistance = null;
+                        this.currentShape = null;
+                    }
+                } 
+                
+                // SINGLE HAND (OR INDEPENDENT HANDS): DRAG & DELETE
+                if (!this.isPinchingDouble) {
+                    let anyHandPinching = false;
+                    let activeHandPos = null;
+
+                    for (const hand of res.landmarks) {
+                        if (isPinch(hand)) {
+                            anyHandPinching = true;
+                            activeHandPos = getScreenPos(hand[8]);
+                            
+                            if (!this.selectedShape) {
+                                this.selectedShape = this.findNearestShape(activeHandPos.x, activeHandPos.y);
+                            }
+
+                            if (this.selectedShape) {
+                                // Drag the shape
+                                this.selectedShape.position.x = activeHandPos.x - window.innerWidth / 2;
+                                this.selectedShape.position.y = -(activeHandPos.y - window.innerHeight / 2);
+
+                                // Check Recycle Bin
+                                const inBin = this.isInRecycleBinZone(activeHandPos.x, activeHandPos.y);
+                                
+                                // Turn wireframe red if in bin
+                                this.selectedShape.children.forEach(child => {
+                                    if (child.material && child.material.wireframe) {
+                                        child.material.color.setHex(inBin ? 0xff0000 : 0xffffff);
+                                    }
+                                });
+
+                                if (inBin) {
+                                    this.recycleBin.style.opacity = '1';
+                                    this.recycleBin.style.filter = 'drop-shadow(0 0 20px rgba(255,0,0,0.8))';
+                                    this.recycleBin.style.transform = 'scale(1.2)';
+                                } else {
+                                    this.recycleBin.style.opacity = '0.5';
+                                    this.recycleBin.style.filter = 'drop-shadow(0 0 0px rgba(255,0,0,0))';
+                                    this.recycleBin.style.transform = 'scale(1)';
+                                }
+                            }
+                            break; // Only handle one pinch drag at a time
+                        }
+                    }
+
+                    // Release pinch logic
+                    if (!anyHandPinching) {
+                        if (this.selectedShape && activeHandPos && this.isInRecycleBinZone(activeHandPos.x, activeHandPos.y)) {
+                            // Destroy Shape
+                            this.scene.remove(this.selectedShape);
+                            this.shapes = this.shapes.filter(s => s !== this.selectedShape);
+                        } else if (this.selectedShape) {
+                            // Reset wireframe color
+                            this.selectedShape.children.forEach(child => {
+                                if (child.material && child.material.wireframe) {
+                                    child.material.color.setHex(0xffffff);
+                                }
+                            });
+                        }
+                        this.selectedShape = null;
+                        this.recycleBin.style.opacity = '0.5';
+                        this.recycleBin.style.filter = 'drop-shadow(0 0 0px rgba(255,0,0,0))';
+                        this.recycleBin.style.transform = 'scale(1)';
+                    }
+                }
             } else {
-                this.targetGemScale = 0; // Hide gem if hand lost
+                // No hands detected
+                this.isPinchingDouble = false;
+                this.selectedShape = null;
             }
         }
 
-        // Smoothly scale the Gem
-        this.currentGemScale += (this.targetGemScale - this.currentGemScale) * 0.2;
-        this.gem.scale.set(this.currentGemScale, this.currentGemScale, this.currentGemScale);
+        // Rotate all idle shapes
+        this.shapes.forEach(shape => {
+            if (shape !== this.selectedShape && shape !== this.currentShape) {
+                shape.rotation.x += 0.01;
+                shape.rotation.y += 0.01;
+            }
+        });
 
-        // Update Gem Position in Three.js (map Screen space to Ortho space)
-        this.gem.position.x = this.handPos.x - window.innerWidth / 2;
-        this.gem.position.y = -(this.handPos.y - window.innerHeight / 2);
-
-        // Rotate Gem
-        this.gem.rotation.x += 0.02;
-        this.gem.rotation.y += 0.03;
-
-        // Apply Repulsion Physics to Text
         this.updatePhysics();
-
         this.renderer.render(this.scene, this.camera);
     }
 
@@ -257,17 +436,15 @@ class InteractiveTextAR {
 
 let activeApp = null;
 
-// --- EXPORTED TOGGLE FUNCTION FOR APP.PY ---
 window.toggleAR = async () => {
     window.arState.active = !window.arState.active;
-    
     const videoEl = document.getElementById("video-feed");
 
     if (window.arState.active) {
         window.arState.videoElement = videoEl; 
         window.arState.overlayCanvas = document.getElementById("ar-overlay"); 
         
-        // Apply the Black & White filter to match the video vibe
+        // B&W Filter
         videoEl.style.filter = "grayscale(100%) contrast(120%) brightness(0.9)";
 
         await window.setupAR(); 
@@ -275,9 +452,7 @@ window.toggleAR = async () => {
         if (!activeApp) activeApp = new InteractiveTextAR();
         activeApp.startGame();            
     } else {
-        // Restore normal video styling
         videoEl.style.filter = "contrast(110%) brightness(0.9)";
-
         if (activeApp) {
             activeApp.stop();
             setTimeout(() => {
