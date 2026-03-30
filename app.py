@@ -424,12 +424,8 @@ def ai_bridge_thread(sid, provider, system_instruction, input_queue, sovereign_k
                     else:
                         if m_type == 'text' and data:
                             ws.send(json.dumps({
-                                "clientContent": {
-                                    "turns":[{
-                                        "role": "user",
-                                        "parts":[{"text": data}]
-                                    }],
-                                    "turnComplete": True
+                                "realtimeInput": {
+                                    "text": data
                                 }
                             }))
                         elif m_type == 'audio' and data:
@@ -452,16 +448,19 @@ def ai_bridge_thread(sid, provider, system_instruction, input_queue, sovereign_k
                             }))
                         elif m_type == 'lens_ocr':
                             prompt_text = item.get('prompt', "Analyze.")
+                            # 1. Send the image frame as video
                             ws.send(json.dumps({
-                                "clientContent": {
-                                    "turns":[{
-                                        "role": "user", 
-                                        "parts":[
-                                            {"text": prompt_text}, 
-                                            {"inlineData": {"mimeType": "image/jpeg", "data": data}}
-                                        ]
-                                    }],
-                                    "turnComplete": True
+                                "realtimeInput": {
+                                    "video": {
+                                        "mimeType": "image/jpeg",
+                                        "data": data
+                                    }
+                                }
+                            }))
+                            # 2. Immediately send the text prompt
+                            ws.send(json.dumps({
+                                "realtimeInput": {
+                                    "text": prompt_text
                                 }
                             }))
                 except queue.Empty:
