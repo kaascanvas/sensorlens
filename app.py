@@ -390,8 +390,7 @@ def ai_bridge_thread(sid, provider, system_instruction, input_queue, sovereign_k
                     "generationConfig": {
                         "responseModalities":["AUDIO"],
                         "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": "Charon"}}}
-                    },
-                    "outputAudioTranscription": {}  
+                    }
                 }
             }
             ws.send(json.dumps(setup_msg))
