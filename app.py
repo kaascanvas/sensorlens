@@ -2511,10 +2511,78 @@ function injectChannel() {
 if (channelsContainer) { injectChannel(); injectChannel(); injectChannel(); if (btnAddChannel) btnAddChannel.onclick = injectChannel; }
 
 const djPresets =[
+    // --- NEW: THE "BKK STARLET" COLLECTION (Legally Safe Lisa/BP Vibes) ---
+    { 
+        // Fans know her as the "Thai Princess". Thai strings + brass = Lalisa vibe.
+        name: "Bangkok Princess Trap", bpm: 105, dur: 8, channels:[
+            { text: "punchy heavy trap kick and crisp snap", weight: 1.5, color: "#00ff41" }, 
+            { text: "booming 808 sub bass glide", weight: 1.8, color: "#00e5ff" }, 
+            { text: "fast rolling trap hi-hats", weight: 1.2, color: "#b000ff" }, 
+            { text: "massive triumphant brass stabs", weight: 1.6, color: "#ff00aa" }, 
+            { text: "traditional thai string instrument pluck", weight: 1.4, color: "#fadc00" }, 
+            { text: "police siren and sweeping riser fx", weight: 0.8, color: "#ff3b30" }, 
+            { text: "fierce high-energy female k-pop rap spelling her name", weight: 1.7, color: "#ff00ea" }, 
+            { text: "deep male hype shout saying 'what!'", weight: 0.8, color: "#0055ff" }
+        ] 
+    },
+    { 
+        // "Dolla Bills" is the iconic lyric from 'Money'.
+        name: "Dolla Bills Bounce", bpm: 112, dur: 8, channels:[
+            { text: "hard hitting hip hop kick and tight snare", weight: 1.5, color: "#00ff41" }, 
+            { text: "bouncy distorted 808 bass", weight: 1.8, color: "#00e5ff" }, 
+            { text: "rhythmic syncopated shakers and hats", weight: 1.0, color: "#b000ff" }, 
+            { text: "dark minimal synth horn melody", weight: 1.4, color: "#ff00aa" }, 
+            { text: "subtle plucked bell melody", weight: 0.8, color: "#fadc00" }, 
+            { text: "cash register ka-ching and coin drop fx", weight: 1.2, color: "#ff3b30" }, 
+            { text: "swag heavy female rap boasting about wealth and dollar bills", weight: 1.8, color: "#ff00ea" }, 
+            { text: "rhythmic male vocal chops", weight: 0.6, color: "#0055ff" }
+        ] 
+    },
+    { 
+        // BKK (Bangkok) + Cyber/Guitar perfectly hints at her 'Rockstar' solo.
+        name: "BKK Cyber-Star", bpm: 120, dur: 16, channels:[
+            { text: "distorted industrial heavy kick drum", weight: 1.6, color: "#00ff41" }, 
+            { text: "gritty synth bass sequence", weight: 1.5, color: "#00e5ff" }, 
+            { text: "metallic cyber trap hi-hat rolls", weight: 1.2, color: "#b000ff" }, 
+            { text: "aggressive distorted electric guitar riff", weight: 1.8, color: "#ff00aa" }, 
+            { text: "cyberpunk arpeggiated synth", weight: 1.0, color: "#fadc00" }, 
+            { text: "laser sweep and futuristic glitch fx", weight: 0.8, color: "#ff3b30" }, 
+            { text: "aggressive bad girl female rap flow rockstar attitude", weight: 1.7, color: "#ff00ea" }, 
+            { text: "heavy metal screaming male backing vocals", weight: 0.7, color: "#0055ff" }
+        ] 
+    },
+    { 
+        // "Pink Poison" + Korean Geomungo string screams 'Pink Venom' without the trademark.
+        name: "Pink Poison Dancebreak", bpm: 130, dur: 16, channels:[
+            { text: "massive festival trap kick drum", weight: 1.5, color: "#00ff41" }, 
+            { text: "earth-shaking rolling sub bass", weight: 1.6, color: "#00e5ff" }, 
+            { text: "driving marching band snare rolls", weight: 1.5, color: "#b000ff" }, 
+            { text: "middle eastern flute and synth lead", weight: 1.4, color: "#ff00aa" }, 
+            { text: "traditional korean geomungo string pluck", weight: 1.6, color: "#fadc00" }, 
+            { text: "stadium crowd cheering and huge riser", weight: 1.0, color: "#ff3b30" }, 
+            { text: "fierce girl group unison chant singing 'get em'", weight: 1.6, color: "#ff00ea" }, 
+            { text: "heavy brass drop impact", weight: 1.2, color: "#0055ff" }
+        ] 
+    },
+    { 
+        // "Maknae" is K-pop slang for the youngest member (Lisa). French/Runway hints at her Celine/LV ambassador status.
+        name: "Maknae Runway House", bpm: 124, dur: 16, channels:[
+            { text: "deep punchy four on the floor house kick", weight: 1.5, color: "#00ff41" }, 
+            { text: "thick fm bassline groove", weight: 1.6, color: "#00e5ff" }, 
+            { text: "crisp 909 open hats and claps", weight: 1.2, color: "#b000ff" }, 
+            { text: "sultry deep house synth chords", weight: 1.4, color: "#ff00aa" }, 
+            { text: "fashion show flashbulb clicks and percussion", weight: 1.0, color: "#fadc00" }, 
+            { text: "runway announcer echo fx", weight: 0.6, color: "#ff3b30" }, 
+            { text: "breathy whispered female vocals speaking french", weight: 1.5, color: "#ff00ea" }, 
+            { text: "smooth vocal house chops", weight: 0.9, color: "#0055ff" }
+        ] 
+    },
+
+    // --- ORIGINAL PRESETS ---
     { name: "K-Pop Girl Crush Trap", bpm: 105, dur: 8, channels:[{ text: "heavy trap 808 punchy kick and snappy snare", weight: 1.5, color: "#00ff41" }, { text: "booming 808 sub bass glide", weight: 1.8, color: "#00e5ff" }, { text: "fast-paced staccato rhythmic trap hi-hat rolls", weight: 1.2, color: "#b000ff" }, { text: "aggressive cinematic brass stabs and middle eastern synth lead", weight: 1.5, color: "#ff00aa" }, { text: "sparkling arpeggios minimal trap sequence", weight: 0.8, color: "#fadc00" }, { text: "hype stadium vocal chants and siren fx", weight: 0.6, color: "#ff3b30" }, { text: "glossy autotuned high soprano female rapper, aggressive flow singing: 'Lens DNA APP'", weight: 1.6, color: "#ff00ea" }, { text: "deep gravelly male hype man with distorted ad-libs", weight: 0.8, color: "#0055ff" }] },
     { name: "K-Pop Mainstage EDM", bpm: 130, dur: 16, channels:[{ text: "heavy four on the floor punchy kick drum edm", weight: 1.5, color: "#00ff41" }, { text: "filthy rolling dubstep sub bass", weight: 1.2, color: "#00e5ff" }, { text: "crisp 909 shakers and building drum rolls", weight: 1.0, color: "#b000ff" }, { text: "massive detuned rave synth lead drop", weight: 1.5, color: "#ff00aa" }, { text: "euphoric trance supersaw chords", weight: 1.2, color: "#fadc00" }, { text: "massive stadium riser sweep fx", weight: 0.8, color: "#ff3b30" }, { text: "anthemic powerful pop female vocals with large stadium reverb", weight: 1.5, color: "#ff00ea" }, { text: "harmonized robotic vocoder male backing vocals", weight: 0.7, color: "#0055ff" }] },
     { name: "Moombahton Pink Groove", bpm: 110, dur: 16, channels:[{ text: "punchy kick reggaeton moombahton beat", weight: 1.5, color: "#00ff41" }, { text: "warm bouncy synth bass", weight: 1.2, color: "#00e5ff" }, { text: "tropical congas and crisp rhythmic snares", weight: 1.0, color: "#b000ff" }, { text: "bright tropical marimba synth pluck", weight: 1.2, color: "#ff00aa" }, { text: "lush strings and upbeat piano chords", weight: 1.0, color: "#fadc00" }, { text: "sweeping white noise fx", weight: 0.5, color: "#ff3b30" }, { text: "sultry soulful female vocals rhythmic reggaeton phrasing", weight: 1.5, color: "#ff00ea" }, { text: "laid-back baritone male vocals with warm analog saturation", weight: 0.8, color: "#0055ff" }] },
-    { name: "Peak-Time Melodic Techno", bpm: 126, dur: 16, channels:[{ text: "punchy deep room techno kick drum", weight: 1.5, color: "#00ff41" }, { text: "rolling dark sub bassline", weight: 1.2, color: "#00e5ff" }, { text: "crisp 909 hi-hats and driving shakers", weight: 0.8, color: "#b000ff" }, { text: "detuned cinematic brass stabs", weight: 1.0, color: "#ff00aa" }, { text: "euphoric analog synthesizer arpeggio", weight: 1.8, color: "#fadc00" }, { text: "distant haunting choral vocal wash", weight: 0.6, color: "#ff3b30" }, { text: "hypnotic high soprano female vocals dark ping-pong delay", weight: 1.0, color: "#ff00ea" }, { text: "commanding rhythmic baritone male vocals monotone techno", weight: 1.2, color: "#0055ff" }] },
+    { name: "Peak-Time Melodic Techno", bpm: 126, dur: 16, channels:[{ text: "punchy deep room techno techno kick drum", weight: 1.5, color: "#00ff41" }, { text: "rolling dark sub bassline", weight: 1.2, color: "#00e5ff" }, { text: "crisp 909 hi-hats and driving shakers", weight: 0.8, color: "#b000ff" }, { text: "detuned cinematic brass stabs", weight: 1.0, color: "#ff00aa" }, { text: "euphoric analog synthesizer arpeggio", weight: 1.8, color: "#fadc00" }, { text: "distant haunting choral vocal wash", weight: 0.6, color: "#ff3b30" }, { text: "hypnotic high soprano female vocals dark ping-pong delay", weight: 1.0, color: "#ff00ea" }, { text: "commanding rhythmic baritone male vocals monotone techno", weight: 1.2, color: "#0055ff" }] },
     { name: "High-Octane Psy-Trance", bpm: 142, dur: 8, channels:[{ text: "tight punchy psytrance kick", weight: 1.5, color: "#00ff41" }, { text: "galloping triplet FM bassline", weight: 1.8, color: "#00e5ff" }, { text: "metallic futuristic percussion loops", weight: 1.0, color: "#b000ff" }, { text: "swirling psychedelic 303 acid squelches", weight: 1.5, color: "#ff00aa" }, { text: "epic trance supersaw chords", weight: 1.0, color: "#fadc00" }, { text: "alien sci-fi riser FX", weight: 0.8, color: "#ff3b30" }, { text: "glitched rhythmic female vocal chops trippy echo trails", weight: 1.5, color: "#ff00ea" }, { text: "distant pitched-shifted male vocal drones", weight: 0.6, color: "#0055ff" }] },
     { name: "Mainstage Future Rave", bpm: 128, dur: 8, channels:[{ text: "heavy distorted mainroom kick", weight: 1.5, color: "#00ff41" }, { text: "aggressive reese bass drone", weight: 1.2, color: "#00e5ff" }, { text: "driving mechanical snare build", weight: 1.0, color: "#b000ff" }, { text: "massive detuned rave synth lead", weight: 1.8, color: "#ff00aa" }, { text: "sidechained white noise sweep", weight: 0.6, color: "#fadc00" }, { text: "distorted hype male vocal shout with metallic crunch", weight: 1.0, color: "#ff3b30" }, { text: "high-energy pop female vocals bright sidechained processing", weight: 1.5, color: "#ff00ea" }, { text: "robotic vocoder male vocals futuristic texture", weight: 0.8, color: "#0055ff" }] },
     { name: "Cyberpunk Synthwave", bpm: 105, dur: 8, channels:[{ text: "retro 80s gated snare and heavy kick", weight: 1.5, color: "#00ff41" }, { text: "fat moog analog bass sequence", weight: 1.8, color: "#00e5ff" }, { text: "driving 16th-note synth hi-hats", weight: 1.0, color: "#b000ff" }, { text: "neon-drenched polysynth chords", weight: 1.5, color: "#ff00aa" }, { text: "soaring outrun electric guitar solo", weight: 1.0, color: "#fadc00" }, { text: "dystopian vhs tape flutter noise", weight: 0.4, color: "#ff3b30" }, { text: "dreamy breathy female vocals vintage gated reverb", weight: 1.4, color: "#ff00ea" }, { text: "smooth multi-tracked male harmonies 80s chorus", weight: 0.8, color: "#0055ff" }] },
