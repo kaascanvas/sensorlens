@@ -1704,6 +1704,11 @@ LIVE_TEMPLATE = r"""
             <span class="brand-dot" style="background:#555; box-shadow:none;" id="conn-dot"></span>
             <span id="btn-text">CONNECT AI</span>
         </button>
+        
+        <!-- SOVEREIGN COPYRIGHT FOOTER -->
+        <div style="text-align: center; padding: 10px; font-size: 0.55rem; color: var(--text-mut); background: var(--panel-bg); border-top: 1px solid var(--border); letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; flex-shrink: 0; z-index: 100;">
+            PRODUCED WITH MAGICAL LOVE BY &copy; HANS JOHANNES SCHULTE
+        </div>
     </div>
 
     <div id="main-stage">
@@ -1860,7 +1865,7 @@ const elements = {
     btnCloseMatrix: document.getElementById("btn-close-matrix")
 };
 
-let state = { socket: null, audioCtx: null, worklet: null, videoStream: null, audioStream: null, serverReady: false, nextStartTime: 0, mode: "camera", facingMode: "user", isSwapping: false, timerInterval: null, secondsLeft: SESSION_LIMIT_SEC, isSpeaking: false, lastVoiceTimestamp: 0, isGeneratingStem: false, stemTimeout: null, stemInterval: null, stemStartTime: 0, mediaRecorder: null, recordedChunks:[], recorderDest: null, micMuted: true };
+let state = { socket: null, audioCtx: null, worklet: null, videoStream: null, audioStream: null, serverReady: false, nextStartTime: 0, mode: "camera", facingMode: "user", isSwapping: false, timerInterval: null, secondsLeft: SESSION_LIMIT_SEC, isSpeaking: false, lastVoiceTimestamp: 0, isGeneratingStem: false, stemTimeout: null, stemInterval: null, stemStartTime: 0, mediaRecorder: null, recordedChunks:[], recorderDest: null, micMuted: true, activeStems:[] };
 let telemetry = { scanCount: 0, totalBytes: 0, startTime: Date.now() };
 
 let engineState = { currentBPM: 138 };
@@ -1878,11 +1883,15 @@ elements.hamburgerBtn.onclick = toggleSidebar;
 if(elements.toggleSidebarBtn) elements.toggleSidebarBtn.onclick = toggleSidebar;
 if(elements.closeSidebarBtn) elements.closeSidebarBtn.onclick = toggleSidebar;
 
-elements.btnToggleMatrix.onclick = () => { 
-    elements.matrixPanel.classList.toggle('hidden');
-    elements.chat.scrollTop = elements.chat.scrollHeight;
-};
-elements.btnCloseMatrix.onclick = () => elements.matrixPanel.classList.add('hidden');
+elements.purgeBtn.onclick = () => {
+    if(confirm("PURGE ALL EPHEMERAL DATA?\n\nThis will wipe the chat history, audio stems, and telemetry logs from your local RAM.")) {
+        // Reset Chat
+        elements.chat.innerHTML = `<div class="msg-row msg-ai"><div class="msg-sender mono">SYSTEM</div><div class="msg-content"><strong>RAM Purged.</strong><br>All ephemeral data wiped. Ready for new input.</div></div>`;
+        // Reset Telemetry Logs
+        elements.logs.innerHTML = '<div class="log-entry"><span style="color:#555;">[SYS]</span> Telemetry Purged.</div>';
+        telemetry = { scanCount: 0, totalBytes: 0, startTime: Date.now() };
+        // Reset Stems
+        state.activeStems = [];
 
 elements.laserGameBtn.onclick = async () => {
     if (typeof window.toggleAR === 'function') {
@@ -2153,6 +2162,16 @@ async function connect() {
                 </div>
             `;
             appendChat("SYSTEM", stemHtml, "speech");
+
+            state.activeStems.push(trackId);
+            if (state.activeStems.length > 3) {
+                const oldestTrackId = state.activeStems.shift(); // Get the oldest
+                const oldAudioEl = document.getElementById(oldestTrackId);
+                if (oldAudioEl) {
+                    const msgRow = oldAudioEl.closest('.msg-row');
+                    if (msgRow) msgRow.remove(); // Wipe oldest track from chat/RAM completely
+                }
+            }
 
             setTimeout(() => {
                 const audioEl = document.getElementById(trackId);
