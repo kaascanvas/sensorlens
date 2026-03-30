@@ -70,7 +70,7 @@ class InteractiveTextAR {
         this.words =[];
         
         this.buildUI();
-        this.setupText("the future of text layout is not css");
+        this.setupText("Lens DNA Republic of DJs");
 
         // Handle Window Resize for Text Layout
         window.addEventListener('resize', this.onWindowResize.bind(this));
