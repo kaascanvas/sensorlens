@@ -16,7 +16,7 @@ window.setupAR = async () => {
 class DJTextOverlay {
     constructor() {
         this.video = window.arState.videoElement;
-        this.currentText = "lens dna DJ flyer text";
+        this.currentText = "lens dna DJ Flyers text";
 
         this.buildUI();
         this.setupText(this.currentText);
@@ -33,22 +33,6 @@ class DJTextOverlay {
         this.ui = document.createElement('div');
         this.ui.id = 'ar-text-overlay';
         this.ui.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; z-index:2005; display:flex; flex-direction:column; justify-content:center; align-items:center; pointer-events:none; overflow:hidden;';
-        
-        if (!document.getElementById('dj-pulse-style')) {
-            const style = document.createElement('style');
-            style.id = 'dj-pulse-style';
-            style.innerHTML = `
-                @keyframes djPulse {
-                    0% { transform: scale(1); }
-                    50% { transform: scale(1.03); }
-                    100% { transform: scale(1); }
-                }
-                .dj-text-container {
-                    animation: djPulse 1.2s infinite cubic-bezier(0.25, 0.46, 0.45, 0.94);
-                }
-            `;
-            document.head.appendChild(style);
-        }
 
         this.textContainer = document.createElement('div');
         this.textContainer.className = 'dj-text-container';
