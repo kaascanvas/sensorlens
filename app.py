@@ -2496,16 +2496,34 @@ const chDefaults =[
 
 function injectChannel() {
     if (activeChannels >= MAX_CHANNELS) return;
-    const ch = chDefaults[activeChannels]; activeChannels++;
-    const col = document.createElement('div'); col.className = "dj-channel";
+    const ch = chDefaults[activeChannels]; 
+    activeChannels++;
+    
+    const currentId = activeChannels; 
+    
+    const col = document.createElement('div'); 
+    col.className = "dj-channel";
     col.innerHTML = `
-        <input type="text" id="ch${activeChannels}-prompt" class="key-input" value="${ch.text}" style="margin-bottom: 5px; text-align: center; padding: 4px; font-size: 0.55rem; background: var(--input-bg); color: var(--text-main);">
-        <input type="range" id="ch${activeChannels}-weight" min="0" max="2" step="0.1" value="${ch.weight}" style="writing-mode: vertical-lr; direction: rtl; flex: 1; height: 80px; width: 15px; accent-color: ${ch.color}; cursor: pointer;">
-        <span id="ch${activeChannels}-val" style="font-size: 0.65rem; font-weight: bold; margin-top: 5px; color: ${ch.color};">${ch.weight.toFixed(1)}</span>
+        <input type="text" id="ch${currentId}-prompt" class="key-input" value="${ch.text}" style="margin-bottom: 5px; text-align: center; padding: 4px; font-size: 0.55rem; background: var(--input-bg); color: var(--text-main);">
+        <input type="range" id="ch${currentId}-weight" min="0" max="2" step="0.1" value="${ch.weight}" style="writing-mode: vertical-lr; direction: rtl; flex: 1; height: 80px; width: 15px; accent-color: ${ch.color}; cursor: pointer;">
+        <span id="ch${currentId}-val" style="font-size: 0.65rem; font-weight: bold; margin-top: 5px; color: ${ch.color};">${ch.weight.toFixed(1)}</span>
     `;
     channelsContainer.appendChild(col);
-    col.querySelector(`#ch${activeChannels}-weight`).addEventListener('input', (e) => col.querySelector(`#ch${activeChannels}-val`).innerText = parseFloat(e.target.value).toFixed(1));
-    if (btnAddChannel) { btnAddChannel.innerText = `+ ADD CH (${activeChannels}/${MAX_CHANNELS})`; if (activeChannels >= MAX_CHANNELS) { btnAddChannel.style.opacity = "0.5"; btnAddChannel.style.cursor = "not-allowed"; } }
+    
+    const weightSlider = col.querySelector(`#ch${currentId}-weight`);
+    const valDisplay = col.querySelector(`#ch${currentId}-val`);
+    
+    weightSlider.addEventListener('input', (e) => {
+        valDisplay.innerText = parseFloat(e.target.value).toFixed(1);
+    });
+    
+    if (btnAddChannel) { 
+        btnAddChannel.innerText = `+ ADD CH (${activeChannels}/${MAX_CHANNELS})`; 
+        if (activeChannels >= MAX_CHANNELS) { 
+            btnAddChannel.style.opacity = "0.5"; 
+            btnAddChannel.style.cursor = "not-allowed"; 
+        } 
+    }
 }
 if (channelsContainer) { injectChannel(); injectChannel(); injectChannel(); if (btnAddChannel) btnAddChannel.onclick = injectChannel; }
 
