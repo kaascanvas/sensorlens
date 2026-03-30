@@ -1573,8 +1573,8 @@ LIVE_TEMPLATE = r"""
         .thought { font-size: 0.85rem; color: var(--neon); font-style: italic; border-left: 1px solid var(--border) !important; opacity: 0.8; }
         .sys-alert { border-left: 3px solid var(--alert) !important; background: var(--panel-bg-solid) !important; color: var(--alert); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
-        #dj-matrix-panel { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 900px; background: rgba(10,10,10,0.95); border: 1px solid #b000ff; border-radius: 12px; padding: 20px; z-index: 50; backdrop-filter: blur(20px); box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(176,0,255,0.2); transition: all 0.3s ease; display: flex; flex-direction: column; }
-        #dj-matrix-panel.hidden { transform: translate(-50%, 100%); opacity: 0; pointer-events: none; }
+        #dj-matrix-panel { position: relative; margin: 0 auto 10px auto; width: 100%; max-width: 850px; flex-shrink: 0; background: var(--panel-bg); border: 1px solid #b000ff; border-radius: 12px; padding: 20px; z-index: 50; backdrop-filter: blur(20px); box-shadow: 0 5px 20px rgba(0,0,0,0.3); transition: all 0.3s ease; display: flex; flex-direction: column; }
+        #dj-matrix-panel.hidden { display: none; }
         .dj-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .dj-channels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: #b000ff transparent; overflow-y: auto; max-height: 400px; }
         .dj-channels::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -1629,7 +1629,7 @@ LIVE_TEMPLATE = r"""
             .hero-mic-btn span.text { display: none; } 
             
             #prompts-overlay { width: calc(100vw - 40px); right: 20px; top: 60px; }
-            #dj-matrix-panel { width: 100%; bottom: 80px; padding: 15px; }
+            #dj-matrix-panel { width: calc(100% - 20px); margin: 0 auto 10px auto; padding: 15px; }
             .dj-channels { grid-template-columns: repeat(2, 1fr); max-height: 50vh; }
         }
 
@@ -1739,24 +1739,6 @@ LIVE_TEMPLATE = r"""
             </div>
         </div>
 
-        <div id="dj-matrix-panel" class="hidden mono">
-            <div class="dj-header">
-                <span style="color:#b000ff; font-weight:bold; font-size:1rem;">🎛️ 8-CHANNEL STEM MATRIX</span>
-                <button id="btn-close-matrix" style="background:none;border:none;color:#fff;cursor:pointer;font-size:1.5rem;line-height:1;">×</button>
-            </div>
-            <div class="dj-channels" id="channels-container"></div>
-            <div style="display:flex; justify-content:space-between; margin-top:15px; align-items:center; flex-wrap:wrap; gap:10px;">
-                <button id="btn-add-channel" class="btn-clear" style="border:1px dashed #b000ff; color:#b000ff; background:none;">+ ADD CH (0/8)</button>
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <span style="color:#888; font-size:0.7rem;">DUR:</span>
-                    <input type="number" id="lyriaDur" class="key-input" value="120" placeholder="Sec" style="width:70px; padding:8px;">
-                    <span style="color:#888; font-size:0.7rem;">BPM:</span>
-                    <input type="number" id="lyriaBpm" class="key-input" value="138" placeholder="BPM" style="width:70px; padding:8px;">
-                </div>
-                <button id="btn-lyria-gen" class="btn-clear" style="background:#b000ff; color:#fff; border:none; padding:10px 20px; font-size:0.8rem;">SYNTHESIZE AUDIO</button>
-            </div>
-        </div>
-
         <div class="top-bar mono">
             <button id="hamburgerBtn" class="hamburger">☰</button>
             <div class="status-pill">
@@ -1782,6 +1764,24 @@ LIVE_TEMPLATE = r"""
                     <strong>LensDNA Sovereign Optic Stack Ready.</strong><br>
                     Configure your keys in the sidebar, then hit CONNECT AI to establish the neural uplink.
                 </div>
+            </div>
+        </div>
+
+        <div id="dj-matrix-panel" class="hidden mono">
+            <div class="dj-header">
+                <span style="color:#b000ff; font-weight:bold; font-size:1rem;">🎛️ 8-CHANNEL STEM MATRIX</span>
+                <button id="btn-close-matrix" style="background:none;border:none;color:#fff;cursor:pointer;font-size:1.5rem;line-height:1;">×</button>
+            </div>
+            <div class="dj-channels" id="channels-container"></div>
+            <div style="display:flex; justify-content:space-between; margin-top:15px; align-items:center; flex-wrap:wrap; gap:10px;">
+                <button id="btn-add-channel" class="btn-clear" style="border:1px dashed #b000ff; color:#b000ff; background:none;">+ ADD CH (0/8)</button>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <span style="color:#888; font-size:0.7rem;">DUR:</span>
+                    <input type="number" id="lyriaDur" class="key-input" value="120" placeholder="Sec" style="width:70px; padding:8px;">
+                    <span style="color:#888; font-size:0.7rem;">BPM:</span>
+                    <input type="number" id="lyriaBpm" class="key-input" value="138" placeholder="BPM" style="width:70px; padding:8px;">
+                </div>
+                <button id="btn-lyria-gen" class="btn-clear" style="background:#b000ff; color:#fff; border:none; padding:10px 20px; font-size:0.8rem;">SYNTHESIZE AUDIO</button>
             </div>
         </div>
 
@@ -1878,7 +1878,10 @@ elements.hamburgerBtn.onclick = toggleSidebar;
 if(elements.toggleSidebarBtn) elements.toggleSidebarBtn.onclick = toggleSidebar;
 if(elements.closeSidebarBtn) elements.closeSidebarBtn.onclick = toggleSidebar;
 
-elements.btnToggleMatrix.onclick = () => elements.matrixPanel.classList.toggle('hidden');
+elements.btnToggleMatrix.onclick = () => { 
+    elements.matrixPanel.classList.toggle('hidden');
+    elements.chat.scrollTop = elements.chat.scrollHeight;
+};
 elements.btnCloseMatrix.onclick = () => elements.matrixPanel.classList.add('hidden');
 
 elements.laserGameBtn.onclick = async () => {
