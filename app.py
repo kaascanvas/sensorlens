@@ -2519,7 +2519,7 @@ const chDefaults =[
     { text: "filthy techno bass", color: "#00ff41", weight: 1.0 }, { text: "lush ambient strings", color: "#00e5ff", weight: 0.0 },
     { text: "female vocal hook", color: "#b000ff", weight: 0.0 }, { text: "acid synth arp", color: "#ff00aa", weight: 0.0 },
     { text: "tribal percussion", color: "#fadc00", weight: 0.0 }, { text: "ethereal pad", color: "#ff3b30", weight: 0.0 },
-    { text: "female vocals singing: 'type your lyrics here'", color: "#ff00ea", weight: 0.0 }, { text: "male vocals singing: 'type your lyrics here'", color: "#0055ff", weight: 0.0 }
+    { text: "upfront, dry, crystal clear female pop lead vocal. Lyrics: 'type your lyrics here'", color: "#ff00ea", weight: 0.0 }, { text: "upfront, dry, resonant baritone male soul lead vocal. Lyrics: 'type your lyrics here'", color: "#0055ff", weight: 0.0 }
 ];
 
 function injectChannel() {
@@ -2556,6 +2556,42 @@ function injectChannel() {
 if (channelsContainer) { injectChannel(); injectChannel(); injectChannel(); if (btnAddChannel) btnAddChannel.onclick = injectChannel; }
 
 const djPresets =[
+    // --- REAL SINGING: VOCAL TEMPLATES (KISS) ---
+    { name: "Vocal: Indie Pop Girl", bpm: 95, dur: 16, density: 80, brightness: 90, chaos: 10, seamless: false, channels:[
+        { text: "upfront, dry, crystal clear female indie pop lead vocal. Lyrics: 'I found your old letter in a box beneath my bed / Tracing every single word that you never actually said'", weight: 2.0, color: "#ff00ea" },
+        { text: "warm mahogany acoustic guitar strumming simple folk chords", weight: 1.2, color: "#fadc00" }, 
+        { text: "deep sustaining electric bass guitar", weight: 1.0, color: "#00e5ff" }, 
+        { text: "simple warm kick and snare drum pattern with soft hi-hat accents", weight: 1.0, color: "#00ff41" }, 
+        { text: "", weight: 0.0, color: "#b000ff" }, { text: "", weight: 0.0, color: "#ff3b30" }, { text: "", weight: 0.0, color: "#ff00aa" }, { text: "", weight: 0.0, color: "#0055ff" }
+    ]},
+    { name: "Vocal: Male Soul Anthem", bpm: 110, dur: 16, density: 85, brightness: 85, chaos: 15, seamless: false, channels:[
+        { text: "dry, upfront, powerful male baritone soul lead vocal, emotional delivery. Lyrics: 'Oh why did you have to go when we were golden / Like a secret world that we had already spoken'", weight: 2.0, color: "#0055ff" },
+        { text: "heavy four on the floor kick drum and crashing cymbals", weight: 1.5, color: "#00ff41" }, 
+        { text: "melodic fuzzy electric bass line", weight: 1.2, color: "#00e5ff" }, 
+        { text: "wall of high-gain distorted electric guitars", weight: 1.5, color: "#ff00aa" }, 
+        { text: "", weight: 0.0, color: "#fadc00" }, { text: "", weight: 0.0, color: "#ff3b30" }, { text: "", weight: 0.0, color: "#b000ff" }, { text: "", weight: 0.0, color: "#ff00ea" }
+    ]},
+    { name: "Vocal: House Diva EDM", bpm: 124, dur: 16, density: 90, brightness: 90, chaos: 20, seamless: false, channels:[
+        { text: "dry, upfront, powerful female gospel house diva belting vocals. Lyrics: 'Take me higher than I've ever been / Feel the fire burning deep within'", weight: 2.0, color: "#ff00ea" },
+        { text: "punchy deep room house kick drum and crisp claps", weight: 1.5, color: "#00ff41" }, 
+        { text: "thick fm bassline groove", weight: 1.6, color: "#00e5ff" }, 
+        { text: "classic 90s piano house chords", weight: 1.4, color: "#fadc00" }, 
+        { text: "", weight: 0.0, color: "#b000ff" }, { text: "", weight: 0.0, color: "#ff3b30" }, { text: "", weight: 0.0, color: "#ff00aa" }, { text: "", weight: 0.0, color: "#0055ff" }
+    ]},
+    { name: "Vocal: Smooth Male R&B", bpm: 85, dur: 16, density: 60, brightness: 60, chaos: 10, seamless: false, channels:[
+        { text: "dry, upfront, silky smooth male tenor r&b lead vocal, slow jam. Lyrics: 'Midnight driving through the city lights / Looking at the stars shining so bright'", weight: 2.0, color: "#0055ff" },
+        { text: "tight acoustic punchy kick and rimshot snare", weight: 1.2, color: "#00ff41" }, 
+        { text: "warm deep sub bass funk groove", weight: 1.5, color: "#00e5ff" }, 
+        { text: "smooth rhodes electric piano chords neo soul", weight: 1.2, color: "#ff00aa" }, 
+        { text: "", weight: 0.0, color: "#fadc00" }, { text: "", weight: 0.0, color: "#b000ff" }, { text: "", weight: 0.0, color: "#ff3b30" }, { text: "", weight: 0.0, color: "#ff00ea" }
+    ]},
+    { name: "Vocal: Cyberpunk Whisper", bpm: 105, dur: 16, density: 85, brightness: 70, chaos: 15, seamless: false, channels:[
+        { text: "upfront, dry, breathy robotic female whisper, cyberpunk vocal. Lyrics: 'Neon lights reflecting in my eyes / Digital heart beating through the lies'", weight: 2.0, color: "#ff00ea" },
+        { text: "retro 80s gated snare and heavy kick", weight: 1.5, color: "#00ff41" }, 
+        { text: "fat moog analog bass sequence", weight: 1.8, color: "#00e5ff" }, 
+        { text: "neon-drenched polysynth chords", weight: 1.5, color: "#ff00aa" }, 
+        { text: "", weight: 0.0, color: "#fadc00" }, { text: "", weight: 0.0, color: "#b000ff" }, { text: "", weight: 0.0, color: "#ff3b30" }, { text: "", weight: 0.0, color: "#0055ff" }
+    ]},
     // --- THE "BKK STARLET" COLLECTION ---
     { name: "Bangkok Princess Trap", bpm: 105, dur: 8, density: 85, brightness: 80, chaos: 20, seamless: true, channels:[
         { text: "punchy heavy trap kick and crisp snap", weight: 1.5, color: "#00ff41" }, { text: "booming 808 sub bass glide", weight: 1.8, color: "#00e5ff" }, { text: "fast rolling trap hi-hats", weight: 1.2, color: "#b000ff" }, { text: "massive triumphant brass stabs", weight: 1.6, color: "#ff00aa" }, { text: "traditional thai string instrument pluck", weight: 1.4, color: "#fadc00" }, { text: "police siren and sweeping riser fx", weight: 0.8, color: "#ff3b30" }, { text: "fierce high-energy female k-pop rap spelling her name", weight: 1.7, color: "#ff00ea" }, { text: "deep male hype shout saying 'what!'", weight: 0.8, color: "#0055ff" }
