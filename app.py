@@ -581,80 +581,94 @@ def handle_stem_generation(data):
             daemon=True
         ).start()
 
-def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, vibe: str = "", bpm: int = 138, sid: str = None, api_key: str = None):
+def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, vibe: str = "trance", bpm: int = 138, sid: str = None, api_key: str = None):
     import base64
     import wave
     import io
     import math
     import struct
     import random
+    import asyncio
     from google import genai
     from google.genai import types
     
     active_key = api_key or os.getenv('GEMINI_API_KEY')
     
-    # Format the prompts for Lyria 3
-    desc_parts =[f"{p['text']} (Weight: {p['weight']})" for p in prompts_payload]
+    # 1. ANALYZE PROMPT: Do we need vocals?
+    vocal_keywords = ['vocal', 'singing', 'lyrics', '[verse]', '[chorus]', 'voice', 'vocals']
+    needs_vocals = any(any(k in p['text'].lower() for k in vocal_keywords) for p in prompts_payload)
+    
+    desc_parts = [f"{p['text']} ({p['weight']})" for p in prompts_payload]
     stem_description = " + ".join(desc_parts)
     b64_stem = None
 
-    if active_key:
+    if not active_key:
+        return # Fallback logic below...
+
+    # --- PATH A: LYRIA 3 PRO (VOCALS & HIGH FIDELITY) ---
+    if needs_vocals:
+        print(f"[ROUTING]: Using Lyria 3 Pro for Vocals...", flush=True)
         try:
-            # 1. Initialize the client for Lyria 3 (Standard API)
             lyria_client = genai.Client(api_key=active_key, http_options={'api_version': 'v1beta'})
+            model_id = os.getenv('GEMINI_LYRIA_PRO_MODEL', 'models/lyria-3-pro-preview')
             
-            # 2. Build the textual prompt
-            full_prompt = f"Create a {duration_seconds}-second track at {bpm} BPM. Composition: {stem_description}"
-            if vibe:
-                full_prompt = f"Genre: {vibe}. " + full_prompt
-
-            # 3. Call Lyria 3 Pro
+            # Construct a single string prompt for the non-streaming model
+            pro_prompt = f"Genre: {vibe}, BPM: {bpm}, Duration: {duration_seconds}s. Composition: {stem_description}"
+            
             response = lyria_client.models.generate_content(
-                model="lyria-3-pro-preview",
-                contents=full_prompt,
-                config=types.GenerateContentConfig(
-                    response_modalities=["AUDIO", "TEXT"],
-                )
+                model=model_id,
+                contents=pro_prompt,
+                config=types.GenerateContentConfig(response_modalities=["AUDIO", "TEXT"])
             )
-
-            # 4. Extract the encoded audio (Lyria 3 returns a ready-to-play audio file)
+            
             for part in response.parts:
-                if part.inline_data is not None:
+                if part.inline_data:
+                    # Lyria 3 Pro returns a complete MP3/WAV file
                     b64_stem = base64.b64encode(part.inline_data.data).decode('utf-8')
                     break
-                    
         except Exception as e:
-            print(f"\n[LYRIA 3 ERROR]: {str(e)}\n", flush=True)
+            print(f"[PRO ERROR]: {e}")
 
-    # 5. OFFLINE FALLBACK SYNTH (If Google API fails or no key is present)
-    if not b64_stem:
-        sample_rate = 44100
-        num_samples = int(duration_seconds * sample_rate)
-        samples_per_beat = int(sample_rate / (bpm / 60.0))
-        buf = io.BytesIO()
-        with wave.open(buf, 'wb') as wav_file:
-            wav_file.setnchannels(1)
-            wav_file.setsampwidth(2)
-            wav_file.setframerate(sample_rate)
-            for i in range(num_samples):
-                t = i / sample_rate
-                beat_pos = i % samples_per_beat
-                kick_env = math.exp(-beat_pos / (sample_rate * 0.15))
-                kick = math.sin(2 * math.pi * 55 * t * (1 + kick_env * 1.5)) * kick_env
-                bass_env = 0
-                if beat_pos > samples_per_beat / 2:
-                    bass_env = math.sin(((beat_pos - samples_per_beat / 2) / (samples_per_beat / 2)) * math.pi)
-                bass = math.sin(2 * math.pi * 41 * t) * 0.6 * bass_env
-                hh_env = math.exp(-(i % (samples_per_beat / 2)) / (sample_rate * 0.05))
-                hh = random.uniform(-0.1, 0.1) * hh_env
-                mixed = max(-1.0, min(1.0, kick + bass + hh))
-                sample = int(mixed * 32767)
-                wav_file.writeframesraw(struct.pack('<h', sample))
-        
-        b64_stem = base64.b64encode(buf.getvalue()).decode('utf-8')
-        stem_description = "[OFFLINE SYNTH] " + stem_description
+    # --- PATH B: LYRIA REALTIME (FAST INSTRUMENTALS / NO VOCALS) ---
+    else:
+        print(f"[ROUTING]: Using Lyria RealTime for Instrumentals...", flush=True)
+        async def fetch_lyria_audio():
+            lyria_client = genai.Client(api_key=active_key, http_options={'api_version': 'v1alpha'})
+            audio_buffer = bytearray()
+            try:
+                lyria_model = os.getenv('GEMINI_LYRIA_MODEL', 'models/lyria-realtime-exp')
+                async with lyria_client.aio.live.music.connect(model=lyria_model) as session:
+                    lyria_prompts = [types.WeightedPrompt(text=f"{vibe}, {p['text']}", weight=float(p.get('weight', 1.0))) for p in prompts_payload]
+                    await session.set_weighted_prompts(prompts=lyria_prompts)
+                    await session.set_music_generation_config(config=types.LiveMusicGenerationConfig(bpm=int(bpm)))
+                    await session.play()
+                    
+                    target_bytes = 192000 * duration_seconds 
+                    async for message in session.receive():
+                        if sid and sid in active_sessions and active_sessions[sid].get('cancel_stem'):
+                            await session.stop(); break
+                        if message.server_content and message.server_content.audio_chunks:
+                            for chunk in message.server_content.audio_chunks:
+                                audio_buffer.extend(chunk.data)
+                                if sid: # Stream chunks to UI
+                                    socketio.emit('lyria_audio_stream_chunk', {'data': base64.b64encode(chunk.data).decode('utf-8')}, namespace='/live', to=sid)
+                        if len(audio_buffer) >= target_bytes:
+                            await session.stop(); break
+                return audio_buffer
+            except Exception: return None
 
-    # 6. Send to Frontend
+        try:
+            raw_pcm = asyncio.run(fetch_lyria_audio())
+            if raw_pcm:
+                buf = io.BytesIO()
+                with wave.open(buf, 'wb') as wav_file:
+                    wav_file.setnchannels(2); wav_file.setsampwidth(2); wav_file.setframerate(48000)
+                    wav_file.writeframes(raw_pcm)
+                b64_stem = base64.b64encode(buf.getvalue()).decode('utf-8')
+        except Exception as e:
+            print(f"[REALTIME ERROR]: {e}")
+
+    # --- FINAL DELIVERY ---
     if b64_stem:
         socketio.emit('new_generative_stem', {
             'b64_wav': b64_stem,
