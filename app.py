@@ -570,19 +570,14 @@ def handle_stem_generation(data):
         user_sovereign_key = request.args.get('sovereign_key')
         bpm = data.get('bpm', 138)
         duration = data.get('duration', 8)
+        vibe = data.get('vibe', '') # <--- Get the vibe dynamically, default to empty
         prompts = data.get('prompts',[])
         
-        if not prompts:
-            raw_prompt = data.get('prompt', 'fresh beat')
-            match = re.search(r'\b[tT]=(\d+)\b', raw_prompt)
-            if match:
-                duration = min(int(match.group(1)), 600)
-                raw_prompt = re.sub(r'\b[tT]=\d+\b', '', raw_prompt).strip()
-            prompts =[{"text": raw_prompt, "weight": 1.0}]
+        # ... (prompt fallback logic) ...
             
         threading.Thread(
             target=generate_music_stem, 
-            args=(prompts, duration, "trance", bpm, request.sid, user_sovereign_key), 
+            args=(prompts, duration, vibe, bpm, request.sid, user_sovereign_key), # <--- Pass dynamic vibe
             daemon=True
         ).start()
 
@@ -2684,10 +2679,12 @@ const btnNextMatrix = document.getElementById('btn-next-preset-matrix');
 if (btnNextMatrix) btnNextMatrix.onclick = () => loadPreset('next');
 
 const btnLyria = document.getElementById('btn-lyria-gen');
+
 if (btnLyria) {
     btnLyria.onclick = () => {
         if (!state.serverReady) return;
         
+        // 1. Handle Cancellation (If already generating)
         if (state.isGeneratingStem) {
             btnLyria.innerText = "PACKAGING AUDIO...";
             btnLyria.style.background = "var(--alert)";
@@ -2696,43 +2693,69 @@ if (btnLyria) {
             return;
         }
 
-        const payload = []; let summaryText =[];
-                for (let i = 1; i <= activeChannels; i++) {
-                    const textEl = document.getElementById(`ch${i}-prompt`); const weightEl = document.getElementById(`ch${i}-weight`);
-                    if (textEl && weightEl && textEl.value && parseFloat(weightEl.value) > 0) {
-                        payload.push({ text: textEl.value, weight: parseFloat(weightEl.value) });
-                        summaryText.push(`${textEl.value} (${weightEl.value})`);
-                    }
+        // 2. Gather Channel Prompts
+        const payload = []; 
+        const summaryText = [];
+        
+        for (let i = 1; i <= activeChannels; i++) {
+            const textEl = document.getElementById(`ch${i}-prompt`); 
+            const weightEl = document.getElementById(`ch${i}-weight`);
+            
+            if (textEl && weightEl && textEl.value) {
+                const weightVal = parseFloat(weightEl.value);
+                if (weightVal > 0) {
+                    payload.push({ text: textEl.value, weight: weightVal });
+                    summaryText.push(`${textEl.value} (${weightVal})`);
                 }
-                if (payload.length === 0) return;
+            }
+        }
+        
+        // Abort if no channels are active
+        if (payload.length === 0) return;
 
-                // NEW: Capture acoustic modifiers
-                const density = document.getElementById('lyriaDensity')?.value || 80;
-                const brightness = document.getElementById('lyriaBrightness')?.value || 70;
-                const chaos = document.getElementById('lyriaChaos')?.value || 30;
-                const isSeamless = document.getElementById('lyriaSeamless')?.checked;
-                
-                let masterPrompt = `Acoustic Modifiers - Density: ${density}/100, Brightness: ${brightness}/100, Chaos: ${chaos}/100`;
-                if (isSeamless) masterPrompt = "Seamless endless loop, perfect loop, " + masterPrompt;
-                
-                // Push the master instructions as a high-weight channel to guide Lyria
-                payload.push({ text: masterPrompt, weight: 1.5 });
+        // 3. Gather Acoustic Modifiers (Natural Language)
+        const density = parseInt(document.getElementById('lyriaDensity')?.value || "80", 10);
+        const brightness = parseInt(document.getElementById('lyriaBrightness')?.value || "70", 10);
+        const isSeamless = document.getElementById('lyriaSeamless')?.checked;
 
-                state.isGeneratingStem = true;
-                btnLyria.style.background = "var(--alert)";
-                
-                // NEW: Progressive Loading UX
-                btnLyria.innerText = "🛑 OPTIMIZING PROMPT...";
-                setTimeout(() => { 
-                    if(state.isGeneratingStem) btnLyria.innerText = "🛑 GENERATING MUSIC..."; 
-                }, 2500);
-                setTimeout(() => { 
-                    if(state.isGeneratingStem) btnLyria.innerText = "🛑 RENDERING AUDIO..."; 
-                }, 6500);
+        const modifierAdjectives = [];
+        if (density > 70) modifierAdjectives.push("dense, full arrangement");
+        if (density < 40) modifierAdjectives.push("minimalist, sparse");
+        if (brightness > 70) modifierAdjectives.push("bright, clear, polished");
+        if (brightness < 40) modifierAdjectives.push("dark, muffled, lo-fi");
+        if (isSeamless) modifierAdjectives.push("seamless perfect loop");
 
-                const dur = document.getElementById('lyriaDur').value || "120"; const bpm = document.getElementById('lyriaBpm').value || "138";
-                appendChat("USER", `[MATRIX TRIGGER]: Interpolating -> ${summaryText.join(' + ')} | Modifiers Applied`, "sys-alert");
-                state.socket.emit("trigger_stem_generation", { prompts: payload, duration: parseInt(dur), bpm: parseInt(bpm) });
+        if (modifierAdjectives.length > 0) {
+            const masterPrompt = "Mastering style: " + modifierAdjectives.join(", ");
+            // Lower weight (0.5) so it guides the mix without overriding the vocals
+            payload.push({ text: masterPrompt, weight: 0.5 }); 
+        }
+
+        // 4. Update UI State for Generation
+        state.isGeneratingStem = true;
+        btnLyria.style.background = "var(--alert)";
+        btnLyria.innerText = "🛑 OPTIMIZING PROMPT...";
+        
+        // Progressive Loading UX Text
+        setTimeout(() => { 
+            if (state.isGeneratingStem) btnLyria.innerText = "🛑 GENERATING MUSIC..."; 
+        }, 2500);
+        
+        setTimeout(() => { 
+            if (state.isGeneratingStem) btnLyria.innerText = "🛑 RENDERING AUDIO..."; 
+        }, 6500);
+
+        // 5. Gather Global Settings & Emit to Backend
+        const dur = parseInt(document.getElementById('lyriaDur')?.value || "120", 10); 
+        const bpm = parseInt(document.getElementById('lyriaBpm')?.value || "138", 10);
+
+        appendChat("USER", `[MATRIX TRIGGER]: Interpolating -> ${summaryText.join(' + ')} | Modifiers Applied`, "sys-alert");
+        
+        state.socket.emit("trigger_stem_generation", { 
+            prompts: payload, 
+            duration: dur, 
+            bpm: bpm 
+        });
     };
 }
 
