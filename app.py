@@ -612,7 +612,9 @@ def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, vibe: 
                     for p in prompts_payload:
                         wt = float(p.get('weight', 1.0))
                         raw_text = p.get('text', '')
-                        if 'vocal' in raw_text.lower() or 'singing' in raw_text.lower() or 'lyrics' in raw_text.lower():
+                        # Prevent appending 'vibe' to vocals OR our new modifiers
+                        bypass_keywords =['vocal', 'singing', 'lyrics', 'acoustic modifiers', 'seamless']
+                        if any(k in raw_text.lower() for k in bypass_keywords):
                             final_text = raw_text
                         else:
                             final_text = f"{vibe}, {raw_text}"
@@ -1776,8 +1778,29 @@ LIVE_TEMPLATE = r"""
                 <button id="btn-close-matrix" style="background:none;border:none;color:#fff;cursor:pointer;font-size:1.5rem;line-height:1;">×</button>
             </div>
             <div class="dj-channels" id="channels-container"></div>
-            <div style="display:flex; justify-content:space-between; margin-top:15px; align-items:center; flex-wrap:wrap; gap:10px;">
-                <button id="btn-add-channel" class="btn-clear" style="border:1px dashed #b000ff; color:#b000ff; background:none;">+ ADD CH (0/8)</button>
+        
+        <!-- NEW: ENTERPRISE ACOUSTIC MODIFIERS -->
+        <div style="display:flex; flex-wrap:wrap; gap:15px; margin-top:10px; padding:12px; background:rgba(0,0,0,0.3); border-radius:8px; border:1px solid rgba(176,0,255,0.3);">
+            <div style="flex:1; min-width:100px; display:flex; flex-direction:column; gap:5px;">
+                <label style="color:#b000ff; font-size:0.65rem; font-weight:bold; text-transform:uppercase;">Density (Smooth → Punchy)</label>
+                <input type="range" id="lyriaDensity" min="0" max="100" value="80" style="accent-color:#00ff41; cursor:pointer;">
+            </div>
+            <div style="flex:1; min-width:100px; display:flex; flex-direction:column; gap:5px;">
+                <label style="color:#b000ff; font-size:0.65rem; font-weight:bold; text-transform:uppercase;">Brightness (Dark → Bright)</label>
+                <input type="range" id="lyriaBrightness" min="0" max="100" value="70" style="accent-color:#00e5ff; cursor:pointer;">
+            </div>
+            <div style="flex:1; min-width:100px; display:flex; flex-direction:column; gap:5px;">
+                <label style="color:#b000ff; font-size:0.65rem; font-weight:bold; text-transform:uppercase;">Chaos (Repetitive → Random)</label>
+                <input type="range" id="lyriaChaos" min="0" max="100" value="30" style="accent-color:#ff00ea; cursor:pointer;">
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; padding-top:5px;">
+                <input type="checkbox" id="lyriaSeamless" checked style="accent-color:#00ff41; width:18px; height:18px; cursor:pointer;">
+                <label style="color:#00ff41; font-size:0.75rem; font-weight:bold; text-transform:uppercase;">Seamless Loop</label>
+            </div>
+        </div>
+        
+        <div style="display:flex; justify-content:space-between; margin-top:15px; align-items:center; flex-wrap:wrap; gap:10px;">
+            <button id="btn-add-channel" class="btn-clear" style="border:1px dashed #b000ff; color:#b000ff; background:none;">+ ADD CH (0/8)</button>
                 <div style="display:flex; gap:10px; align-items:center;">
                     <span style="color:#888; font-size:0.7rem;">DUR:</span>
                     <input type="number" id="lyriaDur" class="key-input" value="120" placeholder="Sec" style="width:70px; padding:8px;">
@@ -2657,20 +2680,43 @@ if (btnLyria) {
             return;
         }
 
-        const payload =[]; let summaryText =[];
-        for (let i = 1; i <= activeChannels; i++) {
-            const textEl = document.getElementById(`ch${i}-prompt`); const weightEl = document.getElementById(`ch${i}-weight`);
-            if (textEl && weightEl && textEl.value && parseFloat(weightEl.value) > 0) {
-                payload.push({ text: textEl.value, weight: parseFloat(weightEl.value) });
-                summaryText.push(`${textEl.value} (${weightEl.value})`);
-            }
-        }
-        if (payload.length === 0) return;
-        state.isGeneratingStem = true;
-        btnLyria.innerText = "🛑 STOP & RENDER"; btnLyria.style.background = "var(--alert)";
-        const dur = document.getElementById('lyriaDur').value || "120"; const bpm = document.getElementById('lyriaBpm').value || "138";
-        appendChat("USER", `[MATRIX TRIGGER]: Interpolating -> ${summaryText.join(' + ')}`, "sys-alert");
-        state.socket.emit("trigger_stem_generation", { prompts: payload, duration: parseInt(dur), bpm: parseInt(bpm) });
+        const payload = []; let summaryText =[];
+                for (let i = 1; i <= activeChannels; i++) {
+                    const textEl = document.getElementById(`ch${i}-prompt`); const weightEl = document.getElementById(`ch${i}-weight`);
+                    if (textEl && weightEl && textEl.value && parseFloat(weightEl.value) > 0) {
+                        payload.push({ text: textEl.value, weight: parseFloat(weightEl.value) });
+                        summaryText.push(`${textEl.value} (${weightEl.value})`);
+                    }
+                }
+                if (payload.length === 0) return;
+
+                // NEW: Capture acoustic modifiers
+                const density = document.getElementById('lyriaDensity')?.value || 80;
+                const brightness = document.getElementById('lyriaBrightness')?.value || 70;
+                const chaos = document.getElementById('lyriaChaos')?.value || 30;
+                const isSeamless = document.getElementById('lyriaSeamless')?.checked;
+                
+                let masterPrompt = `Acoustic Modifiers - Density: ${density}/100, Brightness: ${brightness}/100, Chaos: ${chaos}/100`;
+                if (isSeamless) masterPrompt = "Seamless endless loop, perfect loop, " + masterPrompt;
+                
+                // Push the master instructions as a high-weight channel to guide Lyria
+                payload.push({ text: masterPrompt, weight: 1.5 });
+
+                state.isGeneratingStem = true;
+                btnLyria.style.background = "var(--alert)";
+                
+                // NEW: Progressive Loading UX
+                btnLyria.innerText = "🛑 OPTIMIZING PROMPT...";
+                setTimeout(() => { 
+                    if(state.isGeneratingStem) btnLyria.innerText = "🛑 GENERATING MUSIC..."; 
+                }, 2500);
+                setTimeout(() => { 
+                    if(state.isGeneratingStem) btnLyria.innerText = "🛑 RENDERING AUDIO..."; 
+                }, 6500);
+
+                const dur = document.getElementById('lyriaDur').value || "120"; const bpm = document.getElementById('lyriaBpm').value || "138";
+                appendChat("USER", `[MATRIX TRIGGER]: Interpolating -> ${summaryText.join(' + ')} | Modifiers Applied`, "sys-alert");
+                state.socket.emit("trigger_stem_generation", { prompts: payload, duration: parseInt(dur), bpm: parseInt(bpm) });
     };
 }
 
