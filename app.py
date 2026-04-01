@@ -581,82 +581,129 @@ def handle_stem_generation(data):
             daemon=True
         ).start()
 
-def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, vibe: str = "trance", bpm: int = 138, sid: str = None, api_key: str = None):
+def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, vibe: str = "", bpm: int = 138, sid: str = None, api_key: str = None):
     import wave
     import io
     import asyncio
     import math
     import struct
     import random
+    import base64
     from google import genai
     from google.genai import types
     
     active_key = api_key or os.getenv('GEMINI_API_KEY')
-    desc_parts =[f"{p['text'][:20]} ({p['weight']})" for p in prompts_payload]
+    lyria_rt_model = os.getenv('GEMINI_LYRIA_MODEL', 'models/lyria-realtime-exp')
+    lyria_pro_model = os.getenv('GEMINI_LYRIA_PRO_MODEL', 'lyria-3-pro-preview')
+    
+    desc_parts = [f"{p['text']} (wt: {p.get('weight', 1.0)})" for p in prompts_payload]
     stem_description = " + ".join(desc_parts)
     b64_stem = None
+    
+    # 1. SMART ROUTER: Detect if vocals are requested
+    vocal_keywords =["vocal", "singing", "lyrics", "voice", "choir", "singer", "rap", "soprano", "baritone", "tenor", "chant", "speak"]
+    requires_vocals = False
+    for p in prompts_payload:
+        text_lower = p.get('text', '').lower()
+        if any(k in text_lower for k in vocal_keywords):
+            requires_vocals = True
+            break
 
     if active_key:
-        async def fetch_lyria_audio():
-            lyria_client = genai.Client(api_key=active_key, http_options={'api_version': 'v1alpha'})
-            audio_buffer = bytearray()
+        # 2. ATTEMPT LYRIA 3 PRO (Only if vocals are requested)
+        if requires_vocals:
+            if sid:
+                socketio.emit('message', {'type': 'sys-alert', 'text': '[SYSTEM] Vocals detected. Routing to Lyria 3 Pro (High Fidelity)...'}, namespace='/live', to=sid)
             try:
-                lyria_model = os.getenv('GEMINI_LYRIA_MODEL', 'models/lyria-realtime-exp')
-                async with lyria_client.aio.live.music.connect(model=lyria_model) as session:
-                    lyria_prompts =[]
-                    for p in prompts_payload:
-                        wt = float(p.get('weight', 1.0))
-                        raw_text = p.get('text', '')
-                        # Prevent appending 'vibe' to vocals OR our new modifiers
-                        bypass_keywords =['vocal', 'singing', 'lyrics', 'acoustic modifiers', 'seamless']
-                        if any(k in raw_text.lower() for k in bypass_keywords):
-                            final_text = raw_text
-                        else:
-                            final_text = f"{vibe}, {raw_text}"
-                        lyria_prompts.append(types.WeightedPrompt(text=final_text, weight=wt))
-                    await session.set_weighted_prompts(prompts=lyria_prompts)
-                    await session.set_music_generation_config(config=types.LiveMusicGenerationConfig(bpm=int(bpm), temperature=1.0))
-                    await session.play()
-                    target_bytes = 192000 * duration_seconds 
-                    if sid and sid in active_sessions:
-                        active_sessions[sid]['cancel_stem'] = False
+                lyria_client = genai.Client(api_key=active_key, http_options={'api_version': 'v1beta'})
+                full_prompt = f"Create a {duration_seconds}-second track at {bpm} BPM. Composition: {stem_description}"
+                if vibe and vibe.lower() not in["", "none"]:
+                    full_prompt = f"Genre: {vibe}. " + full_prompt
 
-                    async for message in session.receive():
-                        # If user clicked ABORT MIX, stop the session instantly
-                        if sid and sid in active_sessions and active_sessions[sid].get('cancel_stem'):
-                            await session.stop()
-                            break
+                response = lyria_client.models.generate_content(
+                    model=lyria_pro_model,
+                    contents=full_prompt,
+                    config=types.GenerateContentConfig(
+                        response_modalities=["AUDIO", "TEXT"],
+                    )
+                )
+                for part in response.parts:
+                    if part.inline_data is not None:
+                        b64_stem = base64.b64encode(part.inline_data.data).decode('utf-8')
+                        break
+            except Exception as e:
+                error_msg = str(e)
+                print(f"\n[LYRIA 3 PRO FAILED]: {error_msg}\n", flush=True)
+                if sid:
+                    socketio.emit('message', {'type': 'sys-alert', 'text': f'[SYSTEM] Lyria Pro API rejected (Free Tier/Quota?). Falling back to RealTime Instrumental Engine.'}, namespace='/live', to=sid)
+                b64_stem = None # Force fallback to RealTime
+        
+        # 3. ATTEMPT LYRIA REALTIME (If no vocals OR if Lyria Pro failed)
+        if not b64_stem:
+            if sid and not requires_vocals:
+                socketio.emit('message', {'type': 'sys-alert', 'text': '[SYSTEM] Instrumental only. Routing to Lyria RealTime (Streaming)...'}, namespace='/live', to=sid)
+            
+            async def fetch_lyria_audio():
+                lyria_client = genai.Client(api_key=active_key, http_options={'api_version': 'v1alpha'})
+                audio_buffer = bytearray()
+                try:
+                    async with lyria_client.aio.live.music.connect(model=lyria_rt_model) as session:
+                        lyria_prompts =[]
+                        for p in prompts_payload:
+                            wt = float(p.get('weight', 1.0))
+                            raw_text = p.get('text', '')
+                            # Protect mastering modifiers from getting the vibe prepended
+                            bypass_keywords =['vocal', 'singing', 'lyrics', 'seamless', 'mastering']
+                            if any(k in raw_text.lower() for k in bypass_keywords):
+                                final_text = raw_text
+                            else:
+                                final_text = f"{vibe}, {raw_text}" if vibe else raw_text
+                            lyria_prompts.append(types.WeightedPrompt(text=final_text, weight=wt))
+                        
+                        await session.set_weighted_prompts(prompts=lyria_prompts)
+                        await session.set_music_generation_config(config=types.LiveMusicGenerationConfig(bpm=int(bpm), temperature=1.0))
+                        await session.play()
+                        
+                        target_bytes = 192000 * duration_seconds 
+                        if sid and sid in active_sessions:
+                            active_sessions[sid]['cancel_stem'] = False
 
-                        if message.server_content and hasattr(message.server_content, 'audio_chunks') and message.server_content.audio_chunks:
-                            for chunk in message.server_content.audio_chunks:
-                                audio_buffer.extend(chunk.data)
-                                # LIVE STREAMING: Emit chunk to frontend instantly
-                                if sid:
-                                    import base64
-                                    b64_chunk = base64.b64encode(chunk.data).decode('utf-8')
-                                    socketio.emit('lyria_audio_stream_chunk', {'data': b64_chunk}, namespace='/live', to=sid)
-                                    
-                        if len(audio_buffer) >= target_bytes:
-                            await session.stop()
-                            break
+                        async for message in session.receive():
+                            # Stop instantly if user clicked Abort
+                            if sid and sid in active_sessions and active_sessions[sid].get('cancel_stem'):
+                                await session.stop()
+                                break
+
+                            if message.server_content and hasattr(message.server_content, 'audio_chunks') and message.server_content.audio_chunks:
+                                for chunk in message.server_content.audio_chunks:
+                                    audio_buffer.extend(chunk.data)
+                                    # Stream chunk to frontend
+                                    if sid:
+                                        b64_chunk = base64.b64encode(chunk.data).decode('utf-8')
+                                        socketio.emit('lyria_audio_stream_chunk', {'data': b64_chunk}, namespace='/live', to=sid)
+                                        
+                            if len(audio_buffer) >= target_bytes:
+                                await session.stop()
+                                break
+                except Exception as e:
+                    print(f"\n[LYRIA REALTIME FAILED]: {str(e)}\n", flush=True)
+                    return None
+                return audio_buffer
+
+            try:
+                raw_pcm = asyncio.run(fetch_lyria_audio())
+                if raw_pcm and len(raw_pcm) > 0:
+                    buf = io.BytesIO()
+                    with wave.open(buf, 'wb') as wav_file:
+                        wav_file.setnchannels(2)
+                        wav_file.setsampwidth(2)
+                        wav_file.setframerate(48000)
+                        wav_file.writeframes(raw_pcm)
+                    b64_stem = base64.b64encode(buf.getvalue()).decode('utf-8')
             except Exception:
-                return None
-            return audio_buffer
+                pass
 
-        try:
-            raw_pcm = asyncio.run(fetch_lyria_audio())
-            if raw_pcm and len(raw_pcm) > 0:
-                buf = io.BytesIO()
-                with wave.open(buf, 'wb') as wav_file:
-                    wav_file.setnchannels(2)
-                    wav_file.setsampwidth(2)
-                    wav_file.setframerate(48000)
-                    wav_file.writeframes(raw_pcm)
-                import base64
-                b64_stem = base64.b64encode(buf.getvalue()).decode('utf-8')
-        except Exception:
-            pass
-
+    # 4. OFFLINE FALLBACK SYNTH (If no API key or both APIs crash)
     if not b64_stem:
         sample_rate = 44100
         num_samples = int(duration_seconds * sample_rate)
@@ -680,10 +727,11 @@ def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, vibe: 
                 mixed = max(-1.0, min(1.0, kick + bass + hh))
                 sample = int(mixed * 32767)
                 wav_file.writeframesraw(struct.pack('<h', sample))
-        import base64
+        
         b64_stem = base64.b64encode(buf.getvalue()).decode('utf-8')
         stem_description = "[OFFLINE SYNTH] " + stem_description
 
+    # 5. Send Completed File UI Card
     if b64_stem:
         socketio.emit('new_generative_stem', {
             'b64_wav': b64_stem,
