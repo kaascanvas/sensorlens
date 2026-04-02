@@ -493,12 +493,11 @@ def ai_bridge_thread(sid, provider, system_instruction, input_queue, sovereign_k
             }
             ws.send(json.dumps(setup_msg))
         else:
-            # ---> FIX 2: Defaulting to Gemini 3.1 Flash Live Preview & Injecting Google Search Tool
+            # ---> FIX 2: Defaulting to Gemini 3.1 Flash Live Preview
             setup_msg = {
                 "setup": {
                     "model": os.getenv('GEMINI_LIVE_MODEL', 'models/gemini-3.1-flash-live-preview'),
                     "systemInstruction": {"parts":[{"text": system_instruction}]},
-                    "tools": [{"googleSearch": {}}], # <--- ADDED: Activates native real-time web access
                     "generationConfig": {
                         "responseModalities":["AUDIO"],
                         "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": "Charon"}}}
