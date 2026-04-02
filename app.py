@@ -1751,9 +1751,18 @@ LIVE_TEMPLATE = r"""
         .msg-row { width: 100%; max-width: 850px; display: flex; flex-direction: column; gap: 6px; }
         .msg-sender { font-size: 0.7rem; color: var(--text-mut); text-transform: uppercase; letter-spacing: 1px; }
         .msg-content { padding: 16px 20px; background: var(--msg-bg); border-radius: 12px; font-size: 0.95rem; line-height: 1.6; color: var(--text-main); border: 1px solid var(--border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        .msg-ai .msg-content { border-left: 3px solid var(--neon); background: rgba(0,255,65,0.03); }
+        .msg-ai .msg-content { 
+            border-left: 3px solid var(--neon); 
+            background: var(--msg-bg); 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1), inset 60px 0 40px -40px var(--neon-dim); 
+        }
         .msg-user { align-items: flex-end; }
-        .msg-user .msg-content { border-right: 3px solid var(--cyan); background: rgba(0,229,255,0.03); text-align: right; }
+        .msg-user .msg-content { 
+            border-right: 3px solid var(--cyan); 
+            background: var(--msg-bg); 
+            text-align: right; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1), inset -60px 0 40px -40px var(--cyan-dim); 
+        }
         .thought { font-size: 0.85rem; color: var(--neon); font-style: italic; border-left: 1px solid var(--border) !important; opacity: 0.8; }
         .sys-alert { border-left: 3px solid var(--alert) !important; background: var(--panel-bg-solid) !important; color: var(--alert); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
