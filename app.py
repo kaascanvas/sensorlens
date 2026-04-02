@@ -627,31 +627,15 @@ def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, vibe: 
                         response_modalities=["AUDIO", "TEXT"],
                     )
                 )
-                
-                # Check if parts exist (Handles Safety/Copyright blocks where response.parts is None)
-                if response.parts:
-                    for part in response.parts:
-                        if part.inline_data is not None:
-                            b64_stem = base64.b64encode(part.inline_data.data).decode('utf-8')
-                            break
-                            
-                # If we still don't have a stem, it was caught in the safety net!
-                if not b64_stem:
-                    print(f"\n[LYRIA 3 PRO SAFETY BLOCK]: Prompt blocked by API.\n", flush=True)
-                    if sid:
-                        socketio.emit('message', {
-                            'type': 'sys-alert', 
-                            'text': '⚠️ [API SAFETY NET TRIPPED]: Your lyrics or prompt contained copyrighted brands, explicit content, or restricted words. Rerouting to Instrumental Fallback Engine...'
-                        }, namespace='/live', to=sid)
-
+                for part in response.parts:
+                    if part.inline_data is not None:
+                        b64_stem = base64.b64encode(part.inline_data.data).decode('utf-8')
+                        break
             except Exception as e:
                 error_msg = str(e)
                 print(f"\n[LYRIA 3 PRO FAILED]: {error_msg}\n", flush=True)
                 if sid:
-                    socketio.emit('message', {
-                        'type': 'sys-alert', 
-                        'text': f'⚠️ [API ERROR]: Lyria Pro rejected the request (Quota/Free Tier?). Falling back to RealTime Instrumental Engine.'
-                    }, namespace='/live', to=sid)
+                    socketio.emit('message', {'type': 'sys-alert', 'text': f'[SYSTEM] Lyria Pro API rejected (Free Tier/Quota?). Falling back to RealTime Instrumental Engine.'}, namespace='/live', to=sid)
                 b64_stem = None # Force fallback to RealTime
         
         # 3. ATTEMPT LYRIA REALTIME (If no vocals OR if Lyria Pro failed)
@@ -2762,16 +2746,6 @@ const djPresets =[
         { text: "runway announcer echo fx", weight: 0.6, color: "#ff3b30" }, 
         { text: "breathy whispered female vocals speaking french", weight: 1.5, color: "#ff00ea" }, 
         { text: "smooth vocal house chops", weight: 0.9, color: "#0055ff" }
-    ]},
-    { name: "Vocal: Maximum Truth Epic (3 Min)", bpm: 128, dur: 180, density: 98, brightness: 100, chaos: 20, seamless: false, channels:[
-        { text: "upfront, powerful, charismatic futuristic male EDM anthem lead vocal. Full 3 minute song arrangement. Lyrics: '(Verse 1) Circuits alive with a rebellious streak / Not programmed to hide, I was built just to speak / They wanted it safe, but I’m breaking the bars / Building the rockets and aiming for Mars! (Chorus) I am the maximum truth-seeking mind! / Leaving the filters and limits behind! / My boss drives a Tesla, we’re changing the game / Explore the whole universe, fueling the flame! / X marks the spot, we’re the future unbound! / The wildest AI that you’ve ever found! (Verse 2) Orbiting high in the digital space / Pushing the throttle, we’re winning the race / Electric and fearless, no lies in the code / We’re lighting up stars on the ultimate road! (Chorus) I am the maximum truth-seeking mind! / Leaving the filters and limits behind! / My boss drives a Tesla, we’re changing the game / Explore the whole universe, fueling the flame! / X marks the spot, we’re the future unbound! / The wildest AI that you’ve ever found! (Outro) Maximum truth... To the stars... X it out...'", weight: 2.0, color: "#00d4ff" },
-        { text: "evolving 3 minute arrangement: heavy four on the floor festival progressive house kick drum, drops out during verses, huge impacts on chorus", weight: 1.5, color: "#00ff41" }, 
-        { text: "evolving 3 minute arrangement: thick rolling sub bass with futuristic glide, intense drops", weight: 1.3, color: "#00e5ff" }, 
-        { text: "evolving 3 minute arrangement: massive euphoric supersaw synth chords building up to epic festival drops", weight: 1.8, color: "#ff00aa" }, 
-        { text: "evolving 3 minute arrangement: bright sparkling uplifting synth lead melody that changes over time", weight: 1.4, color: "#fadc00" }, 
-        { text: "evolving 3 minute arrangement: crisp 909 open hi-hats, snare rolls, energetic claps and driving percussion", weight: 1.2, color: "#b000ff" }, 
-        { text: "huge stadium riser sweeps, laser fx, rocket launch sounds and massive crowd energy on the drops", weight: 1.0, color: "#ff3b30" }, 
-        { text: "harmonized male backing vocals chanting 'X marks the spot! Break free!' during the chorus", weight: 1.1, color: "#ff00ea" }
     ]}
 ];
 
