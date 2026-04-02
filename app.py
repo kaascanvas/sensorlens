@@ -493,11 +493,12 @@ def ai_bridge_thread(sid, provider, system_instruction, input_queue, sovereign_k
             }
             ws.send(json.dumps(setup_msg))
         else:
-            # ---> FIX 2: Defaulting to Gemini 3.1 Flash Live Preview
+            # ---> FIX 2: Defaulting to Gemini 3.1 Flash Live Preview & Injecting Google Search Tool
             setup_msg = {
                 "setup": {
                     "model": os.getenv('GEMINI_LIVE_MODEL', 'models/gemini-3.1-flash-live-preview'),
                     "systemInstruction": {"parts":[{"text": system_instruction}]},
+                    "tools": [{"googleSearch": {}}], # <--- ADDED: Activates native real-time web access
                     "generationConfig": {
                         "responseModalities":["AUDIO"],
                         "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": "Charon"}}}
@@ -2454,6 +2455,12 @@ async function connect() {
                 const wrapper = document.createElement("div"); wrapper.className = "msg-row msg-asset"; 
                 wrapper.innerHTML = `<div class="msg-sender mono">SYSTEM [ASSET SECURED]</div><div class="msg-content" style="background:transparent; border:none; padding:0; box-shadow:none;">${msg.asset_html}</div>`;
                 elements.chat.appendChild(wrapper); elements.chat.scrollTop = elements.chat.scrollHeight; return; 
+            }
+
+            // ---> FIX: Intercept system alerts so they don't get glued to the AI's text
+            if (msg.type === "sys-alert") {
+                appendChat("SYSTEM", msg.text, "sys-alert");
+                return;
             }
 
             if (msg.serverContent?.modelTurn?.parts) { msg.serverContent.modelTurn.parts.forEach(p => { if (p.inlineData && p.inlineData.data) { playAudio(p.inlineData.data); } }); }
