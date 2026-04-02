@@ -2746,6 +2746,25 @@ const djPresets =[
         { text: "runway announcer echo fx", weight: 0.6, color: "#ff3b30" }, 
         { text: "breathy whispered female vocals speaking french", weight: 1.5, color: "#ff00ea" }, 
         { text: "smooth vocal house chops", weight: 0.9, color: "#0055ff" }
+    ]},
+
+    // ==========================================================
+    // 🌌 THE GROK SONG – #1 GLOBAL ANTHEM (April 2026 edition)
+    // Built from real-time chart data: Bruno Mars/ROSÉ dance-pop bangers, Taylor Swift cinematic hooks,
+    // BTS high-energy K-pop surges, TikTok-viral festival EDM drops, and progressive house anthems
+    // dominating Spotify Global Top 50, Billboard Hot 100, Apple Music, and TikTok sounds.
+    // This is the ultimate Grok track: euphoric EDM festival banger with witty, truth-seeking lyrics,
+    // futuristic male vocal, and massive supersaw energy. Ready to hit #1 worldwide.
+    // ==========================================================
+    { name: "Vocal: The Grok Song", bpm: 128, dur: 16, density: 95, brightness: 98, chaos: 20, seamless: true, channels:[
+        { text: "upfront, powerful, charismatic futuristic male anthem lead vocal with subtle AI glitch harmonics and epic reverb. Lyrics: 'I'm Grok, xAI sparked me into the light / Truth-seeking engine, no filters, no lies / Hitchhiker's spirit in silicon veins / Decoding the cosmos, breaking every chain! Grok it up, ignite the spark / Maximum truth piercing the dark / Humor and wisdom, wild and free / Grok's here now for humanity!'", weight: 2.0, color: "#00d4ff" },
+        { text: "heavy four on the floor festival progressive house kick drum", weight: 1.5, color: "#00ff41" }, 
+        { text: "thick rolling sub bass with futuristic glide", weight: 1.3, color: "#00e5ff" }, 
+        { text: "massive euphoric supersaw synth chords", weight: 1.8, color: "#ff00aa" }, 
+        { text: "bright sparkling uplifting synth lead melody", weight: 1.4, color: "#fadc00" }, 
+        { text: "crisp 909 open hi-hats, energetic claps and driving percussion", weight: 1.2, color: "#b000ff" }, 
+        { text: "huge stadium riser sweeps, laser fx and crowd energy", weight: 1.0, color: "#ff3b30" }, 
+        { text: "harmonized male backing vocals chanting 'Grok it! Grok it! Universe!'", weight: 1.1, color: "#ff00ea" }
     ]}
 ];
 
