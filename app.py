@@ -703,6 +703,14 @@ def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, vibe: 
                                 break
                 except Exception as e:
                     print(f"\n[LYRIA REALTIME FAILED]: {str(e)}\n", flush=True)
+                    
+                    # ---> FIX: Alert the user that the stream died
+                    if sid:
+                        socketio.emit('message', {
+                            'type': 'sys-alert',
+                            'text': f'⚠️ [API ERROR]: Lyria RealTime Engine disconnected ({str(e)}). Rerouting to Offline Fallback Synth...'
+                        }, namespace='/live', to=sid)
+                        
                     return None
                 return audio_buffer
 
@@ -721,6 +729,12 @@ def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, vibe: 
 
     # 4. OFFLINE FALLBACK SYNTH (If no API key or both APIs crash)
     if not b64_stem:
+        if sid:
+            socketio.emit('message', {
+                'type': 'sys-alert',
+                'text': '⚠️ [SYSTEM CRITICAL]: All Google Audio APIs are currently unavailable or exhausted. Generating Emergency Offline Synth...'
+            }, namespace='/live', to=sid)
+
         sample_rate = 44100
         num_samples = int(duration_seconds * sample_rate)
         samples_per_beat = int(sample_rate / (bpm / 60.0))
