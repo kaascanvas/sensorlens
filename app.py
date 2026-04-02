@@ -407,7 +407,7 @@ async def ai_bridge_task(sid, provider, system_instruction, input_queue, soverei
         url = f"wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key={sovereign_key}"
 
     try:
-        async with websockets.connect(url, extra_headers=headers if provider in ['openai', 'grok'] else None) as ws:
+        async with websockets.connect(url, additional_headers=headers if provider in ['openai', 'grok'] else None) as ws:
             
             active_sessions[sid]['ws'] = ws
 
