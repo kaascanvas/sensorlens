@@ -15,7 +15,10 @@ import urllib.parse
 from datetime import datetime
 from dataclasses import dataclass
 
-# --- NATIVE ASYNC FRAMEWORK IMPORTS ---
+import wave
+import math
+import struct
+
 import aiohttp
 import websockets
 import socketio
