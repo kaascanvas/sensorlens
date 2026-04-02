@@ -684,7 +684,21 @@ def handle_stem_generation(data):
         vibe = data.get('vibe', '') # <--- Get the vibe dynamically, default to empty
         prompts = data.get('prompts',[])
         
-        # ... (prompt fallback logic) ...
+        # --- PROMPT FALLBACK LOGIC START ---
+        if not prompts and 'prompt' in data:
+            raw_prompt = data.get('prompt', '')
+            prompts =[{'text': raw_prompt, 'weight': 1.0}]
+            
+            # Extract AI's requested BPM if it wrote it in the string
+            bpm_match = re.search(r'(\d+)\s*BPM', raw_prompt, re.IGNORECASE)
+            if bpm_match:
+                bpm = int(bpm_match.group(1))
+                
+            # Extract AI's requested Duration (T=) if it wrote it in the string
+            t_match = re.search(r'T=(\d+)', raw_prompt, re.IGNORECASE)
+            if t_match:
+                duration = int(t_match.group(1))
+        # --- PROMPT FALLBACK LOGIC END ---
             
         threading.Thread(
             target=generate_music_stem, 
