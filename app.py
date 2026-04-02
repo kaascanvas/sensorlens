@@ -627,15 +627,31 @@ def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, vibe: 
                         response_modalities=["AUDIO", "TEXT"],
                     )
                 )
-                for part in response.parts:
-                    if part.inline_data is not None:
-                        b64_stem = base64.b64encode(part.inline_data.data).decode('utf-8')
-                        break
+                
+                # Check if parts exist (Handles Safety/Copyright blocks where response.parts is None)
+                if response.parts:
+                    for part in response.parts:
+                        if part.inline_data is not None:
+                            b64_stem = base64.b64encode(part.inline_data.data).decode('utf-8')
+                            break
+                            
+                # If we still don't have a stem, it was caught in the safety net!
+                if not b64_stem:
+                    print(f"\n[LYRIA 3 PRO SAFETY BLOCK]: Prompt blocked by API.\n", flush=True)
+                    if sid:
+                        socketio.emit('message', {
+                            'type': 'sys-alert', 
+                            'text': '⚠️ [API SAFETY NET TRIPPED]: Your lyrics or prompt contained copyrighted brands, explicit content, or restricted words. Rerouting to Instrumental Fallback Engine...'
+                        }, namespace='/live', to=sid)
+
             except Exception as e:
                 error_msg = str(e)
                 print(f"\n[LYRIA 3 PRO FAILED]: {error_msg}\n", flush=True)
                 if sid:
-                    socketio.emit('message', {'type': 'sys-alert', 'text': f'[SYSTEM] Lyria Pro API rejected (Free Tier/Quota?). Falling back to RealTime Instrumental Engine.'}, namespace='/live', to=sid)
+                    socketio.emit('message', {
+                        'type': 'sys-alert', 
+                        'text': f'⚠️ [API ERROR]: Lyria Pro rejected the request (Quota/Free Tier?). Falling back to RealTime Instrumental Engine.'
+                    }, namespace='/live', to=sid)
                 b64_stem = None # Force fallback to RealTime
         
         # 3. ATTEMPT LYRIA REALTIME (If no vocals OR if Lyria Pro failed)
