@@ -601,7 +601,12 @@ async def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, 
                 if not b64_stem and sid:
                     await sio.emit('message', {'type': 'sys-alert', 'text': '⚠️ [API SAFETY NET TRIPPED]: Prompt blocked. Rerouting to Instrumental...'}, namespace='/live', to=sid)
             except Exception as e:
-                if sid: await sio.emit('message', {'type': 'sys-alert', 'text': '⚠️ Sorry, you have no paid API key for "Vocals and lyrics" and continue with Lyria RealTime. For more info please check: https://x.com/LensDJing/status/2039768484557553793'}, namespace='/live', to=sid)
+                if sid and sid in active_sessions:
+                    # Check if we already showed this message
+                    if not active_sessions[sid].get('vocal_error_shown'):
+                        active_sessions[sid]['vocal_error_shown'] = True
+                        alert_msg = '⚠️ Sorry, you have no paid API key for "Vocals and lyrics" and continue with Lyria RealTime. For more info please check: <a href="https://x.com/LensDJing/status/2039768484557553793" target="_blank" style="color:var(--cyan); text-decoration:underline;">https://x.com/LensDJing/status/2039768484557553793</a>'
+                        await sio.emit('message', {'type': 'sys-alert', 'text': alert_msg}, namespace='/live', to=sid)
         
         if not b64_stem:
             if sid and not requires_vocals:
