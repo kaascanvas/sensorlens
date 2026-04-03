@@ -533,12 +533,15 @@ async def handle_socket_connect(sid, environ, auth=None):
     asyncio.create_task(ai_bridge_task(sid, provider, instruction, q, sovereign_key))
 
 @sio.on('disconnect', namespace='/live')
-async def handle_socket_disconnect(sid):
+async def handle_socket_disconnect(sid, *args):
     if sid in active_sessions:
         active_sessions[sid]['running'] = False
         ws = active_sessions[sid].get('ws')
-        if ws and not ws.closed:
-            await ws.close()
+        if ws:
+            try:
+                await ws.close()
+            except Exception:
+                pass
         del active_sessions[sid]
 
 @sio.on('cancel_stem', namespace='/live')
