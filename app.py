@@ -601,7 +601,7 @@ async def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, 
                 if not b64_stem and sid:
                     await sio.emit('message', {'type': 'sys-alert', 'text': '⚠️ [API SAFETY NET TRIPPED]: Prompt blocked. Rerouting to Instrumental...'}, namespace='/live', to=sid)
             except Exception as e:
-                if sid: await sio.emit('message', {'type': 'sys-alert', 'text': f'⚠️ [API ERROR]: {str(e)}. Falling back to RealTime...'}, namespace='/live', to=sid)
+                if sid: await sio.emit('message', {'type': 'sys-alert', 'text': '⚠️ Sorry, you have no paid API key for "Vocals and lyrics" and continue with Lyria RealTime. For more info please check: https://x.com/LensDJing/status/2039768484557553793'}, namespace='/live', to=sid)
         
         if not b64_stem:
             if sid and not requires_vocals:
@@ -643,7 +643,7 @@ async def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, 
                             await session.stop()
                             break
             except Exception as e:
-                if sid: await sio.emit('message', {'type': 'sys-alert', 'text': f'⚠️ [API ERROR]: {str(e)}. Rerouting to Offline Fallback Synth...'}, namespace='/live', to=sid)
+                if sid: await sio.emit('message', {'type': 'sys-alert', 'text': '⚠️ Free tier limit reached. Rerouting to Offline Fallback Synth...'}, namespace='/live', to=sid)
                 audio_buffer = None
                 
             if audio_buffer and len(audio_buffer) > 0:
