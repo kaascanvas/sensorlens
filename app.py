@@ -2336,42 +2336,78 @@ function injectChannel() {
 if (channelsContainer) { injectChannel(); injectChannel(); injectChannel(); if (btnAddChannel) btnAddChannel.onclick = injectChannel; }
 
 const djPresets =[
-    { name: "Inst: Mainstage EDM", bpm: 130, dur: 16, density: 95, brightness: 90, chaos: 30, seamless: true, channels:[
-        { text: "heavy four on the floor punchy kick drum edm", weight: 1.5, color: "#00ff41" }, 
-        { text: "filthy rolling dubstep sub bass", weight: 1.2, color: "#00e5ff" }, 
-        { text: "crisp 909 shakers and building drum rolls", weight: 1.0, color: "#b000ff" }, 
-        { text: "massive detuned rave synth lead drop", weight: 1.5, color: "#ff00aa" }, 
-        { text: "euphoric trance supersaw chords", weight: 1.2, color: "#fadc00" }, 
-        { text: "massive stadium riser sweep fx", weight: 0.8, color: "#ff3b30" }, 
+    { name: "Inst: Mainstage Festival Progressive House (2026 Anthem)", bpm: 128, dur: 16, density: 98, brightness: 98, chaos: 32, seamless: true, channels:[
+        { text: "massive punchy four-on-the-floor festival kick with sidechain pump", weight: 1.7, color: "#00ff41" }, 
+        { text: "filthy rolling sub bass with big-room bounce and pop hook energy", weight: 1.4, color: "#00e5ff" }, 
+        { text: "crisp 909 shakers, claps, and explosive building drum rolls", weight: 1.3, color: "#b000ff" }, 
+        { text: "huge detuned supersaw lead with electrifying festival drop melody", weight: 1.8, color: "#ff00aa" }, 
+        { text: "euphoric layered supersaw chords and bright uplifting piano", weight: 1.5, color: "#fadc00" }, 
+        { text: "stadium riser sweeps, impacts, and massive crowd cheer fx", weight: 1.2, color: "#ff3b30" }, 
         { text: "", weight: 0.0, color: "#ff00ea" }, { text: "", weight: 0.0, color: "#0055ff" }
     ]},
-    { name: "Inst: Peak-Time Techno", bpm: 126, dur: 16, density: 80, brightness: 50, chaos: 25, seamless: true, channels:[
-        { text: "punchy deep room techno kick drum", weight: 1.5, color: "#00ff41" }, 
-        { text: "rolling dark sub bassline", weight: 1.2, color: "#00e5ff" }, 
-        { text: "crisp 909 hi-hats and driving shakers", weight: 0.8, color: "#b000ff" }, 
-        { text: "detuned cinematic brass stabs", weight: 1.0, color: "#ff00aa" }, 
-        { text: "euphoric analog synthesizer arpeggio", weight: 1.8, color: "#fadc00" }, 
-        { text: "distant haunting atmospheric pad", weight: 0.6, color: "#ff3b30" }, 
+    { name: "Inst: Peak-Time Tech House (TikTok & Beatport King)", bpm: 129, dur: 16, density: 92, brightness: 65, chaos: 35, seamless: true, channels:[
+        { text: "groovy punchy tech-house kick with swing and sidechain", weight: 1.6, color: "#00ff41" }, 
+        { text: "warm rolling sub bassline with bouncy tech-house groove", weight: 1.5, color: "#00e5ff" }, 
+        { text: "crisp 909 hi-hats, driving shakers, and percussive groove", weight: 1.4, color: "#b000ff" }, 
+        { text: "catchy detuned synth stabs and vocal chop hooks for TikTok", weight: 1.6, color: "#ff00aa" }, 
+        { text: "melodic tech-house arpeggio and uplifting synth layers", weight: 1.7, color: "#fadc00" }, 
+        { text: "subtle atmospheric pads and tension-building fx", weight: 0.9, color: "#ff3b30" }, 
         { text: "", weight: 0.0, color: "#ff00ea" }, { text: "", weight: 0.0, color: "#0055ff" }
     ]},
-    { name: "Inst: Cyberpunk Synthwave", bpm: 105, dur: 8, density: 60, brightness: 65, chaos: 10, seamless: true, channels:[
-        { text: "retro 80s gated snare and heavy kick", weight: 1.5, color: "#00ff41" }, 
-        { text: "fat moog analog bass sequence", weight: 1.8, color: "#00e5ff" }, 
-        { text: "driving 16th-note synth hi-hats", weight: 1.0, color: "#b000ff" }, 
-        { text: "neon-drenched polysynth chords", weight: 1.5, color: "#ff00aa" }, 
-        { text: "soaring outrun electric guitar solo", weight: 1.0, color: "#fadc00" }, 
-        { text: "dystopian vhs tape flutter noise", weight: 0.4, color: "#ff3b30" }, 
+    { name: "Inst: Melodic Techno (Cinematic Festival Weapon)", bpm: 126, dur: 16, density: 85, brightness: 60, chaos: 28, seamless: true, channels:[
+        { text: "deep punchy melodic techno kick with subtle swing", weight: 1.6, color: "#00ff41" }, 
+        { text: "rolling hypnotic sub bassline with dark groove", weight: 1.4, color: "#00e5ff" }, 
+        { text: "crisp driving hi-hats and intricate percussion", weight: 1.2, color: "#b000ff" }, 
+        { text: "cinematic brass stabs and emotional synth melodies", weight: 1.5, color: "#ff00aa" }, 
+        { text: "euphoric analog arpeggios and soaring melodic layers", weight: 1.8, color: "#fadc00" }, 
+        { text: "haunting atmospheric pads and dystopian tension fx", weight: 1.1, color: "#ff3b30" }, 
         { text: "", weight: 0.0, color: "#ff00ea" }, { text: "", weight: 0.0, color: "#0055ff" }
     ]},
-    { name: "Vocal: Lens DNA Anthem", bpm: 128, dur: 16, density: 95, brightness: 100, chaos: 15, seamless: true, channels:[
-        { text: "upfront, powerful, euphoric female pop anthem lead vocal. Lyrics: 'Midnight fires and endless screens, Hans Schulte built the ultimate dream! The Republic of DJs, a brand new dawn. Lens DNA, the app of all apps! Own your sound, stream it out, be the DJ you were born to be! Next generation, wild and free!'", weight: 2.0, color: "#ff00ea" },
-        { text: "driving four on the floor festival progressive house kick drum", weight: 1.5, color: "#00ff41" }, 
-        { text: "warm thick rolling sub bassline", weight: 1.2, color: "#00e5ff" }, 
-        { text: "massive euphoric supersaw synth chords", weight: 1.8, color: "#ff00aa" }, 
-        { text: "bright sparkling uplifting piano melody", weight: 1.4, color: "#fadc00" }, 
-        { text: "crisp 909 open hi-hats and energetic claps", weight: 1.2, color: "#b000ff" }, 
-        { text: "stadium crowd cheering and uplifting riser sweep fx", weight: 0.8, color: "#ff3b30" }, 
-        { text: "harmonized female backing vocals singing 'Next generation!'", weight: 1.0, color: "#0055ff" }
+    { name: "Inst: Explosive Afro House (Global Viral Breakout)", bpm: 122, dur: 16, density: 95, brightness: 85, chaos: 40, seamless: true, channels:[
+        { text: "deep tribal afro house kick with organic swing and punch", weight: 1.7, color: "#00ff41" }, 
+        { text: "fat rolling sub bass fused with afro percussion groove", weight: 1.6, color: "#00e5ff" }, 
+        { text: "shakers, log drums, and energetic tribal percussion", weight: 1.5, color: "#b000ff" }, 
+        { text: "sunny melodic afro synth hooks and vocal chants", weight: 1.7, color: "#ff00aa" }, 
+        { text: "warm uplifting piano and brass layers with festival energy", weight: 1.4, color: "#fadc00" }, 
+        { text: "atmospheric risers, claps, and earthy impact fx", weight: 1.0, color: "#ff3b30" }, 
+        { text: "", weight: 0.0, color: "#ff00ea" }, { text: "", weight: 0.0, color: "#0055ff" }
+    ]},
+    { name: "Inst: Viral UK Garage / Speed Garage (TikTok Rocket)", bpm: 134, dur: 8, density: 88, brightness: 90, chaos: 25, seamless: true, channels:[
+        { text: "bouncy UK garage kick fused with modern bass punch", weight: 1.6, color: "#00ff41" }, 
+        { text: "fat rolling garage bassline with 2-step swing", weight: 1.7, color: "#00e5ff" }, 
+        { text: "crisp sped-up hi-hats and garage shakers", weight: 1.3, color: "#b000ff" }, 
+        { text: "catchy chopped vocal hooks and neon synth stabs", weight: 1.8, color: "#ff00aa" }, 
+        { text: "uplifting garage chords and bright melodic riffs", weight: 1.4, color: "#fadc00" }, 
+        { text: "glitchy fx, risers, and TikTok-ready impact drops", weight: 1.1, color: "#ff3b30" }, 
+        { text: "", weight: 0.0, color: "#ff00ea" }, { text: "", weight: 0.0, color: "#0055ff" }
+    ]},
+    { name: "Inst: High-Energy Drum & Bass (2026 Crossover Surge)", bpm: 174, dur: 8, density: 96, brightness: 85, chaos: 45, seamless: true, channels:[
+        { text: "rolling jungle breakbeat with massive dnb kick", weight: 1.7, color: "#00ff41" }, 
+        { text: "deep growling reece bass and sub pressure", weight: 1.6, color: "#00e5ff" }, 
+        { text: "rapid fire amen breaks, crisp hi-hats, and snare rolls", weight: 1.5, color: "#b000ff" }, 
+        { text: "euphoric liquid synth leads and neuro bass stabs", weight: 1.7, color: "#ff00aa" }, 
+        { text: "uplifting orchestral strings and piano chords", weight: 1.3, color: "#fadc00" }, 
+        { text: "dramatic risers, impacts, and festival drop fx", weight: 1.2, color: "#ff3b30" }, 
+        { text: "", weight: 0.0, color: "#ff00ea" }, { text: "", weight: 0.0, color: "#0055ff" }
+    ]},
+    { name: "Inst: Future Rave / Big Room EDM (Mainstage Destroyer)", bpm: 130, dur: 16, density: 97, brightness: 92, chaos: 38, seamless: true, channels:[
+        { text: "huge festival big-room kick with hard-hitting sidechain", weight: 1.7, color: "#00ff41" }, 
+        { text: "massive distorted bass drop with future rave energy", weight: 1.6, color: "#00e5ff" }, 
+        { text: "powerful claps, shakers, and epic drum builds", weight: 1.3, color: "#b000ff" }, 
+        { text: "huge rave supersaw leads and anthemic hooks", weight: 1.8, color: "#ff00aa" }, 
+        { text: "euphoric chord stabs and cinematic synth layers", weight: 1.5, color: "#fadc00" }, 
+        { text: "massive laser impacts, risers, and crowd explosion fx", weight: 1.3, color: "#ff3b30" }, 
+        { text: "", weight: 0.0, color: "#ff00ea" }, { text: "", weight: 0.0, color: "#0055ff" }
+    ]},
+    { name: "Vocal: Lens DNA Ultimate 2026 Festival Anthem", bpm: 128, dur: 16, density: 99, brightness: 100, chaos: 22, seamless: true, channels:[
+        { text: "upfront, powerful, euphoric female pop anthem lead vocal. Lyrics: 'Midnight fires and endless screens, Hans Schulte built the ultimate dream! The Republic of DJs, a brand new dawn. Lens DNA, the app of all apps! Own your sound, stream it out, be the DJ you were born to be! Next generation, wild and free!'", weight: 2.3, color: "#ff00ea" },
+        { text: "driving festival progressive house kick with big-room punch", weight: 1.7, color: "#00ff41" }, 
+        { text: "warm thick rolling sub bass with dance-pop bounce", weight: 1.4, color: "#00e5ff" }, 
+        { text: "massive euphoric supersaw chords and viral hook layers", weight: 1.9, color: "#ff00aa" }, 
+        { text: "bright sparkling piano and electropop melody riffs", weight: 1.6, color: "#fadc00" }, 
+        { text: "crisp 909 open hi-hats, claps, and massive drum rolls", weight: 1.4, color: "#b000ff" }, 
+        { text: "stadium crowd cheering, huge risers, and TikTok drop impacts", weight: 1.3, color: "#ff3b30" }, 
+        { text: "harmonized female backing vocals singing 'Next generation! Lens DNA!'", weight: 1.3, color: "#0055ff" }
     ]}
 ];
 
