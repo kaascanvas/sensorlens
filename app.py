@@ -1714,7 +1714,7 @@ async function flipCamera() {
     elements.video.classList.toggle("mirror", state.facingMode === "user");
     await new Promise(r => setTimeout(r, 400)); 
     try { 
-        const constraints = { video: { facingMode: { ideal: state.facingMode }, width: { ideal: isMobile ? 720 : 1280 }, height: { ideal: isMobile ? 1280 : 720 }, frameRate: { ideal: 30, max: 60 } } }; 
+        const constraints = { video: { facingMode: { ideal: state.facingMode }, width: { ideal: window.innerWidth <= 900 ? 720 : 1280 }, height: { ideal: window.innerWidth <= 900 ? 1280 : 720 }, frameRate: { ideal: 30, max: 60 } } }; 
         state.videoStream = await navigator.mediaDevices.getUserMedia(constraints); 
         elements.video.srcObject = state.videoStream; 
         if(state.serverReady) setTimeout(() => captureContextFrame("CAM_FLIP"), 500);
@@ -1729,7 +1729,7 @@ async function toggleScreenShare() {
             if (state.videoStream) state.videoStream.getTracks().forEach(t => t.stop()); 
             state.videoStream = newStream; state.mode = "screen"; elements.video.classList.remove("mirror"); 
         } else { 
-            const newStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: state.facingMode, width: { ideal: isMobile ? 720 : 1280 }, height: { ideal: isMobile ? 1280 : 720 }, frameRate: { ideal: 30, max: 60 } } }); 
+            const newStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: state.facingMode, width: { ideal: window.innerWidth <= 900 ? 720 : 1280 }, height: { ideal: window.innerWidth <= 900 ? 1280 : 720 }, frameRate: { ideal: 30, max: 60 } } }); 
             if (state.videoStream) state.videoStream.getTracks().forEach(t => t.stop()); 
             state.videoStream = newStream; state.mode = "camera"; elements.video.classList.toggle("mirror", state.facingMode === "user");
         } 
@@ -1782,7 +1782,7 @@ async function startLocalMedia() {
     if (state.videoStream) return;
     try {
         state.audioStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 } });
-        state.videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: state.facingMode, width: { ideal: isMobile ? 720 : 1280 }, height: { ideal: isMobile ? 1280 : 720 }, frameRate: { ideal: 30, max: 60 } } });
+        state.videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: state.facingMode, width: { ideal: window.innerWidth <= 900 ? 720 : 1280 }, height: { ideal: window.innerWidth <= 900 ? 1280 : 720 }, frameRate: { ideal: 30, max: 60 } } });
         elements.video.srcObject = state.videoStream; await elements.video.play();
         state.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
         if (state.audioCtx.state === "suspended") await state.audioCtx.resume();
