@@ -418,7 +418,7 @@ async def handle_socket_connect(sid, environ, auth=None):
         instruction = "System Active."
 
     # Store state and instantiate lightweight task
-    q = asyncio.Queue()
+    q = asyncio.Queue(maxsize=150)
     active_sessions[sid] = {'queue': q, 'running': True, 'sovereign_key': sovereign_key}
     asyncio.create_task(ai_bridge_task(sid, provider, instruction, q, sovereign_key))
 
@@ -526,7 +526,10 @@ async def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, 
                         active_sessions[sid]['cancel_stem'] = False
 
                     async for message in session.receive():
-                        if sid and sid in active_sessions and active_sessions[sid].get('cancel_stem'):
+                        if sid and sid not in active_sessions:
+                            await session.stop()
+                            break
+                        if sid and active_sessions.get(sid, {}).get('cancel_stem'):
                             await session.stop()
                             break
 
@@ -545,14 +548,16 @@ async def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, 
                 audio_buffer = None
                 
             if audio_buffer and len(audio_buffer) > 0:
+                import tempfile
                 def write_wav(pcm):
-                    buf = io.BytesIO()
-                    with wave.open(buf, 'wb') as wav_file:
-                        wav_file.setnchannels(2)
-                        wav_file.setsampwidth(2)
-                        wav_file.setframerate(48000)
-                        wav_file.writeframes(pcm)
-                    return base64.b64encode(buf.getvalue()).decode('utf-8')
+                    with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp:
+                        with wave.open(tmp, 'wb') as wav_file:
+                            wav_file.setnchannels(2)
+                            wav_file.setsampwidth(2)
+                            wav_file.setframerate(48000)
+                            wav_file.writeframes(pcm)
+                        tmp.seek(0)
+                        return base64.b64encode(tmp.read()).decode('utf-8')
                 b64_stem = await asyncio.to_thread(write_wav, audio_buffer)
 
     if not b64_stem:
@@ -601,7 +606,10 @@ async def on_user_message(sid, data):
 @sio.on('audio_chunk', namespace='/live')
 async def on_audio_chunk(sid, data):
     if sid in active_sessions:
-        await active_sessions[sid]['queue'].put({'type': 'audio', 'data': data.get('data', '')})
+        try:
+            active_sessions[sid]['queue'].put_nowait({'type': 'audio', 'data': data.get('data', '')})
+        except asyncio.QueueFull:
+            pass
 
 @sio.on('video_frame', namespace='/live')
 async def on_video_frame(sid, data):
@@ -611,7 +619,10 @@ async def on_video_frame(sid, data):
             encoded_frame = base64.b64encode(raw_data).decode('utf-8')
         else:
             encoded_frame = raw_data
-        await active_sessions[sid]['queue'].put({'type': 'video', 'data': encoded_frame})
+        try:
+            active_sessions[sid]['queue'].put_nowait({'type': 'video', 'data': encoded_frame})
+        except asyncio.QueueFull:
+            pass
 
 @sio.on('lens_ocr', namespace='/live')
 async def on_lens_ocr(sid, data):
