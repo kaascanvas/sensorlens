@@ -91,7 +91,7 @@ user_context_map = TTLCache(maxsize=1000, ttl=3600)
 sio = socketio.AsyncServer(
     async_mode='asgi',
     cors_allowed_origins="*",
-    max_http_buffer_size=20 * 1024 * 1024, # Reduced from 250MB to 20MB per message
+    max_http_buffer_size=60 * 1024 * 1024, # Reduced from 250MB to 60MB per message
     logger=False,
     engineio_logger=False
 )
@@ -420,7 +420,7 @@ async def handle_socket_connect(sid, environ, auth=None):
         instruction = "System Active."
 
     # Store state and instantiate lightweight task
-    q = asyncio.Queue(maxsize=30) # Reduced from 150 to 30 to limit RAM used per stream
+    q = asyncio.Queue(maxsize=60) # Reduced from 150 to 60 to limit RAM used per stream
     active_sessions[sid] = {'queue': q, 'running': True, 'sovereign_key': sovereign_key}
     asyncio.create_task(ai_bridge_task(sid, provider, instruction, q, sovereign_key))
 
