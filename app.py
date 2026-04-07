@@ -441,6 +441,22 @@ async def handle_cancel_stem(sid):
     if sid in active_sessions:
         active_sessions[sid]['cancel_stem'] = True
         
+@sio.on('update_stem_weights', namespace='/live')
+async def handle_update_stem_weights(sid, data):
+    if sid in active_sessions:
+        session = active_sessions[sid].get('lyria_session')
+        if session:
+            prompts = data.get('prompts', [])
+            lyria_prompts = []
+            for p in prompts:
+                wt = float(p.get('weight', 1.0))
+                lyria_prompts.append(types.WeightedPrompt(text=p.get('text', ''), weight=wt))
+            try:
+                # Dynamically inject the new weights into the active Lyria stream
+                await session.set_weighted_prompts(prompts=lyria_prompts)
+            except Exception as e:
+                print(f"[STEM UPDATE ERROR]: {e}")
+
 @sio.on('trigger_stem_generation', namespace='/live')
 async def handle_stem_generation(sid, data):
     if sid in active_sessions:
@@ -511,6 +527,8 @@ async def generate_music_stem(prompts_payload: list, duration_seconds: int = 8, 
             try:
                 lyria_client = genai.Client(api_key=active_key, http_options={'api_version': 'v1alpha'})
                 async with lyria_client.aio.live.music.connect(model=lyria_rt_model) as session:
+                    if sid and sid in active_sessions:
+                        active_sessions[sid]['lyria_session'] = session  # Save the session for live updates
                     lyria_prompts =[]
                     for p in prompts_payload:
                         wt = float(p.get('weight', 1.0))
@@ -2223,9 +2241,15 @@ function injectChannel() {
     
     const weightSlider = col.querySelector(`#ch${currentId}-weight`);
     const valDisplay = col.querySelector(`#ch${currentId}-val`);
+    const promptInput = col.querySelector(`#ch${currentId}-prompt`);
     
     weightSlider.addEventListener('input', (e) => {
         valDisplay.innerText = parseFloat(e.target.value).toFixed(1);
+        if (window.sendMatrixUpdate) window.sendMatrixUpdate();
+    });
+
+    promptInput.addEventListener('change', () => {
+        if (window.sendMatrixUpdate) window.sendMatrixUpdate();
     });
     
     if (btnAddChannel) { 
@@ -2368,6 +2392,30 @@ if (btnPrevMatrix) btnPrevMatrix.onclick = () => loadPreset('prev');
 
 const btnNextMatrix = document.getElementById('btn-next-preset-matrix');
 if (btnNextMatrix) btnNextMatrix.onclick = () => loadPreset('next');
+let matrixUpdateTimeout = null;
+window.sendMatrixUpdate = function() {
+    // Only send updates if the stream is currently playing
+    if (!state.serverReady || !state.isGeneratingStem) return;
+    
+    clearTimeout(matrixUpdateTimeout);
+    matrixUpdateTimeout = setTimeout(() => {
+        const payload = [];
+        for (let i = 1; i <= activeChannels; i++) {
+            const textEl = document.getElementById(`ch${i}-prompt`); 
+            const weightEl = document.getElementById(`ch${i}-weight`);
+            if (textEl && weightEl && textEl.value) {
+                const weightVal = parseFloat(weightEl.value);
+                if (weightVal > 0) {
+                    payload.push({ text: textEl.value, weight: weightVal });
+                }
+            }
+        }
+        
+        if (payload.length > 0) {
+            state.socket.emit("update_stem_weights", { prompts: payload });
+        }
+    }, 150); // Debounce to prevent flooding the API while rapidly dragging
+};
 
 const btnLyria = document.getElementById('btn-lyria-gen');
 
