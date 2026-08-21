@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>4 · Pilot intake · SensorLens</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand mono">SensorLens <span>· client-mimic sandbox</span></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="handoff.html">1 · Handoff</a>
+        <a href="residual.html">2 · Residual portal</a>
+        <a href="status.html">3 · Status / metrics</a>
+        <a href="pilot-intake.html" class="on">4 · Pilot intake</a>
+        <a href="#" id="nav-reset">Reset</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="badge">Step 4 · local pilot shape (practice → parameters)</div>
+    <h1>Pilot intake · <span>close the loop here</span></h1>
+    <p class="lead">
+      Mirror of residual pilot intake on this origin — no domain jump required.
+      Prefills from your practice session when present. Synthetic only; not a paid booking.
+    </p>
+
+    <div id="recorded-banner" class="ok" style="display:none;">
+      Practice pilot intake recorded in this browser session at <span class="mono" id="recorded-ts"></span>.
+      Next: <strong style="color:#fff">Copy intake summary</strong> and email it to
+      <a href="mailto:hans@lensdna.app"><span class="mono">hans@lensdna.app</span></a>,
+      or use <strong style="color:#fff">Email summary</strong> to open your mail client with the body filled in.
+    </div>
+
+    <div class="card">
+      <h2>From this practice session</h2>
+      <dl class="kv">
+        <dt>Case</dt><dd id="kv-case">—</dd>
+        <dt>Payer</dt><dd id="kv-payer">—</dd>
+        <dt>Gated submit</dt><dd id="kv-submitted">no</dd>
+      </dl>
+    </div>
+
+    <form class="card" id="pilotIntakeForm">
+      <h2>Bounded pilot parameters</h2>
+      <div class="row">
+        <div>
+          <label for="pilot_org">Organization</label>
+          <input id="pilot_org" name="pilot_org" data-lensdna-target="pilot_org" placeholder="Practice desk / internal lab" />
+        </div>
+        <div>
+          <label for="pilot_email">Contact email</label>
+          <input id="pilot_email" name="pilot_email" type="email" data-lensdna-target="pilot_email" placeholder="you@company.com" />
+        </div>
+      </div>
+      <label for="pilot_workflow">One workflow / portal family</label>
+      <textarea id="pilot_workflow" name="pilot_workflow" data-lensdna-target="pilot_workflow" required></textarea>
+      <label for="pilot_baseline">Baseline residual minutes (plan)</label>
+      <input id="pilot_baseline" name="pilot_baseline" data-lensdna-target="pilot_baseline" required />
+      <label for="pilot_success">Success metric</label>
+      <input id="pilot_success" name="pilot_success" data-lensdna-target="pilot_success" required />
+      <label for="pilot_fail">Failure / stop condition</label>
+      <input id="pilot_fail" name="pilot_fail" data-lensdna-target="pilot_fail" required />
+      <label for="pilot_notes">Notes (cohort, exceptions, oversight)</label>
+      <textarea id="pilot_notes" name="pilot_notes" data-lensdna-target="pilot_notes" placeholder="Frozen cohort · exceptions pre-registered · human gate mandatory · 14-day window"></textarea>
+
+      <p class="note">
+        This records <strong style="color:#e8eef7">practice parameters</strong> in the browser only.
+        <strong style="color:#e8eef7">You</strong> deliver the summary: copy it and email
+        <a href="mailto:hans@lensdna.app">hans@lensdna.app</a>
+        — no server mail, no SMTP secrets on this lab.
+        Not a deposit · not a live payer lane.
+        Commercial Schedule D / residual pilot remains on
+        <a href="https://lensdna.app/enterprise" target="_blank" rel="noopener">lensdna.app/enterprise</a>
+        when you are ready for a real engagement.
+      </p>
+
+      <div class="btn-row">
+        <button type="submit" class="btn primary">Record practice pilot intake</button>
+        <button type="button" class="btn" id="btnCopyPilot">Copy intake summary</button>
+        <a class="btn primary" id="btnEmailPilot" href="mailto:hans@lensdna.app">Email summary to hans@lensdna.app</a>
+        <button type="button" class="btn" onclick="window.LensDNA && window.LensDNA.open()">Open overlay · Pilot Ops</button>
+        <a class="btn" href="status.html">← Status / metrics</a>
+      </div>
+    </form>
+
+    <p class="footer">
+      Internal practice desk · residual shape operators hit · overlay from
+      <a href="https://lensdna.app" target="_blank" rel="noopener">lensdna.app</a>
+      · synthetic only · no live payer · human gate required · <span id="sl-now"></span>
+    </p>
+  </main>
+
+  <script src="sensorlens.js"></script>
+  <script
+    src="https://lensdna.app/embed.js"
+    data-overlay-url="https://lensdna.app/overlay.html"
+    data-tenant-id="sensorlens-sandbox"
+    data-theme="dark"
+    data-position="bottom-right"
+    data-auto-open="false">
+  </script>
+  <script>
+  (function () {
+    var s = SensorLens.load();
+
+    document.getElementById('kv-case').textContent = s.case_id || '—';
+    document.getElementById('kv-payer').textContent = s.payer || '—';
+    document.getElementById('kv-submitted').textContent = s.submitted ? 'yes' : 'no';
+
+    // Prefill
+    document.getElementById('pilot_org').value = s.pilot_org || '';
+    document.getElementById('pilot_email').value = s.pilot_email || '';
+    document.getElementById('pilot_workflow').value = s.pilot_workflow || (
+      (s.payer || 'One payer portal family') + ' · prior-auth residual submit/attach/status · case shape ' + (s.case_id || 'synthetic')
+    );
+    document.getElementById('pilot_baseline').value = s.pilot_baseline || (
+      (s.baseline_minutes || '8-12') + ' minutes residual portal time per case (plan)'
+    );
+    document.getElementById('pilot_success').value = s.pilot_success ||
+      'Measured residual minutes per case reduced vs baseline on frozen cohort';
+    document.getElementById('pilot_fail').value = s.pilot_fail ||
+      'Thin residual, unfrozen exceptions, or human gate bypassed — stop and revise parameters';
+    document.getElementById('pilot_notes').value = s.pilot_notes || '';
+
+    if (s.pilot_recorded) {
+      document.getElementById('recorded-banner').style.display = 'block';
+      document.getElementById('recorded-ts').textContent = s.pilot_recorded_ts || '—';
+    }
+
+    function summary() {
+      var g = function (id) {
+        var e = document.getElementById(id);
+        return e ? e.value : '';
+      };
+      return [
+        'SENSORLENS PRACTICE PILOT INTAKE',
+        'Org: ' + g('pilot_org'),
+        'Email: ' + g('pilot_email'),
+        'Workflow: ' + g('pilot_workflow'),
+        'Baseline: ' + g('pilot_baseline'),
+        'Success: ' + g('pilot_success'),
+        'Fail/stop: ' + g('pilot_fail'),
+        'Notes: ' + g('pilot_notes'),
+        'Session case: ' + (s.case_id || '—') + ' · payer: ' + (s.payer || '—') + ' · gated submit: ' + (s.submitted ? 'yes' : 'no'),
+        '',
+        'Scope: practice parameters only. Not a commercial booking. Not live payer. Economics remain underwriting until measured on a real residual pilot.'
+      ].join('\n');
+    }
+
+    function wireCopyAndMail() {
+      var text = summary();
+      var b = document.getElementById('btnCopyPilot');
+      if (b) {
+        b.onclick = function () {
+          navigator.clipboard.writeText(text).then(function () {
+            alert('Practice pilot intake copied — paste into email to hans@lensdna.app');
+          }).catch(function () {
+            prompt('Copy this summary:', text);
+          });
+        };
+      }
+      var m = document.getElementById('btnEmailPilot');
+      if (m) {
+        m.href = 'mailto:hans@lensdna.app'
+          + '?subject=' + encodeURIComponent('SensorLens practice pilot intake')
+          + '&body=' + encodeURIComponent(text);
+      }
+    }
+
+    wireCopyAndMail();
+    document.querySelectorAll('#pilotIntakeForm input, #pilotIntakeForm textarea').forEach(function (el) {
+      el.addEventListener('input', wireCopyAndMail);
+    });
+
+    document.getElementById('pilotIntakeForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var ts = new Date().toISOString();
+      SensorLens.save({
+        pilot_org: document.getElementById('pilot_org').value.trim(),
+        pilot_email: document.getElementById('pilot_email').value.trim(),
+        pilot_workflow: document.getElementById('pilot_workflow').value.trim(),
+        pilot_baseline: document.getElementById('pilot_baseline').value.trim(),
+        pilot_success: document.getElementById('pilot_success').value.trim(),
+        pilot_fail: document.getElementById('pilot_fail').value.trim(),
+        pilot_notes: document.getElementById('pilot_notes').value.trim(),
+        pilot_recorded: true,
+        pilot_recorded_ts: ts
+      });
+      location.href = 'pilot-intake.html'; // reload to show banner
+    });
+
+    document.getElementById('nav-reset').onclick = function (e) {
+      e.preventDefault();
+      SensorLens.clear();
+      location.href = 'index.html';
+    };
+  })();
+  </script>
+</body>
+</html>

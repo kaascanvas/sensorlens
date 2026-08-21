@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>1 · Handoff · SensorLens</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand mono">SensorLens <span>· client-mimic sandbox</span></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="handoff.html" class="on">1 · Handoff</a>
+        <a href="residual.html">2 · Residual portal</a>
+        <a href="status.html">3 · Status / metrics</a>
+        <a href="pilot-intake.html">4 · Pilot intake</a>
+        <a href="#" id="nav-reset">Reset</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="badge">Step 1 · upstream decision assumed complete</div>
+    <h1>Handoff · what residual <span>remains</span></h1>
+    <p class="lead">
+      Generic upstream finished (any decision layer). Fill what the operator still owes the payer side.
+      Overlay can read these fields via DOM tools / voice.
+    </p>
+
+    <form class="card" id="handoffForm">
+      <h2>Case export (operator-visible)</h2>
+      <div class="row">
+        <div>
+          <label for="case_id">Case / member id</label>
+          <input id="case_id" name="case_id" data-lensdna-target="case_id" required />
+        </div>
+        <div>
+          <label for="payer">Payer / portal family</label>
+          <input id="payer" name="payer" data-lensdna-target="payer" required />
+        </div>
+      </div>
+      <label for="decision">Upstream decision outcome</label>
+      <select id="decision" name="decision" data-lensdna-target="decision">
+        <option value="Medical necessity supported — residual portal submit/attach still required">Medical necessity supported — residual portal submit/attach still required</option>
+        <option value="Documentation gap flagged — operator must attach before submit">Documentation gap flagged — operator must attach before submit</option>
+        <option value="Status chase only — decision already on file">Status chase only — decision already on file</option>
+      </select>
+      <label for="baseline_minutes">Baseline residual minutes (plan / synthetic)</label>
+      <input id="baseline_minutes" name="baseline_minutes" data-lensdna-target="baseline_minutes" placeholder="e.g. 12-18" />
+      <label for="export_notes">Residual still on operator</label>
+      <textarea id="export_notes" name="export_notes" data-lensdna-target="export_notes" required></textarea>
+      <p class="note">
+        No re-decision of medical necessity on this desk. Only residual work after the decision.
+      </p>
+      <div class="btn-row">
+        <button type="submit" class="btn primary">Continue to residual portal →</button>
+        <button type="button" class="btn" onclick="window.LensDNA && window.LensDNA.open()">Open overlay</button>
+      </div>
+    </form>
+
+    <p class="footer">
+      Internal practice desk · residual shape operators hit · overlay from
+      <a href="https://lensdna.app" target="_blank" rel="noopener">lensdna.app</a>
+      · synthetic only · no live payer · human gate required · <span id="sl-now"></span>
+    </p>
+  </main>
+
+  <script src="sensorlens.js"></script>
+  <script
+    src="https://lensdna.app/embed.js"
+    data-overlay-url="https://lensdna.app/overlay.html"
+    data-tenant-id="sensorlens-sandbox"
+    data-theme="dark"
+    data-position="bottom-right"
+    data-auto-open="false">
+  </script>
+  <script>
+    (function () {
+      const s = SensorLens.load();
+      document.getElementById('case_id').value = s.case_id;
+      document.getElementById('payer').value = s.payer;
+      document.getElementById('decision').value = s.decision;
+      document.getElementById('baseline_minutes').value = s.baseline_minutes;
+      document.getElementById('export_notes').value = s.export_notes;
+
+      document.getElementById('handoffForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        SensorLens.save({
+          case_id: document.getElementById('case_id').value.trim(),
+          payer: document.getElementById('payer').value.trim(),
+          decision: document.getElementById('decision').value,
+          baseline_minutes: document.getElementById('baseline_minutes').value.trim() || '12-18',
+          export_notes: document.getElementById('export_notes').value.trim(),
+          // clear residual progress when starting a new handoff
+          submitted: false,
+          submit_ts: '',
+          timing_json: '',
+          run_seconds: '',
+          gate_blocked: false
+        });
+        location.href = 'residual.html';
+      });
+
+      document.getElementById('nav-reset').onclick = function (e) {
+        e.preventDefault();
+        SensorLens.clear();
+        location.href = 'index.html';
+      };
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2 · Residual run · SensorLens</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand mono">SensorLens <span>· client-mimic sandbox</span></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="handoff.html">1 · Handoff</a>
+        <a href="residual.html" class="on">2 · Residual portal</a>
+        <a href="status.html">3 · Status / metrics</a>
+        <a href="pilot-intake.html">4 · Pilot intake</a>
+        <a href="#" id="nav-reset">Reset</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="badge">Step 2 · measurement-grade residual run (synthetic · HealthAdminDNA-shaped)</div>
+    <h1>Residual run · <span>timed last-mile</span></h1>
+    <p class="lead">
+      Expected settings aligned to the HealthAdminDNA sample: after decision → portal context → attach → status → <strong style="color:#e8eef7">human gate</strong> → confirm.
+      Timers record practice measurements. Not a live payer.
+    </p>
+
+    <div id="gate-alert" class="alert" style="display:none;">
+      Human gate blocked submit — approval required. Residual execution does not bypass the operator.
+    </div>
+
+    <div class="card">
+      <h2>From handoff</h2>
+      <dl class="kv">
+        <dt>Case</dt><dd id="kv-case">—</dd>
+        <dt>Payer</dt><dd id="kv-payer">—</dd>
+        <dt>Decision</dt><dd id="kv-decision">—</dd>
+        <dt>Baseline (plan)</dt><dd id="kv-baseline">12-18 min / case</dd>
+      </dl>
+    </div>
+
+    <div class="step-rail" id="stepRail">
+      <span class="s on" data-step="1">1 Context</span>
+      <span class="s" data-step="2">2 Portal fields</span>
+      <span class="s" data-step="3">3 Attach</span>
+      <span class="s" data-step="4">4 Status</span>
+      <span class="s" data-step="5">5 Human gate</span>
+    </div>
+    <p class="timer mono">Run timer: <strong id="runTimer">0.0s</strong> · Step: <strong id="stepTimer">0.0s</strong> <span id="stepLabel">· context</span></p>
+
+    <form class="card" id="residualForm">
+      <div class="panel on" data-panel="1">
+        <h2>1 · Case context (decision already done)</h2>
+        <p class="note">No re-decision of medical necessity. Confirm residual still required on the payer side.</p>
+        <label for="portal_member">Member / subscriber (as on portal)</label>
+        <input id="portal_member" name="portal_member" data-lensdna-target="portal_member" placeholder="e.g. Jane Rivera" />
+        <div class="btn-row">
+          <button type="button" class="btn primary" data-next="2">Next · portal fields →</button>
+          <button type="button" class="btn" onclick="window.LensDNA && window.LensDNA.open()">Open overlay</button>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="2">
+        <h2>2 · Portal residual fields</h2>
+        <div class="row">
+          <div>
+            <label for="auth_ref">Auth / reference number</label>
+            <input id="auth_ref" name="auth_ref" data-lensdna-target="auth_ref" placeholder="Portal ref" />
+          </div>
+          <div>
+            <label for="cpt">CPT / service codes</label>
+            <input id="cpt" name="cpt" data-lensdna-target="cpt" placeholder="e.g. 99214" />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn" data-next="1">← Back</button>
+          <button type="button" class="btn primary" data-next="3">Next · attachments →</button>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="3">
+        <h2>3 · Attachments / packet</h2>
+        <label for="attachment_note">Attachments prepared</label>
+        <textarea id="attachment_note" name="attachment_note" data-lensdna-target="attachment_note" placeholder="LMN, clinical packet, labs…"></textarea>
+        <div class="btn-row">
+          <button type="button" class="btn" data-next="2">← Back</button>
+          <button type="button" class="btn primary" data-next="4">Next · status →</button>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="4">
+        <h2>4 · Status / verification notes</h2>
+        <label for="status_note">Status notes (portal or phone residual)</label>
+        <textarea id="status_note" name="status_note" data-lensdna-target="status_note" placeholder="Portal status text, verification notes…"></textarea>
+        <div class="btn-row">
+          <button type="button" class="btn" data-next="3">← Back</button>
+          <button type="button" class="btn primary" data-next="5">Next · human gate →</button>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="5">
+        <h2>5 · Human gate (irreversible)</h2>
+        <div class="gate">
+          <label class="chk">
+            <input type="checkbox" name="human_approve" value="yes" data-lensdna-target="human_approve" id="human_approve" />
+            <span>
+              <strong style="color:var(--neon)">I approve irreversible residual submit</strong> for this synthetic case.
+              Without this check, submit is rejected — same discipline as production.
+            </span>
+          </label>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn" data-next="4">← Back</button>
+          <button type="submit" class="btn primary">Submit residual (gated) →</button>
+          <a class="btn" href="handoff.html">← Handoff</a>
+        </div>
+      </div>
+    </form>
+
+    <p class="footer">
+      Internal practice desk · residual shape operators hit · overlay from
+      <a href="https://lensdna.app" target="_blank" rel="noopener">lensdna.app</a>
+      · synthetic only · no live payer · human gate required · <span id="sl-now"></span>
+    </p>
+  </main>
+
+  <script src="sensorlens.js"></script>
+  <script
+    src="https://lensdna.app/embed.js"
+    data-overlay-url="https://lensdna.app/overlay.html"
+    data-tenant-id="sensorlens-sandbox"
+    data-theme="dark"
+    data-position="bottom-right"
+    data-auto-open="false">
+  </script>
+  <script>
+  (function () {
+    var s = SensorLens.load();
+    document.getElementById('kv-case').textContent = s.case_id || '—';
+    document.getElementById('kv-payer').textContent = s.payer || '—';
+    document.getElementById('kv-decision').textContent = s.decision || '—';
+    document.getElementById('kv-baseline').textContent = (s.baseline_minutes || '12-18') + ' min / case';
+
+    document.getElementById('portal_member').value = s.portal_member || '';
+    document.getElementById('auth_ref').value = s.auth_ref || '';
+    document.getElementById('cpt').value = s.cpt || '';
+    document.getElementById('attachment_note').value = s.attachment_note || '';
+    document.getElementById('status_note').value = s.status_note || '';
+
+    if (s.gate_blocked) {
+      document.getElementById('gate-alert').style.display = 'block';
+      // clear the flag so it only shows once
+      SensorLens.save({ gate_blocked: false });
+    }
+
+    // --- timers & step rail (same as original) ---
+    var runStart = Date.now();
+    var stepStart = Date.now();
+    var current = 1;
+    var timing = {};
+    var labels = {1:'context',2:'portal',3:'attach',4:'status',5:'gate'};
+
+    function fmt(ms) { return (ms/1000).toFixed(1) + 's'; }
+    function tick() {
+      document.getElementById('runTimer').textContent = fmt(Date.now() - runStart);
+      document.getElementById('stepTimer').textContent = fmt(Date.now() - stepStart);
+    }
+    setInterval(tick, 200);
+
+    function show(n) {
+      if (current && current !== n) {
+        timing['step_' + current + '_' + labels[current]] = Math.round((Date.now() - stepStart) / 100) / 10;
+      }
+      current = n;
+      stepStart = Date.now();
+      document.querySelectorAll('.panel').forEach(function (p) {
+        p.classList.toggle('on', p.getAttribute('data-panel') === String(n));
+      });
+      document.querySelectorAll('#stepRail .s').forEach(function (el) {
+        var sn = parseInt(el.getAttribute('data-step'), 10);
+        el.classList.toggle('on', sn === n);
+        el.classList.toggle('done', sn < n);
+      });
+      document.getElementById('stepLabel').textContent = '· ' + labels[n];
+    }
+
+    document.querySelectorAll('[data-next]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        show(parseInt(btn.getAttribute('data-next'), 10));
+      });
+    });
+
+    document.getElementById('residualForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      timing['step_' + current + '_' + labels[current]] = Math.round((Date.now() - stepStart) / 100) / 10;
+      timing.total_seconds = Math.round((Date.now() - runStart) / 100) / 10;
+      timing.baseline_plan_min = s.baseline_minutes || '12-18';
+      timing.case_id = s.case_id;
+      timing.payer = s.payer;
+
+      var approved = document.getElementById('human_approve').checked;
+
+      SensorLens.save({
+        portal_member: document.getElementById('portal_member').value.trim(),
+        auth_ref: document.getElementById('auth_ref').value.trim(),
+        cpt: document.getElementById('cpt').value.trim(),
+        attachment_note: document.getElementById('attachment_note').value.trim(),
+        status_note: document.getElementById('status_note').value.trim(),
+        timing_json: JSON.stringify(timing),
+        run_seconds: String(timing.total_seconds),
+        submitted: approved,
+        submit_ts: approved ? new Date().toISOString() : '',
+        gate_blocked: !approved
+      });
+
+      if (approved) {
+        location.href = 'status.html';
+      } else {
+        location.href = 'residual.html'; // reloads and shows the alert
+      }
+    });
+
+    document.getElementById('nav-reset').onclick = function (e) {
+      e.preventDefault();
+      SensorLens.clear();
+      location.href = 'index.html';
+    };
+  })();
+  </script>
+</body>
+</html>

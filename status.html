@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>3 · Status / metrics · SensorLens</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand mono">SensorLens <span>· client-mimic sandbox</span></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="handoff.html">1 · Handoff</a>
+        <a href="residual.html">2 · Residual portal</a>
+        <a href="status.html" class="on">3 · Status / metrics</a>
+        <a href="pilot-intake.html">4 · Pilot intake</a>
+        <a href="#" id="nav-reset">Reset</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="badge">Step 3 · outcome + practice metrics</div>
+    <h1>Status · <span>what the run produced</span></h1>
+    <p class="lead">
+      After a gated residual submit, this is the confirmation surface. Use it to practice dossier language and Pilot Ops — not live payer proof.
+    </p>
+
+    <div id="ok-banner" class="ok" style="display:none;">
+      Synthetic residual submit recorded at <span class="mono" id="submit-ts"></span>.
+      Human gate was checked. No live payer was contacted.
+    </div>
+    <div id="alert-banner" class="alert" style="display:none;">
+      No gated submit in session yet. Complete residual portal with human approval, or this page is preview-only.
+    </div>
+
+    <div class="card">
+      <h2>Case snapshot</h2>
+      <dl class="kv">
+        <dt>Case</dt><dd id="kv-case">—</dd>
+        <dt>Payer</dt><dd id="kv-payer">—</dd>
+        <dt>Member on portal</dt><dd id="kv-member">—</dd>
+        <dt>Auth ref</dt><dd id="kv-auth">—</dd>
+        <dt>CPT</dt><dd id="kv-cpt">—</dd>
+        <dt>Attachments</dt><dd id="kv-attach">—</dd>
+        <dt>Status notes</dt><dd id="kv-status">—</dd>
+        <dt>Submitted</dt><dd id="kv-submitted">no</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <h2>Measurement (this synthetic run)</h2>
+      <dl class="kv">
+        <dt>Baseline (plan)</dt><dd id="kv-baseline">—</dd>
+        <dt>Run duration</dt><dd class="mono" id="kv-run">—</dd>
+        <dt>Step timing JSON</dt><dd class="mono" style="font-size:0.75rem;white-space:pre-wrap;" id="kv-timing">—</dd>
+      </dl>
+      <p class="note">
+        Practice measurement against expected residual settings — not live payer minutes, not audited client ROI.
+        Compare run duration to plan baseline only as a protocol demo.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Practice metrics (sandbox)</h2>
+      <p class="note">
+        These are <strong style="color:#e8eef7">session practice counters</strong>, not audited client ROI.
+        Log what you felt: minutes of friction, overlay usefulness, missing fields, gate clarity.
+      </p>
+      <div class="row">
+        <div>
+          <label for="m_minutes">Minutes you spent on residual steps</label>
+          <input id="m_minutes" data-lensdna-target="m_minutes" placeholder="e.g. 8" />
+        </div>
+        <div>
+          <label for="m_friction">Friction points (count)</label>
+          <input id="m_friction" data-lensdna-target="m_friction" placeholder="e.g. 3" />
+        </div>
+      </div>
+      <label for="m_notes">What you learned (product / pilot language)</label>
+      <textarea id="m_notes" data-lensdna-target="m_notes" placeholder="Field labels unclear? Overlay DOM read worked? Gate too easy to miss? Pilot Ops needed earlier?"></textarea>
+      <div class="btn-row">
+        <button type="button" class="btn primary" id="btnSaveMetrics">Save metrics locally</button>
+        <button type="button" class="btn" id="btnCopyDossier">Copy practice dossier</button>
+        <button type="button" class="btn" onclick="window.LensDNA && window.LensDNA.open()">Open overlay · Pilot Ops</button>
+        <a class="btn primary" href="pilot-intake.html">4 · Pilot intake →</a>
+        <a class="btn" href="#" id="btn-reset">Reset session</a>
+      </div>
+      <p id="metricsMsg" class="note" style="display:none;margin-top:12px;"></p>
+    </div>
+
+    <p class="footer">
+      Internal practice desk · residual shape operators hit · overlay from
+      <a href="https://lensdna.app" target="_blank" rel="noopener">lensdna.app</a>
+      · synthetic only · no live payer · human gate required · <span id="sl-now"></span>
+    </p>
+  </main>
+
+  <script src="sensorlens.js"></script>
+  <script
+    src="https://lensdna.app/embed.js"
+    data-overlay-url="https://lensdna.app/overlay.html"
+    data-tenant-id="sensorlens-sandbox"
+    data-theme="dark"
+    data-position="bottom-right"
+    data-auto-open="false">
+  </script>
+  <script>
+  (function () {
+    var s = SensorLens.load();
+
+    document.getElementById('kv-case').textContent = s.case_id || '—';
+    document.getElementById('kv-payer').textContent = s.payer || '—';
+    document.getElementById('kv-member').textContent = s.portal_member || '—';
+    document.getElementById('kv-auth').textContent = s.auth_ref || '—';
+    document.getElementById('kv-cpt').textContent = s.cpt || '—';
+    document.getElementById('kv-attach').textContent = s.attachment_note || '—';
+    document.getElementById('kv-status').textContent = s.status_note || '—';
+    document.getElementById('kv-submitted').textContent = s.submitted ? 'yes' : 'no';
+    document.getElementById('kv-baseline').textContent = (s.baseline_minutes || '12-18') + ' min / case';
+    document.getElementById('kv-run').textContent = (s.run_seconds || '—') + (s.run_seconds ? ' s' : '');
+    document.getElementById('kv-timing').textContent = s.timing_json || '—';
+
+    if (s.submitted) {
+      document.getElementById('ok-banner').style.display = 'block';
+      document.getElementById('submit-ts').textContent = s.submit_ts || '—';
+    } else {
+      document.getElementById('alert-banner').style.display = 'block';
+    }
+
+    function dossierText() {
+      return [
+        'SENSORLENS PRACTICE DOSSIER',
+        'Case: ' + (s.case_id || '—'),
+        'Payer: ' + (s.payer || '—'),
+        'Member: ' + (s.portal_member || '—'),
+        'Auth: ' + (s.auth_ref || '—'),
+        'CPT: ' + (s.cpt || '—'),
+        'Attachments: ' + (s.attachment_note || '—'),
+        'Status notes: ' + (s.status_note || '—'),
+        'Submitted (synthetic): ' + (s.submitted ? 'yes' : 'no'),
+        'Run seconds: ' + (s.run_seconds || '—'),
+        'Baseline plan min: ' + (s.baseline_minutes || '—'),
+        'Timing: ' + (s.timing_json || '—'),
+        'Submit ts: ' + (s.submit_ts || '—'),
+        'Minutes spent: ' + (document.getElementById('m_minutes').value || '—'),
+        'Friction points: ' + (document.getElementById('m_friction').value || '—'),
+        'Learnings: ' + (document.getElementById('m_notes').value || '—'),
+        '',
+        'Scope: internal residual shape practice only. No live payer. No production upstream handoff claimed.'
+      ].join('\n');
+    }
+
+    document.getElementById('btnSaveMetrics').onclick = function () {
+      var payload = {
+        minutes: document.getElementById('m_minutes').value,
+        friction: document.getElementById('m_friction').value,
+        notes: document.getElementById('m_notes').value,
+        case_id: s.case_id,
+        ts: new Date().toISOString()
+      };
+      try {
+        var prev = JSON.parse(localStorage.getItem(SensorLens.METRICS_KEY) || '[]');
+        prev.push(payload);
+        localStorage.setItem(SensorLens.METRICS_KEY, JSON.stringify(prev.slice(-40)));
+        var m = document.getElementById('metricsMsg');
+        m.style.display = 'block';
+        m.textContent = 'Saved locally (' + prev.length + ' runs in browser).';
+      } catch (e) {
+        alert('Could not save locally');
+      }
+    };
+
+    document.getElementById('btnCopyDossier').onclick = function () {
+      var t = dossierText();
+      navigator.clipboard.writeText(t).then(function () {
+        var m = document.getElementById('metricsMsg');
+        m.style.display = 'block';
+        m.textContent = 'Practice dossier copied.';
+      }).catch(function () { alert(t); });
+    };
+
+    function doReset(e) {
+      e.preventDefault();
+      SensorLens.clear();
+      location.href = 'index.html';
+    }
+    document.getElementById('nav-reset').onclick = doReset;
+    document.getElementById('btn-reset').onclick = doReset;
+  })();
+  </script>
+</body>
+</html>
