@@ -48,7 +48,8 @@
       <span class="s" data-step="2">2 Portal fields</span>
       <span class="s" data-step="3">3 Attach</span>
       <span class="s" data-step="4">4 Status</span>
-      <span class="s" data-step="5">5 Human gate</span>
+      <span class="s" data-step="5">5 Verify / evidence</span>
+      <span class="s" data-step="6">6 Human gate</span>
     </div>
     <p class="timer mono">Run timer: <strong id="runTimer">0.0s</strong> · Step: <strong id="stepTimer">0.0s</strong> <span id="stepLabel">· context</span></p>
 
@@ -98,12 +99,29 @@
         <textarea id="status_note" name="status_note" data-lensdna-target="status_note" placeholder="Portal status text, verification notes…"></textarea>
         <div class="btn-row">
           <button type="button" class="btn" data-next="3">← Back</button>
-          <button type="button" class="btn primary" data-next="5">Next · human gate →</button>
+          <button type="button" class="btn primary" data-next="5">Next · verify / evidence →</button>
         </div>
       </div>
 
       <div class="panel" data-panel="5">
-        <h2>5 · Human gate (irreversible)</h2>
+        <h2>5 · Verification & evidence</h2>
+        <p class="note">Residual value is accuracy, consistency, verification, and documentation — not only minutes.</p>
+        <label for="optical_notes">Optical verification (inputs / outputs confirmed on screen)</label>
+        <textarea id="optical_notes" name="optical_notes" data-lensdna-target="optical_notes" placeholder="What was optically verified or documented from the portal screens…"></textarea>
+        <label for="telephony_notes">Telephony verification (status / confirmation by voice)</label>
+        <textarea id="telephony_notes" name="telephony_notes" data-lensdna-target="telephony_notes" placeholder="Call outcome, verification notes, who confirmed…"></textarea>
+        <label for="evidence_notes">Evidence / PDF / dossier storage</label>
+        <textarea id="evidence_notes" name="evidence_notes" data-lensdna-target="evidence_notes" placeholder="PDF generated, packet stored, evidence reference…"></textarea>
+        <label for="quality_notes">Execution quality (accuracy, consistency, completeness)</label>
+        <textarea id="quality_notes" name="quality_notes" data-lensdna-target="quality_notes" placeholder="Any accuracy or consistency observations for this residual run…"></textarea>
+        <div class="btn-row">
+          <button type="button" class="btn" data-next="4">← Back</button>
+          <button type="button" class="btn primary" data-next="6">Next · human gate →</button>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="6">
+        <h2>6 · Human gate (irreversible)</h2>
         <div class="gate">
           <label class="chk">
             <input type="checkbox" name="human_approve" value="yes" data-lensdna-target="human_approve" id="human_approve" />
@@ -114,7 +132,7 @@
           </label>
         </div>
         <div class="btn-row">
-          <button type="button" class="btn" data-next="4">← Back</button>
+          <button type="button" class="btn" data-next="5">← Back</button>
           <button type="submit" class="btn primary">Submit residual (gated) →</button>
           <a class="btn" href="handoff.html">← Handoff</a>
         </div>
@@ -150,6 +168,10 @@
     document.getElementById('cpt').value = s.cpt || '';
     document.getElementById('attachment_note').value = s.attachment_note || '';
     document.getElementById('status_note').value = s.status_note || '';
+    if (document.getElementById('optical_notes')) document.getElementById('optical_notes').value = s.optical_notes || '';
+    if (document.getElementById('telephony_notes')) document.getElementById('telephony_notes').value = s.telephony_notes || '';
+    if (document.getElementById('evidence_notes')) document.getElementById('evidence_notes').value = s.evidence_notes || '';
+    if (document.getElementById('quality_notes')) document.getElementById('quality_notes').value = s.quality_notes || '';
 
     if (s.gate_blocked) {
       document.getElementById('gate-alert').style.display = 'block';
@@ -162,7 +184,7 @@
     var stepStart = Date.now();
     var current = 1;
     var timing = {};
-    var labels = {1:'context',2:'portal',3:'attach',4:'status',5:'gate'};
+    var labels = {1:'context',2:'portal',3:'attach',4:'status',5:'verify',6:'gate'};
 
     function fmt(ms) { return (ms/1000).toFixed(1) + 's'; }
     function tick() {
@@ -212,6 +234,10 @@
         cpt: document.getElementById('cpt').value.trim(),
         attachment_note: document.getElementById('attachment_note').value.trim(),
         status_note: document.getElementById('status_note').value.trim(),
+        optical_notes: (document.getElementById('optical_notes') || {}).value || '',
+        telephony_notes: (document.getElementById('telephony_notes') || {}).value || '',
+        evidence_notes: (document.getElementById('evidence_notes') || {}).value || '',
+        quality_notes: (document.getElementById('quality_notes') || {}).value || '',
         timing_json: JSON.stringify(timing),
         run_seconds: String(timing.total_seconds),
         submitted: approved,

@@ -1,6 +1,6 @@
 /**
- * SensorLens static state + Residual Evidence Artifact (REA)
- * System-of-record for residual runs that can sit next to a declared baseline.
+ * SensorLens static state + Residual Evidence Artifact (REA) v1.2
+ * System-of-record for residual runs: accuracy, verification, evidence, baseline.
  */
 (function () {
   const KEY = 'sensorlens_state';
@@ -19,7 +19,6 @@
       '• Human approve before irreversible submit\n' +
       '• Confirm status if not auto-updated',
     baseline_minutes: '12-18',
-    // Declared baseline (system of record)
     baseline_declared_at: '',
     baseline_cohort: '',
     baseline_metric: 'operator residual minutes per case',
@@ -32,6 +31,10 @@
     cpt: '',
     attachment_note: '',
     status_note: '',
+    optical_notes: '',
+    telephony_notes: '',
+    evidence_notes: '',
+    quality_notes: '',
     submitted: false,
     submit_ts: '',
     timing_json: '',
@@ -78,7 +81,6 @@
       Math.random().toString(36).slice(2, 8);
   }
 
-  // Simple SHA-256 via Web Crypto (returns hex)
   async function sha256(text) {
     try {
       const data = new TextEncoder().encode(text);
@@ -89,10 +91,6 @@
     }
   }
 
-  /**
-   * Build a Residual Evidence Artifact from current state + optional timing object.
-   * This is the system-of-record unit.
-   */
   async function buildREA(extra) {
     const s = load();
     const timing = extra && extra.timing ? extra.timing : (s.timing_json ? JSON.parse(s.timing_json) : {});
@@ -100,7 +98,7 @@
     const startedAt = extra && extra.started_at ? extra.started_at : completedAt;
 
     const rea = {
-      rea_version: '1.0',
+      rea_version: '1.2',
       artifact_id: uid(),
       created_at: new Date().toISOString(),
       origin: location.origin || 'sensorlens.app',
@@ -136,6 +134,36 @@
         }
       },
 
+      verification: {
+        optical: {
+          used: !!(s.optical_notes && s.optical_notes.trim()),
+          notes: s.optical_notes || null,
+          purpose: 'Verify and document on-screen inputs and outputs during residual run'
+        },
+        telephony: {
+          used: !!(s.telephony_notes && s.telephony_notes.trim()),
+          notes: s.telephony_notes || null,
+          purpose: 'Status / verification residual via voice where portal is insufficient'
+        }
+      },
+
+      evidence: {
+        pdf_or_dossier: s.evidence_notes || null,
+        storage_note: s.evidence_notes
+          ? 'Residual evidence / PDF referenced or stored for this run'
+          : null
+      },
+
+      execution_quality: {
+        notes: s.quality_notes || null,
+        dimensions: [
+          'accuracy of residual actions',
+          'consistency of flow',
+          'verification completeness',
+          'documentation integrity'
+        ]
+      },
+
       human_gate: {
         required: true,
         approved: !!s.submitted,
@@ -146,17 +174,16 @@
       outcome: {
         status: s.submitted ? 'submitted_synthetic' : 'not_submitted',
         notes: s.submitted
-          ? 'Residual run completed under human gate. No live payer / upstream system was contacted from this origin.'
+          ? 'Residual run completed under human gate. Verification and evidence fields captured where provided. No live payer / upstream system was contacted from this origin.'
           : 'Human gate was not approved or run was not completed.'
       },
 
       integrity: {
         content_hash: null,
-        generated_by: 'sensorlens-static/1.1-rea'
+        generated_by: 'sensorlens-static/1.2-rea'
       }
     };
 
-    // Reconstruct step timings if present
     if (timing) {
       const stepKeys = Object.keys(timing).filter(k => k.startsWith('step_'));
       rea.run.steps = stepKeys.map(k => {
@@ -168,10 +195,8 @@
       }
     }
 
-    // Hash the artifact (without the hash field itself)
     const forHash = JSON.stringify(rea);
     rea.integrity.content_hash = 'sha256:' + await sha256(forHash);
-
     return rea;
   }
 
@@ -202,10 +227,13 @@
     const b = rea.baseline || {};
     const c = rea.case || {};
     const r = rea.run || {};
+    const v = rea.verification || {};
+    const e = rea.evidence || {};
+    const q = rea.execution_quality || {};
     const g = rea.human_gate || {};
     const o = rea.outcome || {};
     return [
-      'RESIDUAL EVIDENCE ARTIFACT (REA)',
+      'RESIDUAL EVIDENCE ARTIFACT (REA) v1.2',
       'ID: ' + rea.artifact_id,
       'Created: ' + rea.created_at,
       '',
@@ -225,6 +253,16 @@
       'Duration: ' + (r.duration_seconds != null ? r.duration_seconds + 's' : '—'),
       'Completed: ' + (r.completed_at || '—'),
       '',
+      '— VERIFICATION —',
+      'Optical: ' + (v.optical && v.optical.used ? 'YES' : 'no') + (v.optical && v.optical.notes ? ' · ' + v.optical.notes : ''),
+      'Telephony: ' + (v.telephony && v.telephony.used ? 'YES' : 'no') + (v.telephony && v.telephony.notes ? ' · ' + v.telephony.notes : ''),
+      '',
+      '— EVIDENCE / PDF —',
+      (e.pdf_or_dossier || '—'),
+      '',
+      '— EXECUTION QUALITY —',
+      (q.notes || '—'),
+      '',
       '— HUMAN GATE —',
       'Approved: ' + (g.approved ? 'YES' : 'NO'),
       'Approved at: ' + (g.approved_at || '—'),
@@ -236,6 +274,7 @@
       'Integrity: ' + (rea.integrity && rea.integrity.content_hash ? rea.integrity.content_hash : '—'),
       '',
       'This artifact is a system-of-record entry for residual work.',
+      'It records verified, documented residual execution under human gate.',
       'It does not claim live upstream integration or audited economic ROI.'
     ].join('\n');
   }

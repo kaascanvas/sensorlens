@@ -26,7 +26,7 @@
     <h1>Status · <span>system of record</span></h1>
     <p class="lead">
       After a gated residual submit, a Residual Evidence Artifact (REA) is created.
-      This is the structured, timestamped, exportable unit that can sit next to a declared baseline.
+      It records verified, documented residual execution (optical, telephony, evidence, quality) bound to a declared baseline.
     </p>
 
     <div id="ok-banner" class="ok" style="display:none;">
@@ -48,6 +48,10 @@
         <dt>Artifact ID</dt><dd class="mono" id="rea-id">—</dd>
         <dt>Created</dt><dd class="mono" id="rea-created">—</dd>
         <dt>Duration</dt><dd class="mono" id="rea-duration">—</dd>
+        <dt>Optical verify</dt><dd id="rea-optical">—</dd>
+        <dt>Telephony verify</dt><dd id="rea-telephony">—</dd>
+        <dt>Evidence / PDF</dt><dd id="rea-evidence">—</dd>
+        <dt>Execution quality</dt><dd id="rea-quality">—</dd>
         <dt>Human gate</dt><dd id="rea-gate">—</dd>
         <dt>Outcome</dt><dd id="rea-outcome">—</dd>
         <dt>Content hash</dt><dd class="mono" style="font-size:0.72rem;word-break:break-all;" id="rea-hash">—</dd>
@@ -165,6 +169,16 @@
       document.getElementById('rea-created').textContent = rea.created_at || '—';
       document.getElementById('rea-duration').textContent =
         (rea.run && rea.run.duration_seconds != null) ? rea.run.duration_seconds + 's' : '—';
+      var opt = rea.verification && rea.verification.optical;
+      var tel = rea.verification && rea.verification.telephony;
+      var ev = rea.evidence || {};
+      var q = rea.execution_quality || {};
+      document.getElementById('rea-optical').textContent =
+        (opt && opt.used) ? ('YES' + (opt.notes ? ' · ' + opt.notes : '')) : 'no';
+      document.getElementById('rea-telephony').textContent =
+        (tel && tel.used) ? ('YES' + (tel.notes ? ' · ' + tel.notes : '')) : 'no';
+      document.getElementById('rea-evidence').textContent = ev.pdf_or_dossier || '—';
+      document.getElementById('rea-quality').textContent = q.notes || '—';
       document.getElementById('rea-gate').textContent =
         (rea.human_gate && rea.human_gate.approved) ? 'Approved' : 'Not approved';
       document.getElementById('rea-outcome').textContent =
