@@ -22,18 +22,71 @@
     </div>
   </header>
   <main class="wrap">
-    <div class="badge">Step 3 · outcome + practice metrics</div>
-    <h1>Status · <span>what the run produced</span></h1>
+    <div class="badge">Step 3 · residual evidence + baseline binding</div>
+    <h1>Status · <span>system of record</span></h1>
     <p class="lead">
-      After a gated residual submit, this is the confirmation surface. Use it to practice dossier language and Pilot Ops — not live payer proof.
+      After a gated residual submit, a Residual Evidence Artifact (REA) is created.
+      This is the structured, timestamped, exportable unit that can sit next to a declared baseline.
     </p>
 
     <div id="ok-banner" class="ok" style="display:none;">
-      Synthetic residual submit recorded at <span class="mono" id="submit-ts"></span>.
-      Human gate was checked. No live payer was contacted.
+      Residual Evidence Artifact recorded at <span class="mono" id="submit-ts"></span>.
+      Human gate was checked. Artifact is downloadable below.
     </div>
     <div id="alert-banner" class="alert" style="display:none;">
-      No gated submit in session yet. Complete residual portal with human approval, or this page is preview-only.
+      No gated submit in session yet. Complete residual portal with human approval to generate an REA.
+    </div>
+
+    <!-- REA Card -->
+    <div class="card" id="rea-card" style="display:none;">
+      <h2>Residual Evidence Artifact (REA)</h2>
+      <p class="note" style="margin-top:0;">
+        Structured system-of-record entry for this residual run.
+        Bind it to a declared baseline. Export it. No one can deny the artifact exists.
+      </p>
+      <dl class="kv">
+        <dt>Artifact ID</dt><dd class="mono" id="rea-id">—</dd>
+        <dt>Created</dt><dd class="mono" id="rea-created">—</dd>
+        <dt>Duration</dt><dd class="mono" id="rea-duration">—</dd>
+        <dt>Human gate</dt><dd id="rea-gate">—</dd>
+        <dt>Outcome</dt><dd id="rea-outcome">—</dd>
+        <dt>Content hash</dt><dd class="mono" style="font-size:0.72rem;word-break:break-all;" id="rea-hash">—</dd>
+      </dl>
+      <div class="btn-row">
+        <button type="button" class="btn primary" id="btnDownloadREA">Download REA (.json)</button>
+        <button type="button" class="btn" id="btnCopyREA">Copy human summary</button>
+      </div>
+      <p id="reaMsg" class="note" style="display:none;margin-top:12px;"></p>
+    </div>
+
+    <!-- Baseline binding -->
+    <div class="card">
+      <h2>Declared baseline (bind before or after runs)</h2>
+      <p class="note">
+        Baseline is declared, not calculated by the tool.
+        Every REA carries the baseline it is compared against.
+        This is what turns “I flew the rocket” into mission counter-numbers.
+      </p>
+      <div class="row">
+        <div>
+          <label for="bl_value">Baseline value</label>
+          <input id="bl_value" placeholder="e.g. 14.2" />
+        </div>
+        <div>
+          <label for="bl_unit">Unit</label>
+          <input id="bl_unit" placeholder="minutes" value="minutes" />
+        </div>
+      </div>
+      <label for="bl_cohort">Cohort definition</label>
+      <input id="bl_cohort" placeholder="e.g. BCBS commercial PPO · prior-auth residual · frozen 40-case sample" />
+      <label for="bl_method">Measurement method</label>
+      <input id="bl_method" placeholder="e.g. manual time study · 2 operators · same portal family" />
+      <label for="bl_notes">Notes</label>
+      <textarea id="bl_notes" placeholder="Exceptions pre-registered · no auto-approval cases"></textarea>
+      <div class="btn-row">
+        <button type="button" class="btn primary" id="btnSaveBaseline">Save / freeze baseline</button>
+      </div>
+      <p id="blMsg" class="note" style="display:none;margin-top:12px;"></p>
     </div>
 
     <div class="card">
@@ -51,24 +104,7 @@
     </div>
 
     <div class="card">
-      <h2>Measurement (this synthetic run)</h2>
-      <dl class="kv">
-        <dt>Baseline (plan)</dt><dd id="kv-baseline">—</dd>
-        <dt>Run duration</dt><dd class="mono" id="kv-run">—</dd>
-        <dt>Step timing JSON</dt><dd class="mono" style="font-size:0.75rem;white-space:pre-wrap;" id="kv-timing">—</dd>
-      </dl>
-      <p class="note">
-        Practice measurement against expected residual settings — not live payer minutes, not audited client ROI.
-        Compare run duration to plan baseline only as a protocol demo.
-      </p>
-    </div>
-
-    <div class="card">
       <h2>Practice metrics (sandbox)</h2>
-      <p class="note">
-        These are <strong style="color:#e8eef7">session practice counters</strong>, not audited client ROI.
-        Log what you felt: minutes of friction, overlay usefulness, missing fields, gate clarity.
-      </p>
       <div class="row">
         <div>
           <label for="m_minutes">Minutes you spent on residual steps</label>
@@ -79,11 +115,10 @@
           <input id="m_friction" data-lensdna-target="m_friction" placeholder="e.g. 3" />
         </div>
       </div>
-      <label for="m_notes">What you learned (product / pilot language)</label>
-      <textarea id="m_notes" data-lensdna-target="m_notes" placeholder="Field labels unclear? Overlay DOM read worked? Gate too easy to miss? Pilot Ops needed earlier?"></textarea>
+      <label for="m_notes">What you learned</label>
+      <textarea id="m_notes" data-lensdna-target="m_notes" placeholder="Field labels unclear? Gate too easy to miss?"></textarea>
       <div class="btn-row">
-        <button type="button" class="btn primary" id="btnSaveMetrics">Save metrics locally</button>
-        <button type="button" class="btn" id="btnCopyDossier">Copy practice dossier</button>
+        <button type="button" class="btn" id="btnSaveMetrics">Save metrics locally</button>
         <button type="button" class="btn" onclick="window.LensDNA && window.LensDNA.open()">Open overlay · Pilot Ops</button>
         <a class="btn primary" href="pilot-intake.html">4 · Pilot intake →</a>
         <a class="btn" href="#" id="btn-reset">Reset session</a>
@@ -110,7 +145,9 @@
   <script>
   (function () {
     var s = SensorLens.load();
+    var rea = s.last_rea || null;
 
+    // Case snapshot
     document.getElementById('kv-case').textContent = s.case_id || '—';
     document.getElementById('kv-payer').textContent = s.payer || '—';
     document.getElementById('kv-member').textContent = s.portal_member || '—';
@@ -119,39 +156,64 @@
     document.getElementById('kv-attach').textContent = s.attachment_note || '—';
     document.getElementById('kv-status').textContent = s.status_note || '—';
     document.getElementById('kv-submitted').textContent = s.submitted ? 'yes' : 'no';
-    document.getElementById('kv-baseline').textContent = (s.baseline_minutes || '12-18') + ' min / case';
-    document.getElementById('kv-run').textContent = (s.run_seconds || '—') + (s.run_seconds ? ' s' : '');
-    document.getElementById('kv-timing').textContent = s.timing_json || '—';
 
-    if (s.submitted) {
+    if (s.submitted && rea) {
       document.getElementById('ok-banner').style.display = 'block';
-      document.getElementById('submit-ts').textContent = s.submit_ts || '—';
+      document.getElementById('submit-ts').textContent = s.submit_ts || rea.created_at || '—';
+      document.getElementById('rea-card').style.display = 'block';
+      document.getElementById('rea-id').textContent = rea.artifact_id || '—';
+      document.getElementById('rea-created').textContent = rea.created_at || '—';
+      document.getElementById('rea-duration').textContent =
+        (rea.run && rea.run.duration_seconds != null) ? rea.run.duration_seconds + 's' : '—';
+      document.getElementById('rea-gate').textContent =
+        (rea.human_gate && rea.human_gate.approved) ? 'Approved' : 'Not approved';
+      document.getElementById('rea-outcome').textContent =
+        (rea.outcome && rea.outcome.status) ? rea.outcome.status : '—';
+      document.getElementById('rea-hash').textContent =
+        (rea.integrity && rea.integrity.content_hash) ? rea.integrity.content_hash : '—';
     } else {
       document.getElementById('alert-banner').style.display = 'block';
     }
 
-    function dossierText() {
-      return [
-        'SENSORLENS PRACTICE DOSSIER',
-        'Case: ' + (s.case_id || '—'),
-        'Payer: ' + (s.payer || '—'),
-        'Member: ' + (s.portal_member || '—'),
-        'Auth: ' + (s.auth_ref || '—'),
-        'CPT: ' + (s.cpt || '—'),
-        'Attachments: ' + (s.attachment_note || '—'),
-        'Status notes: ' + (s.status_note || '—'),
-        'Submitted (synthetic): ' + (s.submitted ? 'yes' : 'no'),
-        'Run seconds: ' + (s.run_seconds || '—'),
-        'Baseline plan min: ' + (s.baseline_minutes || '—'),
-        'Timing: ' + (s.timing_json || '—'),
-        'Submit ts: ' + (s.submit_ts || '—'),
-        'Minutes spent: ' + (document.getElementById('m_minutes').value || '—'),
-        'Friction points: ' + (document.getElementById('m_friction').value || '—'),
-        'Learnings: ' + (document.getElementById('m_notes').value || '—'),
-        '',
-        'Scope: internal residual shape practice only. No live payer. No production upstream handoff claimed.'
-      ].join('\n');
-    }
+    // Baseline form prefill
+    document.getElementById('bl_value').value = s.baseline_value || s.baseline_minutes || '';
+    document.getElementById('bl_unit').value = s.baseline_unit || 'minutes';
+    document.getElementById('bl_cohort').value = s.baseline_cohort || s.pilot_workflow || '';
+    document.getElementById('bl_method').value = s.baseline_method || '';
+    document.getElementById('bl_notes').value = s.baseline_notes || '';
+
+    document.getElementById('btnSaveBaseline').onclick = function () {
+      SensorLens.save({
+        baseline_value: document.getElementById('bl_value').value.trim(),
+        baseline_unit: document.getElementById('bl_unit').value.trim() || 'minutes',
+        baseline_cohort: document.getElementById('bl_cohort').value.trim(),
+        baseline_method: document.getElementById('bl_method').value.trim(),
+        baseline_notes: document.getElementById('bl_notes').value.trim(),
+        baseline_declared_at: new Date().toISOString(),
+        baseline_minutes: document.getElementById('bl_value').value.trim() || s.baseline_minutes
+      });
+      var m = document.getElementById('blMsg');
+      m.style.display = 'block';
+      m.textContent = 'Baseline frozen and will be bound into the next REA.';
+    };
+
+    document.getElementById('btnDownloadREA').onclick = function () {
+      if (!rea) return;
+      SensorLens.downloadREA(rea);
+      var m = document.getElementById('reaMsg');
+      m.style.display = 'block';
+      m.textContent = 'REA JSON downloaded.';
+    };
+
+    document.getElementById('btnCopyREA').onclick = function () {
+      if (!rea) return;
+      var text = SensorLens.humanSummary(rea);
+      navigator.clipboard.writeText(text).then(function () {
+        var m = document.getElementById('reaMsg');
+        m.style.display = 'block';
+        m.textContent = 'Human summary copied.';
+      }).catch(function () { prompt('Copy this:', text); });
+    };
 
     document.getElementById('btnSaveMetrics').onclick = function () {
       var payload = {
@@ -167,19 +229,8 @@
         localStorage.setItem(SensorLens.METRICS_KEY, JSON.stringify(prev.slice(-40)));
         var m = document.getElementById('metricsMsg');
         m.style.display = 'block';
-        m.textContent = 'Saved locally (' + prev.length + ' runs in browser).';
-      } catch (e) {
-        alert('Could not save locally');
-      }
-    };
-
-    document.getElementById('btnCopyDossier').onclick = function () {
-      var t = dossierText();
-      navigator.clipboard.writeText(t).then(function () {
-        var m = document.getElementById('metricsMsg');
-        m.style.display = 'block';
-        m.textContent = 'Practice dossier copied.';
-      }).catch(function () { alert(t); });
+        m.textContent = 'Saved locally (' + prev.length + ' runs).';
+      } catch (e) { alert('Could not save'); }
     };
 
     function doReset(e) {

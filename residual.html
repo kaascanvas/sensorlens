@@ -204,6 +204,7 @@
       timing.payer = s.payer;
 
       var approved = document.getElementById('human_approve').checked;
+      var submitTs = approved ? new Date().toISOString() : '';
 
       SensorLens.save({
         portal_member: document.getElementById('portal_member').value.trim(),
@@ -214,14 +215,23 @@
         timing_json: JSON.stringify(timing),
         run_seconds: String(timing.total_seconds),
         submitted: approved,
-        submit_ts: approved ? new Date().toISOString() : '',
+        submit_ts: submitTs,
         gate_blocked: !approved
       });
 
       if (approved) {
-        location.href = 'status.html';
+        // Build Residual Evidence Artifact (system of record)
+        SensorLens.buildREA({
+          timing: timing,
+          started_at: new Date(runStart).toISOString()
+        }).then(function (rea) {
+          SensorLens.saveREA(rea);
+          location.href = 'status.html';
+        }).catch(function () {
+          location.href = 'status.html';
+        });
       } else {
-        location.href = 'residual.html'; // reloads and shows the alert
+        location.href = 'residual.html';
       }
     });
 
