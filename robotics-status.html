@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>3 · Dossier · Education & Therapy Robotics</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand mono">SensorLens <span>· Education & Therapy Robotics</span></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="robotics.html">Robotics surface</a>
+        <a href="robotics-event.html">1 · Event</a>
+        <a href="robotics-residual.html">2 · Residual</a>
+        <a href="robotics-status.html" class="on">3 · Dossier</a>
+        <a href="robotics-qualify.html">4 · Qualify</a>
+        <a href="#" id="nav-reset">Reset</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="badge">Step 3 · residual evidence + baseline binding</div>
+    <h1>Dossier · <span>system of record</span></h1>
+    <p class="lead">
+      After a gated residual submit, a Residual Evidence Artifact (REA) is created.
+      It records verified, documented residual execution (optical, telephony, evidence, quality) bound to a declared baseline.
+    </p>
+
+    <div id="ok-banner" class="ok" style="display:none;">
+      Residual Evidence Artifact recorded at <span class="mono" id="submit-ts"></span>.
+      Human gate was checked. Artifact is downloadable below.
+    </div>
+    <div id="alert-banner" class="alert" style="display:none;">
+      No gated submit in session yet. Complete residual ops with human approval to generate an REA.
+    </div>
+
+    <!-- REA Card -->
+    <div class="card" id="rea-card" style="display:none;">
+      <h2>Residual Evidence Artifact (REA)</h2>
+      <p class="note" style="margin-top:0;">
+        Structured system-of-record entry for this residual run after a robot/avatar event.
+        Bind it to a declared baseline. Export it. No one can deny the artifact exists.
+      </p>
+      <dl class="kv">
+        <dt>Artifact ID</dt><dd class="mono" id="rea-id">—</dd>
+        <dt>Created</dt><dd class="mono" id="rea-created">—</dd>
+        <dt>Duration</dt><dd class="mono" id="rea-duration">—</dd>
+        <dt>Optical verify</dt><dd id="rea-optical">—</dd>
+        <dt>Telephony verify</dt><dd id="rea-telephony">—</dd>
+        <dt>Evidence / packet</dt><dd id="rea-evidence">—</dd>
+        <dt>Execution quality</dt><dd id="rea-quality">—</dd>
+        <dt>Human gate</dt><dd id="rea-gate">—</dd>
+        <dt>Outcome</dt><dd id="rea-outcome">—</dd>
+        <dt>Content hash</dt><dd class="mono" style="font-size:0.72rem;word-break:break-all;" id="rea-hash">—</dd>
+      </dl>
+      <div class="btn-row">
+        <button type="button" class="btn primary" id="btnDownloadREA">Download REA (.json)</button>
+        <button type="button" class="btn" id="btnCopyREA">Copy human summary</button>
+      </div>
+      <p id="reaMsg" class="note" style="display:none;margin-top:12px;"></p>
+    </div>
+
+    <!-- Baseline binding -->
+    <div class="card">
+      <h2>Declared baseline (bind before or after runs)</h2>
+      <p class="note">
+        Baseline is declared, not calculated by the tool.
+        Every REA carries the baseline it is compared against.
+      </p>
+      <div class="row">
+        <div>
+          <label for="bl_value">Baseline value</label>
+          <input id="bl_value" placeholder="e.g. 11" />
+        </div>
+        <div>
+          <label for="bl_unit">Unit</label>
+          <input id="bl_unit" placeholder="minutes" value="minutes" />
+        </div>
+      </div>
+      <label for="bl_cohort">Cohort definition</label>
+      <input id="bl_cohort" placeholder="e.g. Cascadia-style SEL check-in residual · frozen 30-event sample" />
+      <label for="bl_method">Measurement method</label>
+      <input id="bl_method" placeholder="e.g. manual time study · 2 operators · same portal family" />
+      <label for="bl_notes">Notes</label>
+      <textarea id="bl_notes" placeholder="Exceptions pre-registered · no auto-approval cases · human gate mandatory"></textarea>
+      <div class="btn-row">
+        <button type="button" class="btn primary" id="btnSaveBaseline">Save / freeze baseline</button>
+      </div>
+      <p id="blMsg" class="note" style="display:none;margin-top:12px;"></p>
+    </div>
+
+    <div class="card">
+      <h2>Event snapshot</h2>
+      <dl class="kv">
+        <dt>Event</dt><dd id="kv-event">—</dd>
+        <dt>Robot</dt><dd id="kv-robot">—</dd>
+        <dt>Student</dt><dd id="kv-student">—</dd>
+        <dt>Classroom</dt><dd id="kv-class">—</dd>
+        <dt>Portal ref</dt><dd id="kv-portal">—</dd>
+        <dt>Session code</dt><dd id="kv-session">—</dd>
+        <dt>Escalation</dt><dd id="kv-esc">—</dd>
+        <dt>Submitted</dt><dd id="kv-submitted">no</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <h2>Practice metrics (sandbox)</h2>
+      <div class="row">
+        <div>
+          <label for="m_minutes">Minutes you spent on residual steps</label>
+          <input id="m_minutes" data-lensdna-target="m_minutes" placeholder="e.g. 7" />
+        </div>
+        <div>
+          <label for="m_friction">Friction points (count)</label>
+          <input id="m_friction" data-lensdna-target="m_friction" placeholder="e.g. 2" />
+        </div>
+      </div>
+      <label for="m_notes">What you learned</label>
+      <textarea id="m_notes" data-lensdna-target="m_notes" placeholder="Field labels unclear? Gate too easy to miss? Notification drafts needed more structure?"></textarea>
+      <div class="btn-row">
+        <button type="button" class="btn" id="btnSaveMetrics">Save metrics locally</button>
+        <button type="button" class="btn" onclick="window.LensDNA && window.LensDNA.open()">Open overlay</button>
+        <a class="btn primary" href="robotics-qualify.html">4 · Qualify →</a>
+        <a class="btn" href="#" id="btn-reset">Reset session</a>
+      </div>
+      <p id="metricsMsg" class="note" style="display:none;margin-top:12px;"></p>
+    </div>
+
+    <p class="footer">
+      Internal practice desk · residual shape operators hit · overlay from
+      <a href="https://lensdna.app" target="_blank" rel="noopener">lensdna.app</a>
+      · synthetic only · no live district systems · human gate required · <span id="sl-now"></span>
+    </p>
+  </main>
+
+  <script src="robotics.js"></script>
+  <script
+    src="https://lensdna.app/embed.js"
+    data-overlay-url="https://lensdna.app/overlay.html"
+    data-tenant-id="sensorlens-sandbox"
+    data-theme="dark"
+    data-position="bottom-right"
+    data-auto-open="false">
+  </script>
+  <script>
+  (function () {
+    var s = RoboticsLens.load();
+    var rea = s.last_rea || null;
+
+    // Snapshot
+    document.getElementById('kv-event').textContent = s.event_id || '—';
+    document.getElementById('kv-robot').textContent = s.robot_id || '—';
+    document.getElementById('kv-student').textContent = s.student_alias || '—';
+    document.getElementById('kv-class').textContent = s.classroom || '—';
+    document.getElementById('kv-portal').textContent = s.portal_case_ref || '—';
+    document.getElementById('kv-session').textContent = s.session_code || '—';
+    document.getElementById('kv-esc').textContent = s.escalation_flag || '—';
+    document.getElementById('kv-submitted').textContent = s.submitted ? 'yes' : 'no';
+
+    if (s.submitted && rea) {
+      document.getElementById('ok-banner').style.display = 'block';
+      document.getElementById('submit-ts').textContent = s.submit_ts || rea.created_at || '—';
+      document.getElementById('rea-card').style.display = 'block';
+      document.getElementById('rea-id').textContent = rea.artifact_id || '—';
+      document.getElementById('rea-created').textContent = rea.created_at || '—';
+      document.getElementById('rea-duration').textContent =
+        (rea.run && rea.run.duration_seconds != null) ? rea.run.duration_seconds + 's' : '—';
+      var opt = rea.verification && rea.verification.optical;
+      var tel = rea.verification && rea.verification.telephony;
+      var ev = rea.evidence || {};
+      var q = rea.execution_quality || {};
+      document.getElementById('rea-optical').textContent =
+        (opt && opt.used) ? ('YES' + (opt.notes ? ' · ' + opt.notes : '')) : 'no';
+      document.getElementById('rea-telephony').textContent =
+        (tel && tel.used) ? ('YES' + (tel.notes ? ' · ' + tel.notes : '')) : 'no';
+      document.getElementById('rea-evidence').textContent = ev.pdf_or_dossier || '—';
+      document.getElementById('rea-quality').textContent = q.notes || '—';
+      document.getElementById('rea-gate').textContent =
+        (rea.human_gate && rea.human_gate.approved) ? 'Approved' : 'Not approved';
+      document.getElementById('rea-outcome').textContent =
+        (rea.outcome && rea.outcome.status) ? rea.outcome.status : '—';
+      document.getElementById('rea-hash').textContent =
+        (rea.integrity && rea.integrity.content_hash) ? rea.integrity.content_hash : '—';
+    } else {
+      document.getElementById('alert-banner').style.display = 'block';
+    }
+
+    // Baseline form prefill
+    document.getElementById('bl_value').value = s.baseline_value || s.baseline_minutes || '';
+    document.getElementById('bl_unit').value = s.baseline_unit || 'minutes';
+    document.getElementById('bl_cohort').value = s.baseline_cohort || s.pilot_workflow || '';
+    document.getElementById('bl_method').value = s.baseline_method || '';
+    document.getElementById('bl_notes').value = s.baseline_notes || '';
+
+    document.getElementById('btnSaveBaseline').onclick = function () {
+      RoboticsLens.save({
+        baseline_value: document.getElementById('bl_value').value.trim(),
+        baseline_unit: document.getElementById('bl_unit').value.trim() || 'minutes',
+        baseline_cohort: document.getElementById('bl_cohort').value.trim(),
+        baseline_method: document.getElementById('bl_method').value.trim(),
+        baseline_notes: document.getElementById('bl_notes').value.trim(),
+        baseline_declared_at: new Date().toISOString(),
+        baseline_minutes: document.getElementById('bl_value').value.trim() || s.baseline_minutes
+      });
+      var m = document.getElementById('blMsg');
+      m.style.display = 'block';
+      m.textContent = 'Baseline frozen and will be bound into the next REA.';
+    };
+
+    document.getElementById('btnDownloadREA').onclick = function () {
+      if (!rea) return;
+      RoboticsLens.downloadREA(rea);
+      var m = document.getElementById('reaMsg');
+      m.style.display = 'block';
+      m.textContent = 'REA JSON downloaded.';
+    };
+
+    document.getElementById('btnCopyREA').onclick = function () {
+      if (!rea) return;
+      var text = RoboticsLens.humanSummary(rea);
+      navigator.clipboard.writeText(text).then(function () {
+        var m = document.getElementById('reaMsg');
+        m.style.display = 'block';
+        m.textContent = 'Human summary copied.';
+      }).catch(function () { prompt('Copy this:', text); });
+    };
+
+    document.getElementById('btnSaveMetrics').onclick = function () {
+      var payload = {
+        minutes: document.getElementById('m_minutes').value,
+        friction: document.getElementById('m_friction').value,
+        notes: document.getElementById('m_notes').value,
+        event_id: s.event_id,
+        ts: new Date().toISOString()
+      };
+      try {
+        var prev = JSON.parse(localStorage.getItem(RoboticsLens.METRICS_KEY) || '[]');
+        prev.push(payload);
+        localStorage.setItem(RoboticsLens.METRICS_KEY, JSON.stringify(prev.slice(-40)));
+        var m = document.getElementById('metricsMsg');
+        m.style.display = 'block';
+        m.textContent = 'Saved locally (' + prev.length + ' runs).';
+      } catch (e) { alert('Could not save'); }
+    };
+
+    function doReset(e) {
+      e.preventDefault();
+      RoboticsLens.clear();
+      location.href = 'robotics.html';
+    }
+    document.getElementById('nav-reset').onclick = doReset;
+    document.getElementById('btn-reset').onclick = doReset;
+  })();
+  </script>
+</body>
+</html>

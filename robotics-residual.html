@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2 · Residual ops · Education & Therapy Robotics</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand mono">SensorLens <span>· Education & Therapy Robotics</span></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="robotics.html">Robotics surface</a>
+        <a href="robotics-event.html">1 · Event</a>
+        <a href="robotics-residual.html" class="on">2 · Residual</a>
+        <a href="robotics-status.html">3 · Dossier</a>
+        <a href="robotics-qualify.html">4 · Qualify</a>
+        <a href="#" id="nav-reset">Reset</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="badge">Step 2 · measurement-grade residual run (synthetic · education / therapy shaped)</div>
+    <h1>Residual ops · <span>timed last-mile</span></h1>
+    <p class="lead">
+      After robot event → portal context → observation log → notifications → evidence → <strong style="color:#e8eef7">human gate</strong> → confirm.
+      Timers record practice measurements. Not a live district or clinical system.
+    </p>
+
+    <div id="gate-alert" class="alert" style="display:none;">
+      Human gate blocked submit — approval required. Residual execution does not bypass the operator.
+    </div>
+
+    <div class="card">
+      <h2>From event</h2>
+      <dl class="kv">
+        <dt>Event</dt><dd id="kv-event">—</dd>
+        <dt>Robot</dt><dd id="kv-robot">—</dd>
+        <dt>Student</dt><dd id="kv-student">—</dd>
+        <dt>Classroom</dt><dd id="kv-class">—</dd>
+        <dt>Trigger</dt><dd id="kv-trigger">—</dd>
+        <dt>Baseline (plan)</dt><dd id="kv-baseline">9-14 min / event</dd>
+      </dl>
+    </div>
+
+    <div class="step-rail" id="stepRail">
+      <span class="s on" data-step="1">1 Context</span>
+      <span class="s" data-step="2">2 Portal fields</span>
+      <span class="s" data-step="3">3 Notifications</span>
+      <span class="s" data-step="4">4 Evidence</span>
+      <span class="s" data-step="5">5 Verify</span>
+      <span class="s" data-step="6">6 Human gate</span>
+    </div>
+    <p class="timer mono">Run timer: <strong id="runTimer">0.0s</strong> · Step: <strong id="stepTimer">0.0s</strong> <span id="stepLabel">· context</span></p>
+
+    <form class="card" id="residualForm">
+      <div class="panel on" data-panel="1">
+        <h2>1 · Event context (robot session already complete)</h2>
+        <p class="note">No educational or clinical re-determination. Confirm residual still required on the operational side.</p>
+        <label for="portal_case_ref">Support / case portal reference</label>
+        <input id="portal_case_ref" name="portal_case_ref" data-lensdna-target="portal_case_ref" placeholder="e.g. SUP-2026-4412" />
+        <label for="student_id_portal">Student ID as shown on portal (synthetic)</label>
+        <input id="student_id_portal" name="student_id_portal" data-lensdna-target="student_id_portal" placeholder="e.g. CLA-JL-09-441" />
+        <div class="btn-row">
+          <button type="button" class="btn primary" data-next="2">Next · portal fields →</button>
+          <button type="button" class="btn" onclick="window.LensDNA && window.LensDNA.open()">Open overlay</button>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="2">
+        <h2>2 · Portal residual fields</h2>
+        <div class="row">
+          <div>
+            <label for="session_code">Session / lesson code</label>
+            <input id="session_code" name="session_code" data-lensdna-target="session_code" placeholder="e.g. SEL-CHK-0824" />
+          </div>
+          <div>
+            <label for="escalation_flag">Escalation level</label>
+            <select id="escalation_flag" name="escalation_flag" data-lensdna-target="escalation_flag">
+              <option value="">— select —</option>
+              <option value="Teacher review only">Teacher review only</option>
+              <option value="Teacher + SPED coordinator">Teacher + SPED coordinator</option>
+              <option value="Caregiver update preferred">Caregiver update preferred</option>
+              <option value="Immediate supervisor escalate">Immediate supervisor escalate</option>
+            </select>
+          </div>
+        </div>
+        <label for="observation_note">Observation / case note (portal)</label>
+        <textarea id="observation_note" name="observation_note" data-lensdna-target="observation_note" placeholder="Session summary, engagement note, protocol flag…"></textarea>
+        <div class="btn-row">
+          <button type="button" class="btn" data-next="1">← Back</button>
+          <button type="button" class="btn primary" data-next="3">Next · notifications →</button>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="3">
+        <h2>3 · Draft notifications (staged, not sent)</h2>
+        <p class="note">These drafts are proposed only. External send requires human gate approval.</p>
+        <label for="notification_teacher">Teacher / SPED draft</label>
+        <textarea id="notification_teacher" name="notification_teacher" data-lensdna-target="notification_teacher" placeholder="Subject + body draft for Ms. Voss / SPED desk…"></textarea>
+        <label for="notification_caregiver">Caregiver / family draft</label>
+        <textarea id="notification_caregiver" name="notification_caregiver" data-lensdna-target="notification_caregiver" placeholder="Preferred protocol channel (SMS/email) draft…"></textarea>
+        <div class="btn-row">
+          <button type="button" class="btn" data-next="2">← Back</button>
+          <button type="button" class="btn primary" data-next="4">Next · evidence →</button>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="4">
+        <h2>4 · Evidence package</h2>
+        <label for="evidence_notes">Evidence / session packet / dossier notes</label>
+        <textarea id="evidence_notes" name="evidence_notes" data-lensdna-target="evidence_notes" placeholder="Session log snippet, optical observation, attachment refs, storage location…"></textarea>
+        <div class="btn-row">
+          <button type="button" class="btn" data-next="3">← Back</button>
+          <button type="button" class="btn primary" data-next="5">Next · verify →</button>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="5">
+        <h2>5 · Verification & quality</h2>
+        <p class="note">Residual value is accuracy, consistency, verification, and documentation — not only minutes.</p>
+        <label for="optical_notes">Optical verification (inputs / outputs confirmed on screen)</label>
+        <textarea id="optical_notes" name="optical_notes" data-lensdna-target="optical_notes" placeholder="What was optically verified or documented from the portal screens…"></textarea>
+        <label for="telephony_notes">Telephony / voice coordination (if used)</label>
+        <textarea id="telephony_notes" name="telephony_notes" data-lensdna-target="telephony_notes" placeholder="Call outcome, confirmation notes, who confirmed…"></textarea>
+        <label for="quality_notes">Execution quality (accuracy, consistency, completeness)</label>
+        <textarea id="quality_notes" name="quality_notes" data-lensdna-target="quality_notes" placeholder="Any accuracy or consistency observations for this residual run…"></textarea>
+        <div class="btn-row">
+          <button type="button" class="btn" data-next="4">← Back</button>
+          <button type="button" class="btn primary" data-next="6">Next · human gate →</button>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="6">
+        <h2>6 · Human gate (irreversible)</h2>
+        <div class="gate">
+          <label class="chk">
+            <input type="checkbox" name="human_approve" value="yes" data-lensdna-target="human_approve" id="human_approve" />
+            <span>
+              <strong style="color:var(--neon)">I approve irreversible residual actions</strong> (portal log submit + external notifications) for this synthetic case.
+              Without this check, submit is rejected — same discipline as production.
+            </span>
+          </label>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn" data-next="5">← Back</button>
+          <button type="submit" class="btn primary">Submit residual (gated) →</button>
+          <a class="btn" href="robotics-event.html">← Event</a>
+        </div>
+      </div>
+    </form>
+
+    <p class="footer">
+      Internal practice desk · residual shape operators hit · overlay from
+      <a href="https://lensdna.app" target="_blank" rel="noopener">lensdna.app</a>
+      · synthetic only · no live district systems · human gate required · <span id="sl-now"></span>
+    </p>
+  </main>
+
+  <script src="robotics.js"></script>
+  <script
+    src="https://lensdna.app/embed.js"
+    data-overlay-url="https://lensdna.app/overlay.html"
+    data-tenant-id="sensorlens-sandbox"
+    data-theme="dark"
+    data-position="bottom-right"
+    data-auto-open="false">
+  </script>
+  <script>
+  (function () {
+    var s = RoboticsLens.load();
+    document.getElementById('kv-event').textContent = s.event_id || '—';
+    document.getElementById('kv-robot').textContent = s.robot_id || '—';
+    document.getElementById('kv-student').textContent = s.student_alias || '—';
+    document.getElementById('kv-class').textContent = s.classroom || '—';
+    document.getElementById('kv-trigger').textContent = (s.trigger || '—').slice(0, 120) + ((s.trigger || '').length > 120 ? '…' : '');
+    document.getElementById('kv-baseline').textContent = (s.baseline_minutes || '9-14') + ' min / event';
+
+    document.getElementById('portal_case_ref').value = s.portal_case_ref || '';
+    document.getElementById('student_id_portal').value = s.student_id_portal || '';
+    document.getElementById('session_code').value = s.session_code || '';
+    document.getElementById('escalation_flag').value = s.escalation_flag || '';
+    document.getElementById('observation_note').value = s.observation_note || '';
+    document.getElementById('notification_teacher').value = s.notification_teacher || '';
+    document.getElementById('notification_caregiver').value = s.notification_caregiver || '';
+    document.getElementById('evidence_notes').value = s.evidence_notes || '';
+    if (document.getElementById('optical_notes')) document.getElementById('optical_notes').value = s.optical_notes || '';
+    if (document.getElementById('telephony_notes')) document.getElementById('telephony_notes').value = s.telephony_notes || '';
+    if (document.getElementById('quality_notes')) document.getElementById('quality_notes').value = s.quality_notes || '';
+
+    if (s.gate_blocked) {
+      document.getElementById('gate-alert').style.display = 'block';
+      RoboticsLens.save({ gate_blocked: false });
+    }
+
+    // --- timers & step rail ---
+    var runStart = Date.now();
+    var stepStart = Date.now();
+    var current = 1;
+    var timing = {};
+    var labels = {1:'context',2:'portal',3:'notifications',4:'evidence',5:'verify',6:'gate'};
+
+    function fmt(ms) { return (ms/1000).toFixed(1) + 's'; }
+    function tick() {
+      document.getElementById('runTimer').textContent = fmt(Date.now() - runStart);
+      document.getElementById('stepTimer').textContent = fmt(Date.now() - stepStart);
+    }
+    setInterval(tick, 200);
+
+    function show(n) {
+      if (current && current !== n) {
+        timing['step_' + current + '_' + labels[current]] = Math.round((Date.now() - stepStart) / 100) / 10;
+      }
+      current = n;
+      stepStart = Date.now();
+      document.querySelectorAll('.panel').forEach(function (p) {
+        p.classList.toggle('on', p.getAttribute('data-panel') === String(n));
+      });
+      document.querySelectorAll('#stepRail .s').forEach(function (el) {
+        var sn = parseInt(el.getAttribute('data-step'), 10);
+        el.classList.toggle('on', sn === n);
+        el.classList.toggle('done', sn < n);
+      });
+      document.getElementById('stepLabel').textContent = '· ' + labels[n];
+    }
+
+    document.querySelectorAll('[data-next]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        show(parseInt(btn.getAttribute('data-next'), 10));
+      });
+    });
+
+    document.getElementById('residualForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      timing['step_' + current + '_' + labels[current]] = Math.round((Date.now() - stepStart) / 100) / 10;
+      timing.total_seconds = Math.round((Date.now() - runStart) / 100) / 10;
+      timing.baseline_plan_min = s.baseline_minutes || '9-14';
+      timing.event_id = s.event_id;
+      timing.robot_id = s.robot_id;
+
+      var approved = document.getElementById('human_approve').checked;
+      var submitTs = approved ? new Date().toISOString() : '';
+
+      RoboticsLens.save({
+        portal_case_ref: document.getElementById('portal_case_ref').value.trim(),
+        student_id_portal: document.getElementById('student_id_portal').value.trim(),
+        session_code: document.getElementById('session_code').value.trim(),
+        escalation_flag: document.getElementById('escalation_flag').value,
+        observation_note: document.getElementById('observation_note').value.trim(),
+        notification_teacher: document.getElementById('notification_teacher').value.trim(),
+        notification_caregiver: document.getElementById('notification_caregiver').value.trim(),
+        evidence_notes: document.getElementById('evidence_notes').value.trim(),
+        optical_notes: (document.getElementById('optical_notes') || {}).value || '',
+        telephony_notes: (document.getElementById('telephony_notes') || {}).value || '',
+        quality_notes: (document.getElementById('quality_notes') || {}).value || '',
+        timing_json: JSON.stringify(timing),
+        run_seconds: String(timing.total_seconds),
+        submitted: approved,
+        submit_ts: submitTs,
+        gate_blocked: !approved
+      });
+
+      if (approved) {
+        RoboticsLens.buildREA({
+          timing: timing,
+          started_at: new Date(runStart).toISOString()
+        }).then(function (rea) {
+          RoboticsLens.saveREA(rea);
+          location.href = 'robotics-status.html';
+        }).catch(function () {
+          location.href = 'robotics-status.html';
+        });
+      } else {
+        location.href = 'robotics-residual.html';
+      }
+    });
+
+    document.getElementById('nav-reset').onclick = function (e) {
+      e.preventDefault();
+      RoboticsLens.clear();
+      location.href = 'robotics.html';
+    };
+  })();
+  </script>
+</body>
+</html>

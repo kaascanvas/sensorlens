@@ -13,10 +13,8 @@
       <div class="brand mono">SensorLens <span>· client-mimic sandbox</span></div>
       <nav>
         <a href="index.html" class="on">Home</a>
-        <a href="handoff.html">1 · Handoff</a>
-        <a href="residual.html">2 · Residual portal</a>
-        <a href="status.html">3 · Status / metrics</a>
-        <a href="pilot-intake.html">4 · Pilot intake</a>
+        <a href="robotics.html">Education & Therapy Robotics</a>
+        <a href="handoff.html">Health residual</a>
         <a href="#" id="nav-reset">Reset</a>
       </nav>
     </div>
@@ -25,25 +23,47 @@
     <div class="badge">Internal lab · same embed path clients use</div>
     <h1>Practice residual flow like a <span>client site</span></h1>
     <p class="lead">
-      Your own pages + one script tag. Walk handoff → residual portal fields → human-gated submit → metrics.
-      Learn the friction operators hit before you sell the 14-day pilot. Bottom-right pill opens LensDNA overlay (optional WebRTC voice).
+      Your own pages + one script tag. Domain surfaces demonstrate how LensDNA turns an upstream event into completed, human-gated operational work.
+      Bottom-right pill opens LensDNA overlay (optional WebRTC voice).
     </p>
 
     <div class="alert" style="border-color:rgba(245,158,11,0.45);background:rgba(245,158,11,0.08);color:#fde68a;">
       <strong style="color:#fff;">Scope:</strong> Synthetic residual shape only.
-      No live payer. Overlay controls <em>this</em> origin’s DOM only.
-      Use this to tighten product, Pilot Ops, and pilot language — not to claim production upstream integration.
+      No live payer, district, or clinical systems. Overlay controls <em>this</em> origin’s DOM only.
+      Use this to tighten product, Pilot Ops, and pilot language — not to claim production upstream integration or any partner relationship.
     </div>
 
+    <!-- Featured: Education & Therapy Robotics -->
+    <div class="card" style="border-color:rgba(0,229,255,0.35);">
+      <h2>Featured · Education & Therapy Robotics</h2>
+      <p style="color:var(--muted);font-size:0.92rem;margin-bottom:10px;">
+        <strong style="color:#fff">From robot event to completed human-approved workflow.</strong>
+        LensDNA executes the browser, phone, documentation, coordination, and evidence work that remains after an education or therapy robot creates an event.
+      </p>
+      <ol style="margin:0 0 12px 1.1rem;color:var(--muted);font-size:0.88rem;">
+        <li style="margin:4px 0;">Receive robot/avatar event + preserve context</li>
+        <li style="margin:4px 0;">Stage portal fields, notifications, evidence</li>
+        <li style="margin:4px 0;">Human gate before irreversible actions</li>
+        <li style="margin:4px 0;">Residual Evidence Artifact (REA) + qualification path</li>
+      </ol>
+      <p style="color:var(--muted);font-size:0.82rem;margin-bottom:12px;">
+        Synthetic only. No endorsement or integration with any named robotics or education provider is claimed.
+      </p>
+      <div class="btn-row">
+        <a class="btn primary" href="robotics.html">Open Education & Therapy Robotics surface →</a>
+        <a class="btn" href="robotics-event.html">Start at event</a>
+      </div>
+    </div>
+
+    <!-- Original Health residual -->
     <div class="card">
-      <h2>Client-shaped path</h2>
+      <h2>HealthAdmin-shaped residual (original practice path)</h2>
       <ol style="margin:0 0 0 1.1rem;color:var(--muted);font-size:0.92rem;">
         <li style="margin:6px 0;"><strong style="color:#fff">Handoff</strong> — decision already done; residual still listed for the operator.</li>
         <li style="margin:6px 0;"><strong style="color:#fff">Residual portal</strong> — member, auth ref, CPT, attachments, status notes (overlay can read/type).</li>
         <li style="margin:6px 0;"><strong style="color:#fff">Human gate</strong> — irreversible submit blocked until explicit approval.</li>
         <li style="margin:6px 0;"><strong style="color:#fff">Status / metrics</strong> — practice dossier + local learning log.</li>
-        <li style="margin:6px 0;"><strong style="color:#fff">Pilot Ops</strong> — in the overlay: charter, readiness, burden, spear.</li>
-        <li style="margin:6px 0;"><strong style="color:#fff">Pilot intake</strong> — local parameter form (workflow, baseline, success/fail) without leaving this origin.</li>
+        <li style="margin:6px 0;"><strong style="color:#fff">Pilot intake</strong> — local parameter form without leaving this origin.</li>
       </ol>
       <div class="btn-row">
         <a class="btn primary" href="handoff.html">Start at handoff →</a>
@@ -63,14 +83,24 @@
 &lt;/script&gt;</pre>
     </div>
 
+    <div class="card">
+      <h2>Runtime posture</h2>
+      <p style="color:var(--muted);font-size:0.9rem;">
+        LensDNA is a domain-agnostic, client-side execution runtime for residual work after an intelligent system, robot, platform, or human operator has created an event.
+        Domain surfaces (Education & Therapy Robotics, HealthAdmin residual, Deploy care-setting, PropTech, industrial) define event types, steps, approval rules, terminology, and pilot metrics.
+        The execution kernel stays reusable.
+      </p>
+    </div>
+
     <p class="footer">
       Internal practice desk · residual shape operators hit · overlay from
       <a href="https://lensdna.app" target="_blank" rel="noopener">lensdna.app</a>
-      · synthetic only · no live payer · human gate required · <span id="sl-now"></span>
+      · synthetic only · no live payer or district systems · human gate required · <span id="sl-now"></span>
     </p>
   </main>
 
   <script src="sensorlens.js"></script>
+  <script src="robotics.js"></script>
   <script
     src="https://lensdna.app/embed.js"
     data-overlay-url="https://lensdna.app/overlay.html"
@@ -82,7 +112,8 @@
   <script>
     document.getElementById('btn-reset').onclick = document.getElementById('nav-reset').onclick = function (e) {
       e.preventDefault();
-      SensorLens.clear();
+      if (window.SensorLens) SensorLens.clear();
+      if (window.RoboticsLens) RoboticsLens.clear();
       location.href = 'index.html';
     };
   </script>

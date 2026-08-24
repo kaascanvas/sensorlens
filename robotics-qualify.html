@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>4 · Qualify · Education & Therapy Robotics</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand mono">SensorLens <span>· Education & Therapy Robotics</span></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="robotics.html">Robotics surface</a>
+        <a href="robotics-event.html">1 · Event</a>
+        <a href="robotics-residual.html">2 · Residual</a>
+        <a href="robotics-status.html">3 · Dossier</a>
+        <a href="robotics-qualify.html" class="on">4 · Qualify</a>
+        <a href="#" id="nav-reset">Reset</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="badge">Step 4 · workflow qualification · pilot shape</div>
+    <h1>Qualify · <span>narrow the residual</span></h1>
+    <p class="lead">
+      Capture the operational problem a buyer actually owns. The desired next step is a tightly scoped workflow engagement or pilot with one measurable process, a defined baseline, an explicit approval boundary, and a pass/fail outcome.
+    </p>
+
+    <div class="alert" style="border-color:rgba(245,158,11,0.45);background:rgba(245,158,11,0.08);color:#fde68a;">
+      <strong style="color:#fff;">Not a booking form.</strong> This records practice parameters in the browser only.
+      You deliver the summary. No server mail. Commercial engagement remains on lensdna.app when ready.
+      No claim of existing customer, partner, or integration status.
+    </div>
+
+    <div id="recorded-banner" class="ok" style="display:none;">
+      Practice qualification recorded in this browser session at <span class="mono" id="recorded-ts"></span>.
+      Next: <strong style="color:#fff">Copy summary</strong> and email it, or use the mailto link.
+    </div>
+
+    <div class="card">
+      <h2>From this practice session</h2>
+      <dl class="kv">
+        <dt>Event</dt><dd id="kv-event">—</dd>
+        <dt>Robot</dt><dd id="kv-robot">—</dd>
+        <dt>Gated submit</dt><dd id="kv-submitted">no</dd>
+      </dl>
+    </div>
+
+    <form class="card" id="qualifyForm">
+      <h2>Discovery questions (buyer-side)</h2>
+      <label for="q_event">What event creates the residual work?</label>
+      <textarea id="q_event" name="q_event" data-lensdna-target="q_event" placeholder="e.g. Avatar/robot session ends with engagement exception flag; implementation checklist incomplete; support ticket from teacher…"></textarea>
+      <label for="q_systems">Which systems are involved today?</label>
+      <textarea id="q_systems" name="q_systems" data-lensdna-target="q_systems" placeholder="District portal, case notes, email, SMS gateway, phone, shared drive…"></textarea>
+      <div class="row">
+        <div>
+          <label for="q_minutes">Minutes per event today (approx)</label>
+          <input id="q_minutes" name="q_minutes" data-lensdna-target="q_minutes" placeholder="e.g. 12" />
+        </div>
+        <div>
+          <label for="q_volume">Events per week / month</label>
+          <input id="q_volume" name="q_volume" data-lensdna-target="q_volume" placeholder="e.g. 40 / week" />
+        </div>
+      </div>
+      <label for="q_owner">Who owns the workflow?</label>
+      <input id="q_owner" name="q_owner" data-lensdna-target="q_owner" placeholder="Role or team that carries the residual today" />
+      <label for="q_auto">Which actions can be staged automatically?</label>
+      <textarea id="q_auto" name="q_auto" data-lensdna-target="q_auto" placeholder="Portal navigation, field prefill, draft notifications, evidence assembly…"></textarea>
+      <label for="q_gate">Where must a human approve?</label>
+      <textarea id="q_gate" name="q_gate" data-lensdna-target="q_gate" placeholder="External send, irreversible portal submit, caregiver contact, escalation…"></textarea>
+      <label for="q_evidence">What evidence or audit record is required?</label>
+      <textarea id="q_evidence" name="q_evidence" data-lensdna-target="q_evidence" placeholder="Session log, observation note, notification timestamps, human approval stamp…"></textarea>
+      <label for="q_success">What would count as a successful pilot?</label>
+      <textarea id="q_success" name="q_success" data-lensdna-target="q_success" placeholder="Measured residual minutes reduced on frozen cohort; zero gate bypasses; audit package complete on every event…"></textarea>
+
+      <h2 style="margin-top:20px;">Bounded pilot parameters</h2>
+      <div class="row">
+        <div>
+          <label for="pilot_org">Organization</label>
+          <input id="pilot_org" name="pilot_org" data-lensdna-target="pilot_org" placeholder="District / clinic / program (synthetic or real prospect)" />
+        </div>
+        <div>
+          <label for="pilot_email">Contact email</label>
+          <input id="pilot_email" name="pilot_email" type="email" data-lensdna-target="pilot_email" placeholder="you@organisation.org" />
+        </div>
+      </div>
+      <label for="pilot_workflow">One workflow / portal family</label>
+      <textarea id="pilot_workflow" name="pilot_workflow" data-lensdna-target="pilot_workflow" required></textarea>
+      <label for="pilot_baseline">Baseline residual minutes (plan)</label>
+      <input id="pilot_baseline" name="pilot_baseline" data-lensdna-target="pilot_baseline" required />
+      <label for="pilot_success">Success metric</label>
+      <input id="pilot_success" name="pilot_success" data-lensdna-target="pilot_success" required />
+      <label for="pilot_fail">Failure / stop condition</label>
+      <input id="pilot_fail" name="pilot_fail" data-lensdna-target="pilot_fail" required />
+      <label for="pilot_notes">Notes (cohort, exceptions, oversight)</label>
+      <textarea id="pilot_notes" name="pilot_notes" data-lensdna-target="pilot_notes" placeholder="Frozen cohort · exceptions pre-registered · human gate mandatory · 14-day window"></textarea>
+
+      <p class="note">
+        This records <strong style="color:#e8eef7">practice parameters</strong> in the browser only.
+        Commercial residual pilot remains underwriting until measured on a real workflow with a named owner.
+        No generic subscription is the first ask — only a tightly scoped engagement with concrete operational outcome.
+      </p>
+
+      <div class="btn-row">
+        <button type="submit" class="btn primary">Record practice qualification</button>
+        <button type="button" class="btn" id="btnCopy">Copy summary</button>
+        <a class="btn primary" id="btnEmail" href="mailto:hans@lensdna.app">Email summary</a>
+        <button type="button" class="btn" onclick="window.LensDNA && window.LensDNA.open()">Open overlay</button>
+        <a class="btn" href="robotics-status.html">← Dossier</a>
+      </div>
+    </form>
+
+    <div class="card">
+      <h2>Outreach posture (for reference)</h2>
+      <p style="color:var(--muted);font-size:0.88rem;margin-bottom:8px;">
+        When approaching an organisation such as a robotics program operating across districts, special-education classrooms, early learning, or therapy settings, keep the message specific and low-pressure:
+      </p>
+      <pre class="mono" style="font-size:0.78rem;color:var(--muted);overflow:auto;background:#080b12;padding:12px;border-radius:8px;border:1px solid var(--border);white-space:pre-wrap;">Your programs operate across districts, special-education classrooms, early learning, and therapy settings. LensDNA is built for the operational layer that often remains after a lesson, student event, implementation task, or support request: portals, documentation, notifications, coordination, and evidence. I built a synthetic demonstration of that event-to-action loop using voice, optic, DOM execution, and a human approval boundary. I would be interested in learning where your teams still carry repetitive last-mile work and whether one workflow is worth measuring.</pre>
+      <p class="note" style="margin-top:10px;">
+        Ask about the workflow before presenting a large product story. No claim of existing relationship.
+      </p>
+    </div>
+
+    <p class="footer">
+      Internal practice desk · residual shape operators hit · overlay from
+      <a href="https://lensdna.app" target="_blank" rel="noopener">lensdna.app</a>
+      · synthetic only · no live district systems · human gate required · <span id="sl-now"></span>
+    </p>
+  </main>
+
+  <script src="robotics.js"></script>
+  <script
+    src="https://lensdna.app/embed.js"
+    data-overlay-url="https://lensdna.app/overlay.html"
+    data-tenant-id="sensorlens-sandbox"
+    data-theme="dark"
+    data-position="bottom-right"
+    data-auto-open="false">
+  </script>
+  <script>
+  (function () {
+    var s = RoboticsLens.load();
+
+    document.getElementById('kv-event').textContent = s.event_id || '—';
+    document.getElementById('kv-robot').textContent = s.robot_id || '—';
+    document.getElementById('kv-submitted').textContent = s.submitted ? 'yes' : 'no';
+
+    // Prefill pilot fields from session where useful
+    document.getElementById('pilot_org').value = s.pilot_org || '';
+    document.getElementById('pilot_email').value = s.pilot_email || '';
+    document.getElementById('pilot_workflow').value = s.pilot_workflow || (
+      'Education / therapy robotics residual · robot event → portal log + teacher/caregiver notification · case shape ' + (s.event_id || 'synthetic')
+    );
+    document.getElementById('pilot_baseline').value = s.pilot_baseline || (
+      (s.baseline_minutes || '9-14') + ' minutes residual operational time per event (plan)'
+    );
+    document.getElementById('pilot_success').value = s.pilot_success ||
+      'Measured residual minutes per event reduced vs baseline on frozen cohort; zero human-gate bypasses';
+    document.getElementById('pilot_fail').value = s.pilot_fail ||
+      'Thin residual, unfrozen exceptions, or human gate bypassed — stop and revise parameters';
+    document.getElementById('pilot_notes').value = s.pilot_notes || '';
+
+    if (s.pilot_recorded) {
+      document.getElementById('recorded-banner').style.display = 'block';
+      document.getElementById('recorded-ts').textContent = s.pilot_recorded_ts || '—';
+    }
+
+    function summary() {
+      var g = function (id) {
+        var e = document.getElementById(id);
+        return e ? e.value : '';
+      };
+      return [
+        'SENSORLENS PRACTICE QUALIFICATION — Education & Therapy Robotics',
+        'Org: ' + g('pilot_org'),
+        'Email: ' + g('pilot_email'),
+        '',
+        '— DISCOVERY —',
+        'Event that creates residual: ' + g('q_event'),
+        'Systems involved: ' + g('q_systems'),
+        'Minutes per event today: ' + g('q_minutes'),
+        'Volume: ' + g('q_volume'),
+        'Workflow owner: ' + g('q_owner'),
+        'Actions that can be staged: ' + g('q_auto'),
+        'Human approval required at: ' + g('q_gate'),
+        'Evidence / audit required: ' + g('q_evidence'),
+        'Success definition: ' + g('q_success'),
+        '',
+        '— BOUNDED PILOT PARAMETERS —',
+        'Workflow: ' + g('pilot_workflow'),
+        'Baseline: ' + g('pilot_baseline'),
+        'Success metric: ' + g('pilot_success'),
+        'Fail/stop: ' + g('pilot_fail'),
+        'Notes: ' + g('pilot_notes'),
+        '',
+        'Session event: ' + (s.event_id || '—') + ' · robot: ' + (s.robot_id || '—') + ' · gated submit: ' + (s.submitted ? 'yes' : 'no'),
+        '',
+        'Scope: practice parameters only. Not a commercial booking. Not live systems. Economics remain underwriting until measured on a real residual pilot with a named workflow owner.'
+      ].join('\n');
+    }
+
+    function wireCopyAndMail() {
+      var text = summary();
+      var b = document.getElementById('btnCopy');
+      if (b) {
+        b.onclick = function () {
+          navigator.clipboard.writeText(text).then(function () {
+            alert('Practice qualification copied — paste into email');
+          }).catch(function () {
+            prompt('Copy this summary:', text);
+          });
+        };
+      }
+      var m = document.getElementById('btnEmail');
+      if (m) {
+        m.href = 'mailto:hans@lensdna.app'
+          + '?subject=' + encodeURIComponent('SensorLens practice qualification — Education & Therapy Robotics')
+          + '&body=' + encodeURIComponent(text);
+      }
+    }
+
+    wireCopyAndMail();
+    document.querySelectorAll('#qualifyForm input, #qualifyForm textarea').forEach(function (el) {
+      el.addEventListener('input', wireCopyAndMail);
+    });
+
+    document.getElementById('qualifyForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var ts = new Date().toISOString();
+      RoboticsLens.save({
+        pilot_org: document.getElementById('pilot_org').value.trim(),
+        pilot_email: document.getElementById('pilot_email').value.trim(),
+        pilot_workflow: document.getElementById('pilot_workflow').value.trim(),
+        pilot_baseline: document.getElementById('pilot_baseline').value.trim(),
+        pilot_success: document.getElementById('pilot_success').value.trim(),
+        pilot_fail: document.getElementById('pilot_fail').value.trim(),
+        pilot_notes: document.getElementById('pilot_notes').value.trim(),
+        pilot_recorded: true,
+        pilot_recorded_ts: ts
+      });
+      location.href = 'robotics-qualify.html';
+    });
+
+    document.getElementById('nav-reset').onclick = function (e) {
+      e.preventDefault();
+      RoboticsLens.clear();
+      location.href = 'robotics.html';
+    };
+  })();
+  </script>
+</body>
+</html>

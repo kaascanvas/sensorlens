@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>1 · Event · Education & Therapy Robotics</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand mono">SensorLens <span>· Education & Therapy Robotics</span></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="robotics.html">Robotics surface</a>
+        <a href="robotics-event.html" class="on">1 · Event</a>
+        <a href="robotics-residual.html">2 · Residual</a>
+        <a href="robotics-status.html">3 · Dossier</a>
+        <a href="robotics-qualify.html">4 · Qualify</a>
+        <a href="#" id="nav-reset">Reset</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="badge">Step 1 · robot / avatar event received · residual still required</div>
+    <h1>Event · what residual <span>remains</span></h1>
+    <p class="lead">
+      Upstream robot or avatar session finished. The event is recorded. Fill or confirm what the operator still owes the district / care surface.
+      Overlay can read these fields via DOM tools / voice.
+    </p>
+
+    <div class="alert" style="border-color:rgba(245,158,11,0.45);background:rgba(245,158,11,0.08);color:#fde68a;">
+      <strong style="color:#fff;">Synthetic only.</strong> All student, staff, classroom, and organisation names are fictional.
+      No real education or clinical data. No partner systems are contacted.
+    </div>
+
+    <form class="card" id="eventForm">
+      <h2>Event export (operator-visible)</h2>
+      <div class="row">
+        <div>
+          <label for="event_id">Event / case id</label>
+          <input id="event_id" name="event_id" data-lensdna-target="event_id" required />
+        </div>
+        <div>
+          <label for="robot_id">Robot / avatar</label>
+          <input id="robot_id" name="robot_id" data-lensdna-target="robot_id" required />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="student_alias">Student (synthetic alias)</label>
+          <input id="student_alias" name="student_alias" data-lensdna-target="student_alias" required />
+        </div>
+        <div>
+          <label for="classroom">Classroom / site</label>
+          <input id="classroom" name="classroom" data-lensdna-target="classroom" required />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="teacher">Teacher / therapist (synthetic)</label>
+          <input id="teacher" name="teacher" data-lensdna-target="teacher" required />
+        </div>
+        <div>
+          <label for="program">Program / session type</label>
+          <input id="program" name="program" data-lensdna-target="program" required />
+        </div>
+      </div>
+      <label for="trigger">Trigger / exception summary</label>
+      <textarea id="trigger" name="trigger" data-lensdna-target="trigger" required></textarea>
+      <label for="baseline_minutes">Baseline residual minutes (plan / synthetic)</label>
+      <input id="baseline_minutes" name="baseline_minutes" data-lensdna-target="baseline_minutes" placeholder="e.g. 9-14" />
+      <label for="residual_notes">Residual still on operator</label>
+      <textarea id="residual_notes" name="residual_notes" data-lensdna-target="residual_notes" required></textarea>
+      <p class="note">
+        No educational or clinical re-determination on this desk. Only residual operational work after the robot event.
+      </p>
+      <div class="btn-row">
+        <button type="submit" class="btn primary">Continue to residual ops →</button>
+        <button type="button" class="btn" onclick="window.LensDNA && window.LensDNA.open()">Open overlay</button>
+      </div>
+    </form>
+
+    <p class="footer">
+      Internal practice desk · residual shape operators hit · overlay from
+      <a href="https://lensdna.app" target="_blank" rel="noopener">lensdna.app</a>
+      · synthetic only · no live district systems · human gate required · <span id="sl-now"></span>
+    </p>
+  </main>
+
+  <script src="robotics.js"></script>
+  <script
+    src="https://lensdna.app/embed.js"
+    data-overlay-url="https://lensdna.app/overlay.html"
+    data-tenant-id="sensorlens-sandbox"
+    data-theme="dark"
+    data-position="bottom-right"
+    data-auto-open="false">
+  </script>
+  <script>
+    (function () {
+      const s = RoboticsLens.load();
+      document.getElementById('event_id').value = s.event_id;
+      document.getElementById('robot_id').value = s.robot_id;
+      document.getElementById('student_alias').value = s.student_alias;
+      document.getElementById('classroom').value = s.classroom;
+      document.getElementById('teacher').value = s.teacher;
+      document.getElementById('program').value = s.program;
+      document.getElementById('trigger').value = s.trigger;
+      document.getElementById('baseline_minutes').value = s.baseline_minutes;
+      document.getElementById('residual_notes').value = s.residual_notes;
+
+      document.getElementById('eventForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        RoboticsLens.save({
+          event_id: document.getElementById('event_id').value.trim(),
+          robot_id: document.getElementById('robot_id').value.trim(),
+          student_alias: document.getElementById('student_alias').value.trim(),
+          classroom: document.getElementById('classroom').value.trim(),
+          teacher: document.getElementById('teacher').value.trim(),
+          program: document.getElementById('program').value.trim(),
+          trigger: document.getElementById('trigger').value.trim(),
+          baseline_minutes: document.getElementById('baseline_minutes').value.trim() || '9-14',
+          residual_notes: document.getElementById('residual_notes').value.trim(),
+          // clear residual progress when starting a new event
+          submitted: false,
+          submit_ts: '',
+          timing_json: '',
+          run_seconds: '',
+          gate_blocked: false
+        });
+        location.href = 'robotics-residual.html';
+      });
+
+      document.getElementById('nav-reset').onclick = function (e) {
+        e.preventDefault();
+        RoboticsLens.clear();
+        location.href = 'robotics.html';
+      };
+    })();
+  </script>
+</body>
+</html>
