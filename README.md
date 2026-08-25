@@ -1,4 +1,4 @@
-# SensorLens (Static)
+# SensorLens (Static) — with Doula Care Residual
 
 **Residual practice desk · client-mimic host for LensDNA OS domain overlay**
 
@@ -10,10 +10,49 @@
 
 | Surface | Entry | Purpose |
 |---------|-------|---------|
+| **Doula Care Residual** | `doula.html` | Credentialing + coverage confirmation + outcomes documentation residual after Medicaid / commercial eligibility (26 states + DC) |
 | **Education & Therapy Robotics** | `robotics.html` | Event → residual ops → human gate → REA dossier → qualification |
 | **HealthAdmin residual** | `handoff.html` | Prior-auth residual practice (original path) |
 
-Both use the identical production embed pattern and human-gate discipline.
+All three use the identical production embed pattern and human-gate discipline.
+
+---
+
+## Doula Care Residual (new)
+
+**Positioning:** “From policy decision to completed human-approved residual.”
+
+**Primary synthetic demonstration**
+
+A fictional community doula program is newly eligible for Medicaid reimbursement. Residual work remains:
+
+1. Receive enrollment / coverage decision + preserve context  
+2. Open synthetic MCO credentialing portal  
+3. Complete fields + attach training / certification packet  
+4. Stage coverage confirmation for a synthetic client  
+5. Prepare visit / outcomes documentation  
+6. Pause at human gate before irreversible submit  
+7. Produce Residual Evidence Artifact (REA)  
+8. Capture qualification parameters for a narrow pilot  
+
+**Trust boundary (stated on every page)**
+
+- Synthetic data only — no real patient, doula, or plan data  
+- No endorsement, partnership, integration, or customer status with any named organization  
+- LensDNA does not make clinical determinations  
+- Irreversible actions require explicit human approval  
+- Residual shape is relevant to the 26 states + DC with Medicaid doula reimbursement (as of 2026)
+
+**Files**
+
+```
+doula.html           Surface home / scope
+doula-event.html     Step 1 — coverage decision received, residual listed
+doula-residual.html  Step 2 — multi-step residual ops + human gate + timers
+doula-status.html    Step 3 — REA dossier + baseline binding + metrics
+doula-qualify.html   Step 4 — discovery questions + bounded pilot parameters
+doula.js             Domain state + REA builder (doula_care_residual)
+```
 
 ---
 
@@ -32,56 +71,6 @@ This static build keeps the exact same layout, residual flow, human gate, timers
 - No cold starts
 - No runtime secrets required
 - Still demonstrates the identical client install pattern
-
----
-
-## What SensorLens is
-
-| SensorLens is | SensorLens is not |
-|---------------|-------------------|
-| A **client-mimic sandbox** for residual last-mile shape | The commercial LensDNA product |
-| A place to **feel embed + overlay** on a separate origin | A production integration with any named upstream vendor |
-| Synthetic cases for **practice and product learning** | Live payer / district / clinical submission or real PHI/PII workflows |
-| Honest scope for **pilot design conversations** | A guarantee of $ economic outcomes for a named prospect |
-| Domain surfaces (Education & Therapy Robotics, HealthAdmin, …) | A claim of endorsement or partnership with any robotics or education provider |
-
-Commercial runtime, pilots, and licensing live on **[lensdna.app](https://lensdna.app)**.
-
----
-
-## Education & Therapy Robotics surface
-
-**Positioning:** “From robot event to completed human-approved workflow.”
-
-**Primary synthetic demonstration**
-
-A fictional therapy support robot (Companion-3) completes a scheduled social-emotional check-in. Engagement drops; residual operational work remains:
-
-1. Receive event + preserve context  
-2. Open synthetic district support portal  
-3. Log observation + stage evidence  
-4. Draft teacher / SPED and caregiver notifications  
-5. Pause at human gate before any external send or irreversible log  
-6. Produce Residual Evidence Artifact (REA)  
-7. Capture qualification parameters for a narrow pilot  
-
-**Trust boundary (stated on every page)**
-
-- Synthetic data only — no real student, teacher, therapist, or family data  
-- No endorsement, partnership, integration, or customer status with any named robotics or education provider  
-- LensDNA does not make educational or clinical determinations  
-- Irreversible actions require explicit human approval  
-
-**Files**
-
-```
-robotics.html           Surface home / scope
-robotics-event.html     Step 1 — robot event received, residual listed
-robotics-residual.html  Step 2 — multi-step residual ops + human gate + timers
-robotics-status.html    Step 3 — REA dossier + baseline binding + metrics
-robotics-qualify.html   Step 4 — discovery questions + bounded pilot parameters
-robotics.js             Domain state + REA builder (education_therapy_robotics)
-```
 
 ---
 
@@ -110,40 +99,6 @@ The runtime remains domain-agnostic. Domain pages supply event types, workflow s
 
 ---
 
-## Practice flow (Education & Therapy Robotics)
-
-| Step | File | What you do |
-|------|------|-------------|
-| Surface home | `robotics.html` | Scope, trust boundary, start |
-| Event | `robotics-event.html` | Robot event assumed complete; residual still listed |
-| Residual ops | `robotics-residual.html` | Portal fields, notifications, evidence, verify · **human gate required** |
-| Dossier | `robotics-status.html` | REA + baseline binding + practice metrics |
-| Qualify | `robotics-qualify.html` | Discovery questions + bounded pilot parameters · copy / email summary |
-| Reset | any page → Reset | Clears domain `localStorage` |
-
-**Discipline under test**
-
-1. No educational or clinical re-determination on this desk — residual only after the robot event  
-2. Irreversible submit / external notification blocked until the operator explicitly approves  
-3. Economic language stays **underwriting / plan bands** until a real measured pilot  
-4. Qualification captures owner, systems, minutes, volume, gate points, and success/fail criteria  
-
----
-
-## HealthAdmin residual (original)
-
-```
-index.html          Home / scope (now dual-surface)
-handoff.html        Step 1 — residual after decision
-residual.html       Step 2 — portal-shaped fields + human gate + timers
-status.html         Step 3 — outcome + practice metrics
-pilot-intake.html   Step 4 — pilot parameters + copy/email
-styles.css          Shared styles
-sensorlens.js       localStorage state layer (health path)
-```
-
----
-
 ## Deploy (Render Static Site)
 
 1. New → **Static Site** → connect the repository (or upload the folder)
@@ -164,7 +119,6 @@ No environment variables required.
 ## Local preview
 
 ```bash
-# any static server
 npx serve .
 # or
 python -m http.server 5055
@@ -176,7 +130,7 @@ Open http://127.0.0.1:5055
 
 ## Security and compliance posture (sandbox)
 
-- **Synthetic data only** — do not enter real PHI / PII / student data  
+- **Synthetic data only** — do not enter real PHI / PII / patient data  
 - **No live payer, district, or clinical connectivity**  
 - **noindex** on pages  
 - Production LensDNA HIPAA / Zero-Retention posture is documented on the commercial product when Enterprise + BAA + ZRM conditions are met; this lab does not assert those conditions by itself  

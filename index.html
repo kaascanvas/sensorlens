@@ -13,6 +13,7 @@
       <div class="brand mono">SensorLens <span>· client-mimic sandbox</span></div>
       <nav>
         <a href="index.html" class="on">Home</a>
+        <a href="doula.html">Doula Care</a>
         <a href="robotics.html">Education & Therapy Robotics</a>
         <a href="handoff.html">Health residual</a>
         <a href="#" id="nav-reset">Reset</a>
@@ -33,21 +34,34 @@
       Use this to tighten product, Pilot Ops, and pilot language — not to claim production upstream integration or any partner relationship.
     </div>
 
-    <!-- Featured: Education & Therapy Robotics -->
+    <!-- Featured: Doula Care Residual -->
     <div class="card" style="border-color:rgba(0,229,255,0.35);">
-      <h2>Featured · Education & Therapy Robotics</h2>
+      <h2>Featured · Doula Care Residual</h2>
       <p style="color:var(--muted);font-size:0.92rem;margin-bottom:10px;">
-        <strong style="color:#fff">From robot event to completed human-approved workflow.</strong>
-        LensDNA executes the browser, phone, documentation, coordination, and evidence work that remains after an education or therapy robot creates an event.
+        <strong style="color:#fff">From policy decision to completed human-approved residual.</strong>
+        LensDNA executes the credentialing, coverage confirmation, documentation, and evidence work that remains after Medicaid or commercial coverage makes doula care reimbursable (26 states + DC as of 2026).
       </p>
       <ol style="margin:0 0 12px 1.1rem;color:var(--muted);font-size:0.88rem;">
-        <li style="margin:4px 0;">Receive robot/avatar event + preserve context</li>
-        <li style="margin:4px 0;">Stage portal fields, notifications, evidence</li>
+        <li style="margin:4px 0;">Receive enrollment / coverage decision + preserve context</li>
+        <li style="margin:4px 0;">Stage MCO credentialing fields, coverage confirmation, outcomes docs</li>
         <li style="margin:4px 0;">Human gate before irreversible actions</li>
         <li style="margin:4px 0;">Residual Evidence Artifact (REA) + qualification path</li>
       </ol>
       <p style="color:var(--muted);font-size:0.82rem;margin-bottom:12px;">
-        Synthetic only. No endorsement or integration with any named robotics or education provider is claimed.
+        Synthetic only. No endorsement or integration with any named program or plan is claimed.
+      </p>
+      <div class="btn-row">
+        <a class="btn primary" href="doula.html">Open Doula Care surface →</a>
+        <a class="btn" href="doula-event.html">Start at event</a>
+      </div>
+    </div>
+
+    <!-- Education & Therapy Robotics -->
+    <div class="card">
+      <h2>Education & Therapy Robotics</h2>
+      <p style="color:var(--muted);font-size:0.92rem;margin-bottom:10px;">
+        <strong style="color:#fff">From robot event to completed human-approved workflow.</strong>
+        LensDNA executes the browser, phone, documentation, coordination, and evidence work that remains after an education or therapy robot creates an event.
       </p>
       <div class="btn-row">
         <a class="btn primary" href="robotics.html">Open Education & Therapy Robotics surface →</a>
@@ -55,7 +69,7 @@
       </div>
     </div>
 
-    <!-- Original Health residual -->
+    <!-- HealthAdmin residual -->
     <div class="card">
       <h2>HealthAdmin-shaped residual (original practice path)</h2>
       <ol style="margin:0 0 0 1.1rem;color:var(--muted);font-size:0.92rem;">
@@ -87,7 +101,7 @@
       <h2>Runtime posture</h2>
       <p style="color:var(--muted);font-size:0.9rem;">
         LensDNA is a domain-agnostic, client-side execution runtime for residual work after an intelligent system, robot, platform, or human operator has created an event.
-        Domain surfaces (Education & Therapy Robotics, HealthAdmin residual, Deploy care-setting, PropTech, industrial) define event types, steps, approval rules, terminology, and pilot metrics.
+        Domain surfaces (Doula Care, Education & Therapy Robotics, HealthAdmin residual, Deploy care-setting, PropTech, industrial) define event types, steps, approval rules, terminology, and pilot metrics.
         The execution kernel stays reusable.
       </p>
     </div>
@@ -101,6 +115,7 @@
 
   <script src="sensorlens.js"></script>
   <script src="robotics.js"></script>
+  <script src="doula.js"></script>
   <script
     src="https://lensdna.app/embed.js"
     data-overlay-url="https://lensdna.app/overlay.html"
@@ -114,6 +129,7 @@
       e.preventDefault();
       if (window.SensorLens) SensorLens.clear();
       if (window.RoboticsLens) RoboticsLens.clear();
+      if (window.DoulaLens) DoulaLens.clear();
       location.href = 'index.html';
     };
   </script>

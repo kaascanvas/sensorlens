@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>1 · Event · Doula Care Residual</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand mono">SensorLens <span>· Doula Care Residual</span></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="doula.html">Doula surface</a>
+        <a href="doula-event.html" class="on">1 · Event</a>
+        <a href="doula-residual.html">2 · Residual</a>
+        <a href="doula-status.html">3 · Dossier</a>
+        <a href="doula-qualify.html">4 · Qualify</a>
+        <a href="#" id="nav-reset">Reset</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="badge">Step 1 · policy / enrollment decision received · residual still required</div>
+    <h1>Event · what residual <span>remains</span></h1>
+    <p class="lead">
+      Upstream coverage or enrollment decision finished. The event is recorded. Fill or confirm what the operator still owes the MCO / plan surface.
+      Overlay can read these fields via DOM tools / voice.
+    </p>
+
+    <div class="alert" style="border-color:rgba(245,158,11,0.45);background:rgba(245,158,11,0.08);color:#fde68a;">
+      <strong style="color:#fff;">Synthetic only.</strong> All doula, client, program, and plan names are fictional.
+      No real patient or clinical data. No partner systems are contacted.
+    </div>
+
+    <form class="card" id="eventForm">
+      <h2>Event export (operator-visible)</h2>
+      <div class="row">
+        <div>
+          <label for="event_id">Event / case id</label>
+          <input id="event_id" name="event_id" data-lensdna-target="event_id" required />
+        </div>
+        <div>
+          <label for="program_name">Program / collective</label>
+          <input id="program_name" name="program_name" data-lensdna-target="program_name" required />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="state">State context (synthetic)</label>
+          <input id="state" name="state" data-lensdna-target="state" required />
+        </div>
+        <div>
+          <label for="mco_or_plan">MCO / plan</label>
+          <input id="mco_or_plan" name="mco_or_plan" data-lensdna-target="mco_or_plan" required />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="doula_alias">Doula (synthetic alias)</label>
+          <input id="doula_alias" name="doula_alias" data-lensdna-target="doula_alias" required />
+        </div>
+        <div>
+          <label for="client_alias">Client (synthetic alias)</label>
+          <input id="client_alias" name="client_alias" data-lensdna-target="client_alias" required />
+        </div>
+      </div>
+      <label for="trigger">Trigger / residual summary</label>
+      <textarea id="trigger" name="trigger" data-lensdna-target="trigger" required></textarea>
+      <label for="baseline_minutes">Baseline residual minutes (plan / synthetic)</label>
+      <input id="baseline_minutes" name="baseline_minutes" data-lensdna-target="baseline_minutes" placeholder="e.g. 14-22" />
+      <label for="residual_notes">Residual still on operator</label>
+      <textarea id="residual_notes" name="residual_notes" data-lensdna-target="residual_notes" required></textarea>
+      <p class="note">
+        No clinical re-determination on this desk. Only residual operational work after the coverage / enrollment decision.
+      </p>
+      <div class="btn-row">
+        <button type="submit" class="btn primary">Continue to residual ops →</button>
+        <button type="button" class="btn" onclick="window.LensDNA && window.LensDNA.open()">Open overlay</button>
+      </div>
+    </form>
+
+    <p class="footer">
+      Internal practice desk · residual shape operators hit · overlay from
+      <a href="https://lensdna.app" target="_blank" rel="noopener">lensdna.app</a>
+      · synthetic only · no live payer systems · human gate required · <span id="sl-now"></span>
+    </p>
+  </main>
+
+  <script src="doula.js"></script>
+  <script
+    src="https://lensdna.app/embed.js"
+    data-overlay-url="https://lensdna.app/overlay.html"
+    data-tenant-id="sensorlens-sandbox"
+    data-theme="dark"
+    data-position="bottom-right"
+    data-auto-open="false">
+  </script>
+  <script>
+    (function () {
+      const s = DoulaLens.load();
+      document.getElementById('event_id').value = s.event_id;
+      document.getElementById('program_name').value = s.program_name;
+      document.getElementById('state').value = s.state;
+      document.getElementById('mco_or_plan').value = s.mco_or_plan;
+      document.getElementById('doula_alias').value = s.doula_alias;
+      document.getElementById('client_alias').value = s.client_alias;
+      document.getElementById('trigger').value = s.trigger;
+      document.getElementById('baseline_minutes').value = s.baseline_minutes;
+      document.getElementById('residual_notes').value = s.residual_notes;
+
+      document.getElementById('eventForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        DoulaLens.save({
+          event_id: document.getElementById('event_id').value.trim(),
+          program_name: document.getElementById('program_name').value.trim(),
+          state: document.getElementById('state').value.trim(),
+          mco_or_plan: document.getElementById('mco_or_plan').value.trim(),
+          doula_alias: document.getElementById('doula_alias').value.trim(),
+          client_alias: document.getElementById('client_alias').value.trim(),
+          trigger: document.getElementById('trigger').value.trim(),
+          baseline_minutes: document.getElementById('baseline_minutes').value.trim() || '14-22',
+          residual_notes: document.getElementById('residual_notes').value.trim(),
+          submitted: false,
+          submit_ts: '',
+          timing_json: '',
+          run_seconds: '',
+          gate_blocked: false
+        });
+        location.href = 'doula-residual.html';
+      });
+
+      document.getElementById('nav-reset').onclick = function (e) {
+        e.preventDefault();
+        DoulaLens.clear();
+        location.href = 'doula.html';
+      };
+    })();
+  </script>
+</body>
+</html>

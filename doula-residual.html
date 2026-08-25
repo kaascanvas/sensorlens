@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2 · Residual ops · Doula Care Residual</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand mono">SensorLens <span>· Doula Care Residual</span></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="doula.html">Doula surface</a>
+        <a href="doula-event.html">1 · Event</a>
+        <a href="doula-residual.html" class="on">2 · Residual</a>
+        <a href="doula-status.html">3 · Dossier</a>
+        <a href="doula-qualify.html">4 · Qualify</a>
+        <a href="#" id="nav-reset">Reset</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="badge">Step 2 · measurement-grade residual run (synthetic · doula care shaped)</div>
+    <h1>Residual ops · <span>timed last-mile</span></h1>
+    <p class="lead">
+      After coverage decision → credentialing context → portal fields → documentation → evidence → <strong style="color:#e8eef7">human gate</strong> → confirm.
+      Timers record practice measurements. Not a live payer or MCO system.
+    </p>
+
+    <div id="gate-alert" class="alert" style="display:none;">
+      Human gate blocked submit — approval required. Residual execution does not bypass the operator.
+    </div>
+
+    <div class="card">
+      <h2>From event</h2>
+      <dl class="kv">
+        <dt>Event</dt><dd id="kv-event">—</dd>
+        <dt>Program</dt><dd id="kv-program">—</dd>
+        <dt>Doula</dt><dd id="kv-doula">—</dd>
+        <dt>Client</dt><dd id="kv-client">—</dd>
+        <dt>MCO / Plan</dt><dd id="kv-mco">—</dd>
+        <dt>Baseline (plan)</dt><dd id="kv-baseline">14-22 min</dd>
+      </dl>
+    </div>
+
+    <div class="step-rail" id="stepRail">
+      <span class="s on" data-step="1">1 Context</span>
+      <span class="s" data-step="2">2 Credentialing</span>
+      <span class="s" data-step="3">3 Coverage</span>
+      <span class="s" data-step="4">4 Documentation</span>
+      <span class="s" data-step="5">5 Verify</span>
+      <span class="s" data-step="6">6 Human gate</span>
+    </div>
+    <p class="timer mono">Run timer: <strong id="runTimer">0.0s</strong> · Step: <strong id="stepTimer">0.0s</strong> <span id="stepLabel">· context</span></p>
+
+    <form class="card" id="residualForm">
+      <div class="panel on" data-panel="1">
+        <h2>1 · Event context (coverage decision already complete)</h2>
+        <p class="note">No clinical re-determination. Confirm residual still required on the operational side.</p>
+        <label for="portal_cred_ref">Credentialing / portal reference</label>
+        <input id="portal_cred_ref" name="portal_cred_ref" data-lensdna-target="portal_cred_ref" placeholder="e.g. CRED-2026-1187" />
+        <label for="npi_or_id">NPI or provider ID (synthetic)</label>
+        <input id="npi_or_id" name="npi_or_id" data-lensdna-target="npi_or_id" placeholder="e.g. 1234567890" />
+        <div class="btn-row">
+          <button type="button" class="btn primary" data-next="2">Next · credentialing →</button>
+          <button type="button" class="btn" onclick="window.LensDNA && window.LensDNA.open()">Open overlay</button>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="2">
+        <h2>2 · Credentialing residual fields</h2>
+        <div class="row">
+          <div>
+            <label for="cert_codes">Certification / training codes</label>
+            <input id="cert_codes" name="cert_codes" data-lensdna-target="cert_codes" placeholder="e.g. DONA · state-approved" />
+          </div>
+          <div>
+            <label for="training_packet_note">Training packet status</label>
+            <input id="training_packet_note" name="training_packet_note" data-lensdna-target="training_packet_note" placeholder="Packet prepared / gaps noted" />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn" data-next="1">← Back</button>
+          <button type="button" class="btn primary" data-next="3">Next · coverage →</button>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="3">
+        <h2>3 · Coverage confirmation residual</h2>
+        <label for="coverage_status">Coverage / enrollment status notes</label>
+        <textarea id="coverage_status" name="coverage_status" data-lensdna-target="coverage_status" placeholder="Portal status, effective date, any remaining confirmation steps…"></textarea>
+        <div class="btn-row">
+          <button type="button" class="btn" data-next="2">← Back</button>
+          <button type="button" class="btn primary" data-next="4">Next · documentation →</button>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="4">
+        <h2>4 · Visit & outcomes documentation</h2>
+        <label for="visit_docs_note">Visit / encounter documentation residual</label>
+        <textarea id="visit_docs_note" name="visit_docs_note" data-lensdna-target="visit_docs_note" placeholder="What still needs to be staged or attached for the claim path…"></textarea>
+        <label for="outcomes_note">Outcomes / SDOH reporting residual</label>
+        <textarea id="outcomes_note" name="outcomes_note" data-lensdna-target="outcomes_note" placeholder="Required outcomes fields or packet notes for continued reimbursement…"></textarea>
+        <div class="btn-row">
+          <button type="button" class="btn" data-next="3">← Back</button>
+          <button type="button" class="btn primary" data-next="5">Next · verify →</button>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="5">
+        <h2>5 · Verification & quality</h2>
+        <p class="note">Residual value is accuracy, consistency, verification, and documentation — not only minutes.</p>
+        <label for="optical_notes">Optical verification (inputs / outputs confirmed on screen)</label>
+        <textarea id="optical_notes" name="optical_notes" data-lensdna-target="optical_notes" placeholder="What was optically verified or documented from the portal screens…"></textarea>
+        <label for="telephony_notes">Telephony / voice coordination (if used)</label>
+        <textarea id="telephony_notes" name="telephony_notes" data-lensdna-target="telephony_notes" placeholder="Call outcome, confirmation notes, who confirmed…"></textarea>
+        <label for="evidence_notes">Evidence / packet / dossier notes</label>
+        <textarea id="evidence_notes" name="evidence_notes" data-lensdna-target="evidence_notes" placeholder="Credentialing packet, outcomes docs, storage location…"></textarea>
+        <label for="quality_notes">Execution quality (accuracy, consistency, completeness)</label>
+        <textarea id="quality_notes" name="quality_notes" data-lensdna-target="quality_notes" placeholder="Any accuracy or consistency observations for this residual run…"></textarea>
+        <div class="btn-row">
+          <button type="button" class="btn" data-next="4">← Back</button>
+          <button type="button" class="btn primary" data-next="6">Next · human gate →</button>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="6">
+        <h2>6 · Human gate (irreversible)</h2>
+        <div class="gate">
+          <label class="chk">
+            <input type="checkbox" name="human_approve" value="yes" data-lensdna-target="human_approve" id="human_approve" />
+            <span>
+              <strong style="color:var(--neon)">I approve irreversible residual actions</strong> (credentialing portal submit + coverage-related documentation) for this synthetic case.
+              Without this check, submit is rejected — same discipline as production.
+            </span>
+          </label>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn" data-next="5">← Back</button>
+          <button type="submit" class="btn primary">Submit residual (gated) →</button>
+          <a class="btn" href="doula-event.html">← Event</a>
+        </div>
+      </div>
+    </form>
+
+    <p class="footer">
+      Internal practice desk · residual shape operators hit · overlay from
+      <a href="https://lensdna.app" target="_blank" rel="noopener">lensdna.app</a>
+      · synthetic only · no live payer systems · human gate required · <span id="sl-now"></span>
+    </p>
+  </main>
+
+  <script src="doula.js"></script>
+  <script
+    src="https://lensdna.app/embed.js"
+    data-overlay-url="https://lensdna.app/overlay.html"
+    data-tenant-id="sensorlens-sandbox"
+    data-theme="dark"
+    data-position="bottom-right"
+    data-auto-open="false">
+  </script>
+  <script>
+  (function () {
+    var s = DoulaLens.load();
+    document.getElementById('kv-event').textContent = s.event_id || '—';
+    document.getElementById('kv-program').textContent = s.program_name || '—';
+    document.getElementById('kv-doula').textContent = s.doula_alias || '—';
+    document.getElementById('kv-client').textContent = s.client_alias || '—';
+    document.getElementById('kv-mco').textContent = s.mco_or_plan || '—';
+    document.getElementById('kv-baseline').textContent = (s.baseline_minutes || '14-22') + ' min';
+
+    document.getElementById('portal_cred_ref').value = s.portal_cred_ref || '';
+    document.getElementById('npi_or_id').value = s.npi_or_id || '';
+    document.getElementById('cert_codes').value = s.cert_codes || '';
+    document.getElementById('training_packet_note').value = s.training_packet_note || '';
+    document.getElementById('coverage_status').value = s.coverage_status || '';
+    document.getElementById('visit_docs_note').value = s.visit_docs_note || '';
+    document.getElementById('outcomes_note').value = s.outcomes_note || '';
+    if (document.getElementById('optical_notes')) document.getElementById('optical_notes').value = s.optical_notes || '';
+    if (document.getElementById('telephony_notes')) document.getElementById('telephony_notes').value = s.telephony_notes || '';
+    if (document.getElementById('evidence_notes')) document.getElementById('evidence_notes').value = s.evidence_notes || '';
+    if (document.getElementById('quality_notes')) document.getElementById('quality_notes').value = s.quality_notes || '';
+
+    if (s.gate_blocked) {
+      document.getElementById('gate-alert').style.display = 'block';
+      DoulaLens.save({ gate_blocked: false });
+    }
+
+    var runStart = Date.now();
+    var stepStart = Date.now();
+    var current = 1;
+    var timing = {};
+    var labels = {1:'context',2:'credentialing',3:'coverage',4:'documentation',5:'verify',6:'gate'};
+
+    function fmt(ms) { return (ms/1000).toFixed(1) + 's'; }
+    function tick() {
+      document.getElementById('runTimer').textContent = fmt(Date.now() - runStart);
+      document.getElementById('stepTimer').textContent = fmt(Date.now() - stepStart);
+    }
+    setInterval(tick, 200);
+
+    function show(n) {
+      if (current && current !== n) {
+        timing['step_' + current + '_' + labels[current]] = Math.round((Date.now() - stepStart) / 100) / 10;
+      }
+      current = n;
+      stepStart = Date.now();
+      document.querySelectorAll('.panel').forEach(function (p) {
+        p.classList.toggle('on', p.getAttribute('data-panel') === String(n));
+      });
+      document.querySelectorAll('#stepRail .s').forEach(function (el) {
+        var sn = parseInt(el.getAttribute('data-step'), 10);
+        el.classList.toggle('on', sn === n);
+        el.classList.toggle('done', sn < n);
+      });
+      document.getElementById('stepLabel').textContent = '· ' + labels[n];
+    }
+
+    document.querySelectorAll('[data-next]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        show(parseInt(btn.getAttribute('data-next'), 10));
+      });
+    });
+
+    document.getElementById('residualForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      timing['step_' + current + '_' + labels[current]] = Math.round((Date.now() - stepStart) / 100) / 10;
+      timing.total_seconds = Math.round((Date.now() - runStart) / 100) / 10;
+      timing.baseline_plan_min = s.baseline_minutes || '14-22';
+      timing.event_id = s.event_id;
+
+      var approved = document.getElementById('human_approve').checked;
+      var submitTs = approved ? new Date().toISOString() : '';
+
+      DoulaLens.save({
+        portal_cred_ref: document.getElementById('portal_cred_ref').value.trim(),
+        npi_or_id: document.getElementById('npi_or_id').value.trim(),
+        cert_codes: document.getElementById('cert_codes').value.trim(),
+        training_packet_note: document.getElementById('training_packet_note').value.trim(),
+        coverage_status: document.getElementById('coverage_status').value.trim(),
+        visit_docs_note: document.getElementById('visit_docs_note').value.trim(),
+        outcomes_note: document.getElementById('outcomes_note').value.trim(),
+        optical_notes: (document.getElementById('optical_notes') || {}).value || '',
+        telephony_notes: (document.getElementById('telephony_notes') || {}).value || '',
+        evidence_notes: (document.getElementById('evidence_notes') || {}).value || '',
+        quality_notes: (document.getElementById('quality_notes') || {}).value || '',
+        timing_json: JSON.stringify(timing),
+        run_seconds: String(timing.total_seconds),
+        submitted: approved,
+        submit_ts: submitTs,
+        gate_blocked: !approved
+      });
+
+      if (approved) {
+        DoulaLens.buildREA({
+          timing: timing,
+          started_at: new Date(runStart).toISOString()
+        }).then(function (rea) {
+          DoulaLens.saveREA(rea);
+          location.href = 'doula-status.html';
+        }).catch(function () {
+          location.href = 'doula-status.html';
+        });
+      } else {
+        location.href = 'doula-residual.html';
+      }
+    });
+
+    document.getElementById('nav-reset').onclick = function (e) {
+      e.preventDefault();
+      DoulaLens.clear();
+      location.href = 'doula.html';
+    };
+  })();
+  </script>
+</body>
+</html>
