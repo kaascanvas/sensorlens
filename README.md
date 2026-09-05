@@ -1,37 +1,38 @@
 # SensorLens
 
-Static practice desk for the [LensDNA](https://lensdna.app) overlay.
+Customer-origin fixture for the LensDNA `embed.js` + overlay.
 
-Issuer: **LensDNA, Inc.**  
+This host is **not** the product site. Pages live here on purpose so you can see the script load from [lensdna.app](https://lensdna.app) onto a different origin — the same pattern a buyer uses on their own workbench.
+
+Vendor: **LensDNA, Inc.**  
 Product: **HealthAdminDNA**  
 Terms: [Schedule S + I + M](https://lensdna.app/master-terms)
 
-Synthetic pages only. No live payer, plan, or clinical systems. Overlay can drive this origin’s DOM; irreversible actions stay behind a human gate.
+## What this origin proves
 
----
+- Script tag on a foreign host mounts the overlay
+- Overlay can read / type fields marked `data-lensdna-target` **on this origin**
+- Human gate blocks irreversible submit
+- REA v1.2 can be assembled in the browser
 
-## Pages
+## What this origin does not prove
 
-| Path | What it is |
-|------|------------|
-| `handoff.html` → `residual.html` → `status.html` → `pilot-intake.html` | HealthAdmin residual loop (prior-auth last-mile practice) |
-| `doula.html` | Same kernel on a coverage-decision residual |
-| `robotics.html` | Same kernel on an education/therapy robot event |
+- Driving Availity, UnitedHealthcare, or any third-party payer tab
+- Bypassing Same-Origin Policy
+- A live clearinghouse integration
 
-Entry: `index.html`.
+Payer-tab execution is a separate operator runtime (extension or managed browser).
 
----
+## Workbench loop
 
-## HealthAdmin loop
+1. `handoff.html` — synthetic case export
+2. `residual.html` — portal-shaped fields, attachments, gate, timers
+3. `status.html` — REA dossier
+4. `pilot-intake.html` — local parameters only
 
-1. `handoff.html` — upstream decision already made; residual still listed  
-2. `residual.html` — portal fields, attachments, status, human gate, timers  
-3. `status.html` — REA v1.2 dossier  
-4. `pilot-intake.html` — local Schedule M parameters in the browser only  
+`doula.html` and `robotics.html` are extra fixtures of the same embed. They are not additional products.
 
----
-
-## Embed (same pattern as production)
+## Tag
 
 ```html
 <script
@@ -43,9 +44,7 @@ Entry: `index.html`.
 </script>
 ```
 
----
-
-## Run locally
+## Run
 
 ```bash
 npx serve .
@@ -53,10 +52,6 @@ npx serve .
 python -m http.server 5055
 ```
 
-Publish the folder that contains `index.html` as a static site. No env vars, no backend.
-
-Do not enter real PHI or PII. Pages are `noindex`.
-
----
+Publish the folder that contains `index.html`. No env vars. Do not enter real PHI or PII. Pages are `noindex`.
 
 Contact: [lensdna.app](https://lensdna.app) · hans@lensdna.app · [@LensDNA_OS](https://x.com/LensDNA_OS)
