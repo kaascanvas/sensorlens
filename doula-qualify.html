@@ -26,7 +26,7 @@
     <div class="badge">Step 4 · workflow qualification · pilot shape</div>
     <h1>Qualify · <span>narrow the residual</span></h1>
     <p class="lead">
-      Capture the operational problem a buyer actually owns. The desired next step is a tightly scoped workflow engagement or pilot with one measurable process, a defined baseline, an explicit approval boundary, and a pass/fail outcome.
+      Capture the operational problem a buyer actually owns. The desired next step is a tightly scoped workflow engagement or pilot with one measurable process, a defined baseline, an explicit approval boundary, and a Schedule M measurement ledger (not a binary savings warranty).
     </p>
 
     <div class="alert" style="border-color:rgba(245,158,11,0.45);background:rgba(245,158,11,0.08);color:#fde68a;">
@@ -74,7 +74,7 @@
       <label for="q_evidence">What evidence or audit record is required?</label>
       <textarea id="q_evidence" name="q_evidence" data-lensdna-target="q_evidence" placeholder="Credentialing packet, coverage confirmation stamp, outcomes documentation, human approval…"></textarea>
       <label for="q_success">What would count as a successful pilot?</label>
-      <textarea id="q_success" name="q_success" data-lensdna-target="q_success" placeholder="Measured residual minutes reduced on frozen cohort; zero gate bypasses; complete audit package on every residual…"></textarea>
+      <textarea id="q_success" name="q_success" data-lensdna-target="q_success" placeholder="Schedule M ledger on a frozen cohort; zero gate bypasses; complete audit package — no minutes-SLA warranty…"></textarea>
 
       <h2 style="margin-top:20px;">Bounded pilot parameters</h2>
       <div class="row">
@@ -157,7 +157,7 @@
       (s.baseline_minutes || '14-22') + ' minutes residual operational time per event (plan)'
     );
     document.getElementById('pilot_success').value = s.pilot_success ||
-      'Measured residual minutes per event reduced vs baseline on frozen cohort; zero human-gate bypasses';
+      'Schedule M ledger: residual minutes + completeness on a frozen cohort; zero human-gate bypasses (no ≥60% warranty)';
     document.getElementById('pilot_fail').value = s.pilot_fail ||
       'Thin residual, unfrozen exceptions, or human gate bypassed — stop and revise parameters';
     document.getElementById('pilot_notes').value = s.pilot_notes || '';

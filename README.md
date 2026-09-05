@@ -1,82 +1,64 @@
-# SensorLens (Static) — with Doula Care Residual
+# SensorLens (Static) — residual practice desk
 
-**Residual practice desk · client-mimic host for LensDNA OS domain overlay**
+**Client-mimic host for the LensDNA overlay · companion lab to [lensdna.app](https://lensdna.app)**
 
-[sensorlens.app](https://sensorlens.app) · companion lab to [lensdna.app](https://lensdna.app)
+Issuer: **LensDNA, Inc.** (Delaware C-Corp)  
+Commercial product: **HealthAdminDNA**  
+Terms: [Schedule S + I + M](https://lensdna.app/master-terms)
+
+This origin is an **internal synthetic lab**. It is not a second company and not the SAFE.
 
 ---
 
 ## Surfaces
 
-| Surface | Entry | Purpose |
-|---------|-------|---------|
-| **Doula Care Residual** | `doula.html` | Credentialing + coverage confirmation + outcomes documentation residual after Medicaid / commercial eligibility (26 states + DC) |
-| **Education & Therapy Robotics** | `robotics.html` | Event → residual ops → human gate → REA dossier → qualification |
-| **HealthAdmin residual** | `handoff.html` | Prior-auth residual practice (original path) |
+| Surface | Entry | Role |
+|---------|-------|------|
+| **HealthAdminDNA residual** | `handoff.html` | **Commercial wedge practice path** — prior-auth residual after an upstream decision |
+| **Doula Care Residual** | `doula.html` | Method-transfer sandbox (coverage decision → credentialing / docs residual) |
+| **Education & Therapy Robotics** | `robotics.html` | Method-transfer sandbox (robot event → portal / notify residual) |
 
 All three use the identical production embed pattern and human-gate discipline.
 
 ---
 
-## Doula Care Residual (new)
+## Alignment (2026-09-05)
 
-**Positioning:** “From policy decision to completed human-approved residual.”
-
-**Primary synthetic demonstration**
-
-A fictional community doula program is newly eligible for Medicaid reimbursement. Residual work remains:
-
-1. Receive enrollment / coverage decision + preserve context  
-2. Open synthetic MCO credentialing portal  
-3. Complete fields + attach training / certification packet  
-4. Stage coverage confirmation for a synthetic client  
-5. Prepare visit / outcomes documentation  
-6. Pause at human gate before irreversible submit  
-7. Produce Residual Evidence Artifact (REA)  
-8. Capture qualification parameters for a narrow pilot  
-
-**Trust boundary (stated on every page)**
-
-- Synthetic data only — no real patient, doula, or plan data  
-- No endorsement, partnership, integration, or customer status with any named organization  
-- LensDNA does not make clinical determinations  
-- Irreversible actions require explicit human approval  
-- Residual shape is relevant to the 26 states + DC with Medicaid doula reimbursement (as of 2026)
-
-**Files**
-
-```
-doula.html           Surface home / scope
-doula-event.html     Step 1 — coverage decision received, residual listed
-doula-residual.html  Step 2 — multi-step residual ops + human gate + timers
-doula-status.html    Step 3 — REA dossier + baseline binding + metrics
-doula-qualify.html   Step 4 — discovery questions + bounded pilot parameters
-doula.js             Domain state + REA builder (doula_care_residual)
-```
+- Featured path is HealthAdmin residual, not Doula / robotics.
+- Retired **Schedule D $25k / ≥60% minutes SLA**. Qualification language is **Schedule M** (14-day frozen-cohort ledger, no savings warranty).
+- Commercial links point to `https://lensdna.app/master-terms` (S + I + M).
+- Contact remains `hans@lensdna.app` only.
+- Multi-vertical PropTech / minerals / “domain-agnostic OS company” copy removed from diligence-facing pages.
 
 ---
 
-## Why this version is static
+## HealthAdmin practice loop
 
-SensorLens is a **synthetic practice surface**. It does not need a Python process, sessions on the server, or SMTP.
-
-This static build keeps the exact same layout, residual flow, human gate, timers, metrics, and pilot intake — using only:
-
-- Plain HTML pages
-- `localStorage` for practice state
-- The production embed from `lensdna.app`
-
-**Benefits**
-- Free / near-free hosting (Render Static Site, Cloudflare Pages, Netlify, GitHub Pages…)
-- No cold starts
-- No runtime secrets required
-- Still demonstrates the identical client install pattern
+1. `handoff.html` — decision already done; residual listed
+2. `residual.html` — portal fields + attachments + status + human gate + timers
+3. `status.html` — REA v1.2 dossier + baseline binding
+4. `pilot-intake.html` — local Schedule M parameters (browser only)
 
 ---
 
-## Architecture (one client pattern)
+## Doula / robotics (method transfer only)
 
-Every page loads the production domain overlay:
+Same 4-step shape: event → residual ops → REA dossier → qualify.  
+Synthetic only. No partner endorsement. Not Year-1 revenue.
+
+---
+
+## Why static
+
+SensorLens does not need a Python process, server sessions, or SMTP.
+
+- Plain HTML + `localStorage`
+- Production embed from `lensdna.app`
+- Free static hosting (Render Static Site, Cloudflare Pages, Netlify, GitHub Pages)
+
+---
+
+## Install pattern (identical to production)
 
 ```html
 <script
@@ -88,35 +70,17 @@ Every page loads the production domain overlay:
 </script>
 ```
 
-| Layer | Role |
-|-------|------|
-| **This site** | Parent pages: event, residual fields, human gate, dossier, qualify |
-| **embed.js** | Floating pill + resizable overlay iframe |
-| **overlay.html (lensdna.app)** | Voice (optional WebRTC), DOM tools on *this* parent, Pilot Ops |
-| **Control boundary** | Overlay can drive only the origin that embeds it |
-
-The runtime remains domain-agnostic. Domain pages supply event types, workflow steps, approval rules, synthetic portals, terminology, evidence requirements, escalation paths, dossier templates, and pilot metrics.
+Overlay can drive only the origin that embeds it.
 
 ---
 
-## Deploy (Render Static Site)
+## Deploy
 
-1. New → **Static Site** → connect the repository (or upload the folder)
-2. Build command: leave empty (or `echo "static"`)
-3. Publish directory: `.` (or the folder that contains `index.html`)
-4. Map custom domain **sensorlens.app** (HTTPS)
+1. Static host → publish directory = this folder (contains `index.html`)
+2. Optional custom domain **sensorlens.app**
+3. No environment variables
 
-Alternative hosts that work identically:
-- Cloudflare Pages
-- Netlify
-- GitHub Pages
-- Any static file host
-
-No environment variables required.
-
----
-
-## Local preview
+Local preview:
 
 ```bash
 npx serve .
@@ -124,25 +88,19 @@ npx serve .
 python -m http.server 5055
 ```
 
-Open http://127.0.0.1:5055
-
 ---
 
-## Security and compliance posture (sandbox)
+## Security posture (sandbox)
 
-- **Synthetic data only** — do not enter real PHI / PII / patient data  
-- **No live payer, district, or clinical connectivity**  
-- **noindex** on pages  
-- Production LensDNA HIPAA / Zero-Retention posture is documented on the commercial product when Enterprise + BAA + ZRM conditions are met; this lab does not assert those conditions by itself  
+- Synthetic data only — do not enter real PHI / PII
+- No live payer, district, or clinical connectivity
+- `noindex` on pages
+- Production HIPAA / ZRM claims live on the commercial product when Enterprise + BAA + ZRM conditions are met; this lab does not assert those conditions by itself
 
 ---
 
 ## Contact
 
-Practice desk source is published for transparency for operators, SAFE participants, and portfolio stakeholders evaluating residual last-mile execution.
+Commercial licensing and desks: **[lensdna.app](https://lensdna.app)** · hans@lensdna.app · [@LensDNA_OS](https://x.com/LensDNA_OS)
 
-Commercial licensing, pilots, and white-label runtime: **[lensdna.app](https://lensdna.app)**
-
----
-
-*SensorLens — practice the residual path. Measure real deployments under pilot parameters. Do not confuse synthetic practice with audited outcomes for a named prospect. Do not claim partner relationships that do not exist.*
+*Practice the residual path. Measure real deployments under Schedule M parameters. Do not confuse synthetic practice with audited outcomes for a named prospect.*
